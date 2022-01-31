@@ -1,0 +1,100 @@
+Wed Oct  6 22:46:38 CDT 2021
+working on CohJpsi
+In file included from input_line_8:1:
+/home/zy35/Tools/Macro/rootlogon.C:17:2: warning: treating Unicode character as whitespace [-Wunicode-whitespace]
+          printf(" Welcome to ROOT v. %s\n", gROOT->GetVersion());
+        ^
+SYSINFO: Intel(R) Xeon(R) CPU E5-2660 0 @ 2.20GHz, 16 cores @ 2.008GHz, 63GB RAM
+******************************************
+ Welcome to ROOT v. 6.24/00
+******************************************
+gStyle mode requested !
+
+Processing anaSTARlight.C+("CohJpsi", 10000000)...
+Info in <TUnixSystem::ACLiC>: creating shared library /home/zy35/zaochen/cmsJpsiDimu/jpsiAnaCode/simulation/./anaSTARlight_C.so
+	 ERROR: I can not open "/Users/syang/work/run2/STARlight/genSTARlightLHE_v313/CohJpsi/slight.CohJpsi.0_30M.out"
+Goodbye!
+working on CohJpsi 0n0n
+In file included from input_line_8:1:
+/home/zy35/Tools/Macro/rootlogon.C:17:2: warning: treating Unicode character as whitespace [-Wunicode-whitespace]
+          printf(" Welcome to ROOT v. %s\n", gROOT->GetVersion());
+        ^
+SYSINFO: Intel(R) Xeon(R) CPU E5-2660 0 @ 2.20GHz, 16 cores @ 1.966GHz, 63GB RAM
+******************************************
+ Welcome to ROOT v. 6.24/00
+******************************************
+gStyle mode requested !
+
+Processing anaSTARlight.C+("CohJpsi_0n0n", 10000000)...
+	 ERROR: I can not open "/Users/syang/work/run2/STARlight/genSTARlightLHE_v313/CohJpsi_0n0n/cohJpsi_0n0n_0_60M.out"
+Goodbye!
+working on CohJpsi 0nXn
+In file included from input_line_8:1:
+/home/zy35/Tools/Macro/rootlogon.C:17:2: warning: treating Unicode character as whitespace [-Wunicode-whitespace]
+          printf(" Welcome to ROOT v. %s\n", gROOT->GetVersion());
+        ^
+SYSINFO: Intel(R) Xeon(R) CPU E5-2660 0 @ 2.20GHz, 16 cores @ 2.199GHz, 63GB RAM
+******************************************
+ Welcome to ROOT v. 6.24/00
+******************************************
+gStyle mode requested !
+
+Processing anaSTARlight.C+("CohJpsi_0nXn", 10000000)...
+	 ERROR: I can not open "/Users/syang/work/run2/STARlight/genSTARlightLHE_v313/CohJpsi_0nXn/cohJpsi_0nXn_0_50M.out"
+Goodbye!
+working on CohJpsi XnXn
+In file included from input_line_8:1:
+/home/zy35/Tools/Macro/rootlogon.C:17:2: warning: treating Unicode character as whitespace [-Wunicode-whitespace]
+          printf(" Welcome to ROOT v. %s\n", gROOT->GetVersion());
+        ^
+SYSINFO: Intel(R) Xeon(R) CPU E5-2660 0 @ 2.20GHz, 16 cores @ 1.761GHz, 63GB RAM
+******************************************
+ Welcome to ROOT v. 6.24/00
+******************************************
+gStyle mode requested !
+
+Processing anaSTARlight.C+("CohJpsi_XnXn", 10000000)...
+	 ERROR: I can not open "/Users/syang/work/run2/STARlight/genSTARlightLHE_v313/CohJpsi_XnXn/cohJpsi_XnXn_0_50M.out"
+Goodbye!
+working on InCohJpsi
+In file included from input_line_8:1:
+/home/zy35/Tools/Macro/rootlogon.C:17:2: warning: treating Unicode character as whitespace [-Wunicode-whitespace]
+          printf(" Welcome to ROOT v. %s\n", gROOT->GetVersion());
+        ^
+SYSINFO: Intel(R) Xeon(R) CPU E5-2660 0 @ 2.20GHz, 16 cores @ 2.199GHz, 63GB RAM
+******************************************
+ Welcome to ROOT v. 6.24/00
+******************************************
+gStyle mode requested !
+
+Processing anaSTARlight.C+("InCohJpsi", 10000000)...
+	 ERROR: I can not open "/Users/syang/work/run2/STARlight/genSTARlightLHE_v313/InCohJpsi/slight.InCohJpsi.0_30M.out"
+Goodbye!
+working on CohPsi2S
+In file included from input_line_8:1:
+/home/zy35/Tools/Macro/rootlogon.C:17:2: warning: treating Unicode character as whitespace [-Wunicode-whitespace]
+          printf(" Welcome to ROOT v. %s\n", gROOT->GetVersion());
+        ^
+SYSINFO: Intel(R) Xeon(R) CPU E5-2660 0 @ 2.20GHz, 16 cores @ 2.13GHz, 63GB RAM
+******************************************
+ Welcome to ROOT v. 6.24/00
+******************************************
+gStyle mode requested !
+
+Processing anaSTARlight.C+("CohPsi2S", 10000000)...
+	 ERROR: I can not open "/Users/syang/work/run2/STARlight/genSTARlightLHE_v313/CohPsi2S/slight.CohPsi2S.0_25M.out"
+Goodbye!
+working on InCohPsi2S
+In file included from input_line_8:1:
+/home/zy35/Tools/Macro/rootlogon.C:17:2: warning: treating Unicode character as whitespace [-Wunicode-whitespace]
+          printf(" Welcome to ROOT v. %s\n", gROOT->GetVersion());
+        ^
+SYSINFO: Intel(R) Xeon(R) CPU E5-2660 0 @ 2.20GHz, 16 cores @ 2.199GHz, 63GB RAM
+******************************************
+ Welcome to ROOT v. 6.24/00
+******************************************
+gStyle mode requested !
+
+Processing anaSTARlight.C+("InCohPsi2S", 10000000)...
+	 ERROR: I can not open "/Users/syang/work/run2/STARlight/genSTARlightLHE_v313/InCohPsi2S/slight.InCohPsi2S.0_25M.out"
+Goodbye!

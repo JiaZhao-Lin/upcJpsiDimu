@@ -1,0 +1,34 @@
+
+Processing plotJpsiQA.C+...
+Info in <TUnixSystem::ACLiC>: creating shared library /home/zy35/zaochen/cmsJpsiDimu/jpsiAnaCode/anaData/./plotJpsiQA_C.so
+fileName: jpsiHistos/rawSig
+dirName: jpsiQAPlots/rawSig
+Info in <TCanvas::Print>: png file jpsiQAPlots/rawSig/nEvts.png has been created
+Info in <TCanvas::Print>: png file jpsiQAPlots/rawSig/vertex.png has been created
+Info in <TCanvas::Print>: png file jpsiQAPlots/rawSig/centrality.png has been created
+Info in <TCanvas::Print>: png file jpsiQAPlots/rawSig/NtrkHPvsNtrkoffline.png has been created
+Info in <TCanvas::Print>: png file jpsiQAPlots/rawSig/NtrkHP.png has been created
+Info in <TCanvas::Print>: png file jpsiQAPlots/rawSig/ZDCPlus_Compare.png has been created
+Info in <TCanvas::Print>: png file jpsiQAPlots/rawSig/ZDCMinus_Compare.png has been created
+Info in <TCanvas::Print>: png file jpsiQAPlots/rawSig/MvsPt.png has been created
+Info in <TCanvas::Print>: png file jpsiQAPlots/rawSig/rawMassvsRap.png has been created
+Info in <TCanvas::Print>: png file jpsiQAPlots/rawSig/rawPtvsRap.png has been created
+Info in <TCanvas::Print>: png file jpsiQAPlots/rawSig/massvsRap_NeuDir0p0m.png has been created
+Info in <TCanvas::Print>: png file jpsiQAPlots/rawSig/massvsRap_NeuDir0p1m.png has been created
+Info in <TCanvas::Print>: png file jpsiQAPlots/rawSig/massvsRap_NeuDir1p0m.png has been created
+Info in <TCanvas::Print>: png file jpsiQAPlots/rawSig/massvsRap_NeuDir1p1m.png has been created
+Info in <TCanvas::Print>: png file jpsiQAPlots/rawSig/ptvsRap_NeuDir0p0m.png has been created
+Info in <TCanvas::Print>: png file jpsiQAPlots/rawSig/ptvsRap_NeuDir0p1m.png has been created
+Info in <TCanvas::Print>: png file jpsiQAPlots/rawSig/ptvsRap_NeuDir1p0m.png has been created
+Info in <TCanvas::Print>: png file jpsiQAPlots/rawSig/ptvsRap_NeuDir1p1m.png has been created
+Info in <TCanvas::Print>: png file jpsiQAPlots/rawSig/jpsiPtvsRap_NeuDir0p0m.png has been created
+Info in <TCanvas::Print>: png file jpsiQAPlots/rawSig/jpsiPtvsRap_NeuDir0p1m.png has been created
+Info in <TCanvas::Print>: png file jpsiQAPlots/rawSig/jpsiPtvsRap_NeuDir1p0m.png has been created
+Info in <TCanvas::Print>: png file jpsiQAPlots/rawSig/jpsiPtvsRap_NeuDir1p1m.png has been created
+Info in <TCanvas::Print>: png file jpsiQAPlots/rawSig/massvsRap_Neu0n0n.png has been created
+Info in <TCanvas::Print>: png file jpsiQAPlots/rawSig/massvsRap_Neu0n1n.png has been created
+Info in <TCanvas::Print>: png file jpsiQAPlots/rawSig/massvsRap_Neu1n1n.png has been created
+Info in <TCanvas::Print>: png file jpsiQAPlots/rawSig/ptvsRap_Neu0n0n.png has been created
+Info in <TCanvas::Print>: png file jpsiQAPlots/rawSig/ptvsRap_Neu0n1n.png has been created
+Info in <TCanvas::Print>: png file jpsiQAPlots/rawSig/ptvsRap_Neu1n1n.png has been created
+End of program !

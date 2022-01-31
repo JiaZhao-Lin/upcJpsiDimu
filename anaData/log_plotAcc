@@ -1,0 +1,18 @@
+
+Processing plotAcc.C+...
+Info in <TUnixSystem::ACLiC>: creating shared library /home/zy35/zaochen/cmsJpsiDimu/jpsiAnaCode/anaData/./plotAcc_C.so
+Info in <TCanvas::Print>: pdf file accStudy/JpsiAnaAcc_DaughterMu.pdf has been created
+Info in <TCanvas::Print>: pdf file accStudy/JpsiAnaAcc_TriggerMu.pdf has been created
+Info in <TCanvas::Print>: pdf file accStudy/JpsiAnaAcc_RapBin0.pdf has been created
+Info in <TCanvas::Print>: pdf file accStudy/JpsiAnaAcc_RapBin1.pdf has been created
+Info in <TCanvas::Print>: pdf file accStudy/JpsiAnaAcc_RapBin2.pdf has been created
+Info in <TCanvas::Print>: pdf file accStudy/JpsiAnaAcc_RapBin3.pdf has been created
+Info in <TCanvas::Print>: pdf file accStudy/JpsiAnaAcc_RapBin4.pdf has been created
+Info in <TCanvas::Print>: pdf file accStudy/JpsiAnaAcc_RapBin5.pdf has been created
+Info in <TCanvas::Print>: pdf file accStudy/JpsiAnaAcc_RapBin6.pdf has been created
+Info in <TCanvas::Print>: pdf file accStudy/JpsiAnaAcc_RapBin7.pdf has been created
+Info in <TCanvas::Print>: pdf file accStudy/JpsiAnaAcc_RapBin8.pdf has been created
+Info in <TCanvas::Print>: pdf file accStudy/JpsiAnaAcc_RapBin9.pdf has been created
+Info in <TCanvas::Print>: pdf file accStudy/JpsiAnaAcc_RapBin10.pdf has been created
+Info in <TCanvas::Print>: pdf file accStudy/JpsiAnaAcc_RapBin11.pdf has been created
+End of program !

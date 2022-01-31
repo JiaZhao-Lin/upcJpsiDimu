@@ -1,0 +1,228 @@
+#include "../common/headers.h"
+#include "../common/function.C"
+#include "../common/funUtil.h"
+
+#include "RooRealVar.h"
+#include "RooDataSet.h"
+#include "RooDataHist.h"
+#include "RooGaussian.h"
+#include "RooConstVar.h"
+#include "RooFormulaVar.h"
+#include "RooHistPdf.h"
+#include "RooGenericPdf.h"
+#include "RooAddPdf.h"
+#include "RooPolynomial.h"
+#include "RooChi2Var.h"
+#include "RooMinimizer.h"
+#include "RooCategory.h"
+#include "RooSimultaneous.h"
+#include "RooPlot.h"
+#include "RooFitResult.h"
+
+using namespace RooFit;
+
+void readFiles();
+void scanAndFit2Data();
+
+const double mTinyNum     = 1.e-6;
+const double deltaStretch = 0.01;
+const double StrechStart  = 0.70;
+const int    nSteps_scan  = 20;
+
+TH1D *hPt_CohJpsi_Scan[nSteps_scan];
+TH1D *hPt_CohJpsi_fromDataFit;        //Only use for pt<0.1 region, where Coherent J/psi are the only physics source
+Int_t    mTextFont  = 42;
+Double_t mTextSize  = 0.045;
+Int_t    mTextColor = 1;
+
+Double_t mMarkerStyle = 20;
+Double_t mMarkerSize  = 0.8;
+
+Double_t mTitleSize    = 0.06;
+Double_t mXTitleOffset = 0.95;
+Double_t mYTitleOffset = 0.95;
+Double_t mLabelSize    = 0.05;
+Double_t mTickLength   = 0.02;
+
+void findStrechFactor()
+{
+	readFiles();
+	scanAndFit2Data();
+}
+
+void readFiles()
+{
+	TFile* infile_scan = new TFile("../simulation/mcHistos/dimuonHistos.CohJpsi.root", "read");
+	
+	TH1D *hPt_CohJpsi_Rap[nRapBins][nSteps_scan];
+
+	for(Int_t iscan=0; iscan<nSteps_scan; iscan++)
+	{
+		TH3D* h3d_MvsPtVsRap_tem = (TH3D*) infile_scan -> Get(Form("hMvsPtvsRap_isc%d",iscan));
+
+		cout<<"read in: "<<h3d_MvsPtVsRap_tem->GetName()<<endl;
+		
+		for(Int_t irap=0; irap<nRapBins; irap++) //hMvsPtvsRap_isc0
+		{
+			Int_t rapBinLow      = h3d_MvsPtVsRap_tem->GetXaxis()->FindBin( mRapLow[irap] + mTinyNum );
+			Int_t rapBinHig      = h3d_MvsPtVsRap_tem->GetXaxis()->FindBin( mRapHi[irap]  - mTinyNum );
+			Int_t jpsiMBinLow    = h3d_MvsPtVsRap_tem->GetZaxis()->FindBin( mJpsiMassLow  + mTinyNum );
+			Int_t jpsiMBinHig    = h3d_MvsPtVsRap_tem->GetZaxis()->FindBin( mJpsiMassHi   - mTinyNum );
+
+			cout<<"add in "<<mRapLow[irap]<<"<y<"<<mRapHi[irap]<<endl;
+
+			hPt_CohJpsi_Rap[irap][iscan] = (TH1D*) h3d_MvsPtVsRap_tem -> ProjectionY(Form("hPt_CohJpsi_iRap%d_iscan%d", irap, iscan), rapBinLow, rapBinHig, jpsiMBinLow, jpsiMBinHig);
+
+			if( irap==0 )
+			{
+				hPt_CohJpsi_Scan[iscan]   = (TH1D *)hPt_CohJpsi_Rap[irap][iscan]->Clone( Form("hPt_CohJpsi_iscan%d",iscan) );
+				hPt_CohJpsi_Scan[iscan]   -> SetTitle(Form("%1.1f < |y| < %1.1f", mRapLow[nRapBins/2], mRapHi[nRapBins-1]));
+			}
+			else
+			{
+				hPt_CohJpsi_Scan[iscan]  -> Add( hPt_CohJpsi_Rap[irap][iscan] );
+			}
+
+		}//irapidity
+	}//iscan
+
+	TFile* infile_data = new TFile("./outplots/outdata_pt_QED_CohJpsi.root", "read"); //Coherent Jpsi pt shape from tiny pt bin fitting, only use pt<0.10 GeV/c region to find stretch factor
+	hPt_CohJpsi_fromDataFit = (TH1D*) infile_data->Get("hPt_CohJpsi");
+
+	cout<<"readin Coherent Jpsi pt from data fit: "<<hPt_CohJpsi_fromDataFit->GetName()<<endl;
+}
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void scanAndFit2Data( )
+{
+	TH1D* h1d_chi2overNDF_vsStretchFactor = new TH1D("h1d_chi2overNDF_vsStretchFactor","h1d_chi2overNDF_vsStretchFactor", nSteps_scan, 0.70, 0.90);
+	const double pt_lowm = 0.0 ;
+	const double pt_higm = 0.10;
+	RooRealVar  mPt(   "mPt",    "p_{T}^{#mu#mu} (GeV)", pt_lowm, pt_higm );
+	RooRealVar  nNorm( "nNorm",  "nNorm",                1.e4, 0.0, 1.e8 );
+
+	const TString outDir = "plots_scan4StretchFractor";
+	const TString cmd = "mkdir -p "+outDir;
+	system( cmd );
+	
+	TPDF *mypdf = new TPDF(Form("%s/scan4StretchFractor.pdf", outDir.Data()), 111);
+	mypdf->Off();
+
+	Int_t nColumns = 2;
+	Int_t nRaws    = 2;
+	Int_t nPads    = nColumns * nRaws;
+
+	TCanvas* c1 = new TCanvas("c1", "c1", 600, 600);
+	
+	c1->cd();
+	drawLatex(0.05, 0.70, "scan for best stretch factor which could",  mTextFont, 0.04, 4);
+	drawLatex(0.05, 0.65, "match template to data Coh. Jpsi pt shape", mTextFont, 0.04, 4);
+
+	pdfAction(c1, mypdf);
+
+
+	c1->Divide(nColumns, nRaws);
+
+	for(Int_t ipad=0; ipad<nPads; ipad++)
+	{
+		c1->cd(ipad+1);
+		setPad(0.12, 0.08, 0.07, 0.13);
+	}
+
+	
+	//hPt_CohJpsi_fromDataFit -> Scale(1., "width");
+
+	for(int iscan = 0; iscan<nSteps_scan; iscan++)
+	{
+		//hPt_CohJpsi_Scan[iscan] -> Scale(1., "width");
+
+		RooDataHist rh_CohJpsiPt_Data("rh_CohJpsiPt_Data", "rh_CohJpsiPt_Data", mPt, hPt_CohJpsi_Scan[iscan] );
+		RooHistPdf  cohJpsiPtPdf(     "cohJpsiPtPdf",      "cohJpsiPtPdf",      mPt, rh_CohJpsiPt_Data, 2    );
+
+		RooAddPdf totPtPdf("totPtPdf", "totPtPdf", RooArgList(cohJpsiPtPdf), RooArgList(nNorm)); 
+
+		RooDataHist dataPt("dataPt", "dataPt", mPt, hPt_CohJpsi_fromDataFit); 
+		totPtPdf.fitTo(dataPt,Extended(kTRUE),SumW2Error(kTRUE),Hesse(kTRUE),Minos(kFALSE),Save());
+
+		int nFrameMBins = 5; //(pt_higm-pt_lowm) / hPt_CohJpsi_fromDataFit->GetBinWidth(1);
+		
+		c1->cd(iscan%nPads+1);
+
+		RooPlot *framePt = mPt.frame(Range(pt_lowm, pt_higm), Title(""), Bins(nFrameMBins));
+		framePt ->GetYaxis()->SetRangeUser(1., hPt_CohJpsi_fromDataFit->GetMaximum()*1.5);
+		
+		dataPt  .plotOn(framePt, MarkerStyle(20), MarkerSize(1), MarkerColor(1), LineColor(1), LineWidth(2), DrawOption("pz"));
+		totPtPdf.plotOn(framePt, LineColor(2), LineStyle(1), LineWidth(2));
+		
+		framePt ->GetYaxis()->SetNdivisions(6);
+		framePt ->GetYaxis()->SetTitleSize(0.05);
+		framePt ->GetYaxis()->SetLabelSize(0.05);
+		framePt ->GetYaxis()->SetTitleOffset(1.25);
+		
+		framePt ->GetXaxis()->SetNdivisions(6);
+		framePt ->GetXaxis()->SetTitleSize(0.05);
+		framePt ->GetXaxis()->SetLabelSize(0.05);
+		framePt ->GetXaxis()->SetTitleOffset(1.15);
+		framePt ->GetXaxis()->SetLabelFont(40);
+		framePt ->SetTickLength(0.02);
+	
+		framePt->Draw();
+
+		//		cout<<endl;
+		//		cout<<"******** Print frame ********"<<endl;
+		//		framePt->Print();
+		//		cout<<"******** End ********"<<endl;
+		//		cout<<endl;
+
+		Double_t chi2overNDF = framePt ->chiSquare("totPtPdf_Norm[mPt]", "h_dataPt", 1);
+		
+		h1d_chi2overNDF_vsStretchFactor ->SetBinContent( iscan+1, chi2overNDF );
+		h1d_chi2overNDF_vsStretchFactor ->SetBinError(   iscan+1, 0           );
+		
+		double iStrech = StrechStart + iscan*deltaStretch;
+
+		drawLatex(0.28, 0.95, Form("scanIdx = %d (strechF = %.2f)", iscan, iStrech), mTextFont, 0.04, 4);
+		drawLatex(0.4, 0.44,  Form("%1.1f < |y| < %1.1f", mRapLow[nRapBins/2], mRapHi[nRapBins-1]), mTextFont, 0.05,      mTextColor);
+		drawLatex(0.4, 0.32,  Form("#chi^{2}/ndf = %.2f", chi2overNDF),                             mTextFont, mTextSize, mTextColor);
+
+		TLegend  *leg =  new TLegend(0.15, 0.75, 0.64, 0.89);
+		leg->SetFillStyle(0);
+		leg->SetFillColor(0);
+		leg->SetTextFont(mTextFont);
+		leg->SetTextSize(0.038);
+		leg->AddEntry( framePt->findObject("h_dataPt"),           "Coh. J/#psi from Data Fit",        "p");
+		leg->AddEntry( framePt->findObject("totPtPdf_Norm[mPt]"), "Coh. J/#psi stretched template ",  "l");
+		leg->Draw("same");
+
+		if(iscan%nPads == nPads-1) pdfAction(c1, mypdf);
+
+	}//iscan
+
+	c1->Clear();
+	
+	c1->cd();
+	h1d_chi2overNDF_vsStretchFactor->SetXTitle("StrechFactorValue");
+	h1d_chi2overNDF_vsStretchFactor->SetYTitle("#chi2/ndf");
+	h1d_chi2overNDF_vsStretchFactor ->GetYaxis()->SetNdivisions(10);
+	h1d_chi2overNDF_vsStretchFactor ->GetYaxis()->SetTitleSize(0.05);
+	h1d_chi2overNDF_vsStretchFactor ->GetYaxis()->SetLabelSize(0.03);
+	h1d_chi2overNDF_vsStretchFactor ->GetYaxis()->SetTitleOffset(1.05);
+	h1d_chi2overNDF_vsStretchFactor ->GetXaxis()->SetNdivisions(6);
+	h1d_chi2overNDF_vsStretchFactor ->GetXaxis()->SetTitleSize(0.04);
+	h1d_chi2overNDF_vsStretchFactor ->GetXaxis()->SetLabelSize(0.03);
+	h1d_chi2overNDF_vsStretchFactor ->GetXaxis()->SetTitleOffset(1.05);
+	h1d_chi2overNDF_vsStretchFactor ->GetXaxis()->SetLabelFont(40);
+	h1d_chi2overNDF_vsStretchFactor->SetMarkerStyle(20);
+	h1d_chi2overNDF_vsStretchFactor->Draw("hist");
+	h1d_chi2overNDF_vsStretchFactor->Draw("pesame");
+	h1d_chi2overNDF_vsStretchFactor->SetNdivisions(10);
+	
+	drawLatex(0.28, 0.80, "Scan for best Strech Factor", mTextFont, 0.04, 4);
+
+	mypdf->On();
+	mypdf->Close();
+
+	mypdf->On();
+	mypdf->Close();
+}
+

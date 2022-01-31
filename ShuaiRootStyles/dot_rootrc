@@ -1,0 +1,4 @@
+Rint.Logon: $HOME/Tools/Macro/rootlogon.C
+Rint.Logoff: $HOME/Tools/Macro/myrootlogoff.C
+
+#ACLiC.IncludePaths: -I/Users/syang/Tools/pythia8303/include

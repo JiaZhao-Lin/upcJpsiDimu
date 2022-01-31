@@ -1,0 +1,3 @@
+root ../simulation/effAndTemp/MassPtTemp_AllSpecs.root
+
+for(int ib=1;ib<100; ib++)cout<< hCohJpsiPt->GetBinCenter(ib)<<" value: "<<hCohJpsiPt->GetBinContent(ib)<<endl;
