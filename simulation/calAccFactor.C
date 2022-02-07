@@ -21,8 +21,11 @@ TH3D *hMvsPtvsRap_Den[nSpecs];
 TH3D *hMvsPtvsRap_Num[nSpecs];
 TH1D *hRap_Den[nSpecs];
 TH1D *hRap_Num[nSpecs];
+TH1D *hRap_Den_Symm[nSpecs];
+TH1D *hRap_Num_Symm[nSpecs];
 
 TH1D *hAccvsRap[nSpecs];
+TH1D *hAccvsRap_Symm[nSpecs];
 
 //--------------------------------------
 //--------------------------------------
@@ -72,6 +75,16 @@ void readFiles()
 		//Rebin rapidity bins to be same as signal rapidity bins
 		hRap_Den[is]             = (TH1D*) rebHisto( hRap_Den[is],    Form("hRap_Den_ispec%d",     is), nDiffRapBins+1, mDiffRapBds, "NO");
 		hRap_Num[is]             = (TH1D*) rebHisto( hRap_Num[is],    Form("hRap_ispec%d",         is), nDiffRapBins+1, mDiffRapBds, "NO");
+
+		hRap_Den_Symm[is]		 = (TH1D*) hRap_Den[is] 	->Clone( Form("hRap_Den_Symm_ispec%d",	is) );
+		hRap_Num_Symm[is]		 = (TH1D*) hRap_Num[is]		->Clone( Form("hRap_Den_Symm_ispec%d",	is) );
+
+		//For SymmetricRapBin, the positive rap side of the histogram is combined y 
+		for (int i = nDiffRapBins/2 + 1; i < nDiffRapBins + 1; ++i)
+		{
+			hRap_Den_Symm[is]		->AddBinContent(i+1,	hRap_Den[is]	 ->GetBinContent(nDiffRapBins + 1 - i));
+			hRap_Num_Symm[is] 		->AddBinContent(i+1,	hRap_Num[is]	 ->GetBinContent(nDiffRapBins + 1 - i));
+		}
 	}//ispec
 }
 
@@ -87,6 +100,11 @@ void getAcc()
 		hAccvsRap[is]   ->Divide( hRap_Num[is], hRap_Den[is], 1, 1, "B");
 		hAccvsRap[is]   ->SetTitle( specTitle[is].Data() );
 		hAccvsRap[is]   ->GetYaxis()->SetTitle("Acceptance");
+
+		hAccvsRap_Symm[is]   = (TH1D *)hRap_Num_Symm[is]->Clone( Form("hAccvsRap_Symm_%s", specName[is].Data()) );
+		hAccvsRap_Symm[is]   ->Divide( hRap_Num_Symm[is], hRap_Den_Symm[is], 1, 1, "B");
+		hAccvsRap_Symm[is]   ->SetTitle( specTitle[is].Data() );
+		hAccvsRap_Symm[is]   ->GetYaxis()->SetTitle("Acceptance");
 	}//ispec
 }
 
@@ -167,7 +185,7 @@ void drawAcc()
 void saveFiles()
 {
 
-	TFile *fOut = new TFile(Form("%s/Acceptance_AllSpecs.root", outDir.Data()), "recreate");
+	TFile *fOut = new TFile(Form("%s/Acceptance_AllSpecs_%dRapBins.root", outDir.Data(), nDiffRapBins), "recreate");
 	cout<<"save efficiencies into: "<<fOut->GetName()<<endl;
 	fOut->cd();
 
@@ -176,6 +194,7 @@ void saveFiles()
 		if( is!=0 && is!=1 && is!=2 && is!=3 && is!=6 ) continue;
 
 		hAccvsRap[is]          ->Write();
+		hAccvsRap_Symm[is]     ->Write();
 	}
 
 	fOut->Close();

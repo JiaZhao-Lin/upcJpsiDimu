@@ -6,15 +6,21 @@ void plotRvsN()
 {
 	const double x[3]    = {0.5, 1.5, 2.5};
 	const double xerr[3] = {0, 0, 0};
-	const double y_negRap[3]    = {0.146,  0.196,  0.319 };
-	const double yerr_negRap[3] = {0.0205, 0.0407, 0.0579};
+
+	//negative y region
+	// const double y_negRap[3]    = {0.146,  0.196,  0.319 };
+	// const double yerr_negRap[3] = {0.0205, 0.0407, 0.0579};
+
+	//combined y region
+	const double y_negRap[3]    = {0.156,  0.171,  0.233 };
+	const double yerr_negRap[3] = {0.0158, 0.022, 0.0395};
 
 	TGraphErrors* ge_negRap = new TGraphErrors(3, x, y_negRap, xerr, yerr_negRap);
 	
 	TCanvas* c1 = new TCanvas("c1", "c1", 0, 0, 800, 600);
 	setPad(0.12, 0.08, 0.07, 0.13);
 
-	TH2D* htem2d = new TH2D("htem2d", "", 3, 0.0, 3.0, 10, 0.09, 0.42);
+	TH2D* htem2d = new TH2D("htem2d", "", 3, 0.0, 3.0, 10, 0.09, 0.3);
 	//TH2D* htem2d = new TH2D("htem2d", "", 10, -4.1, 1.0, 10, 0, 8.0);
 	htem2d ->SetYTitle("#sigma_{#psi(2S)}/#sigma_{J/#psi}");
 	htem2d ->SetXTitle("");
@@ -39,7 +45,7 @@ void plotRvsN()
 	ge_negRap->Draw("pesame");
 
 	drawLatex(0.15, 0.85, "UPC Pb+Pb #sqrt{s_{NN}} = 5.02 TeV",      42,       0.06,      1);
-	drawLatex(0.18, 0.78, "-2.0 < y < -1.6",      42,       0.05,      1);
+	drawLatex(0.18, 0.78, "2.0 < |y| < 1.6",      42,       0.05,      1);
 	
 	c1->SaveAs("./outplots/RvsN_UPC.png");
 	c1->SaveAs("./outplots/RvsN_UPC.pdf");

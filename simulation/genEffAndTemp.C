@@ -50,10 +50,17 @@ TH3D *hMvsPtvsRap[nSpecs];
 TH1D *hRap_Gen[nSpecs];
 TH1D *hRap_woEvtSel[nSpecs];
 TH1D *hRap[nSpecs];
+TH1D *hRap_Gen_Symm[nSpecs];
+TH1D *hRap_woEvtSel_Symm[nSpecs];
+TH1D *hRap_Symm[nSpecs];
 
 TH1D *hEffvsRap_woEvtSel[nSpecs];
 TH1D *hEffvsRap[nSpecs];
 TH1D *hEvtSelEffvsRap[nSpecs];
+
+TH1D *hEffvsRap_woEvtSel_Symm[nSpecs];
+TH1D *hEffvsRap_Symm[nSpecs];
+TH1D *hEvtSelEffvsRap_Symm[nSpecs];
 
 TH1D *hMass[nSpecs];
 TH1D *hPt[nSpecs];
@@ -484,6 +491,18 @@ void readFiles( )
 		hRap_Gen[is]      = (TH1D*) rebHisto( hRap_Gen[is],      Form("hRap_Gen_ispec%d",     is), nDiffRapBins+1, mDiffRapBds, "NO");
 		hRap[is]          = (TH1D*) rebHisto( hRap[is],          Form("hRap_ispec%d",         is), nDiffRapBins+1, mDiffRapBds, "NO");
 		hRap_woEvtSel[is] = (TH1D*) rebHisto( hRap_woEvtSel[is], Form("hRap_woEvtSel_ispec%d",is), nDiffRapBins+1, mDiffRapBds, "NO");
+
+		hRap_Gen_Symm[is] 	   = (TH1D *)hRap_Gen[is]		->Clone( Form("hRap_Gen_Symm_ispec%d",     	is) );
+		hRap_Symm[is] 	  	   = (TH1D *)hRap[is]			->Clone( Form("hRap_Symm_ispec%d",     		is) );
+		hRap_woEvtSel_Symm[is] = (TH1D *)hRap_woEvtSel[is]	->Clone( Form("hRap_woEvtSel_Symm_ispec%d", is) );
+
+		//For SymmetricRapBin, the positive rap side of the histogram is combined y 
+		for (int i = nDiffRapBins/2 + 1; i < nDiffRapBins + 1; ++i)
+		{
+			hRap_Gen_Symm[is]		->AddBinContent(i+1,	hRap_Gen[is]	 ->GetBinContent(nDiffRapBins + 1 - i));
+			hRap_Symm[is] 			->AddBinContent(i+1,	hRap[is]		 ->GetBinContent(nDiffRapBins + 1 - i));
+			hRap_woEvtSel_Symm[is]	->AddBinContent(i+1,	hRap_woEvtSel[is]->GetBinContent(nDiffRapBins + 1 - i));
+		}
 	}//ispec
 }
 //----------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -508,7 +527,23 @@ void calEff()
 		hEvtSelEffvsRap[is]    ->Divide( hRap[is], hRap_woEvtSel[is], 1, 1, "B");
 		hEvtSelEffvsRap[is]    ->SetTitle(specTitle[is].Data());
 		hEvtSelEffvsRap[is]    ->GetYaxis()->SetTitle("Efficiency");
+
+		hEffvsRap_woEvtSel_Symm[is] = (TH1D *)hRap_woEvtSel_Symm[is]->Clone( Form("hEffvsRap_woEvtSel_Symm_%s", specName[is].Data()) );
+		hEffvsRap_woEvtSel_Symm[is] ->Divide( hRap_woEvtSel_Symm[is], hRap_Gen_Symm[is], 1, 1, "B");
+		hEffvsRap_woEvtSel_Symm[is] ->SetTitle( specTitle[is].Data() );
+		hEffvsRap_woEvtSel_Symm[is] ->GetYaxis()->SetTitle("Efficiency");
+
+		hEffvsRap_Symm[is]          = (TH1D *)hRap_Symm[is]->Clone( Form("hEffvsRap_Symm_%s", specName[is].Data()) );
+		hEffvsRap_Symm[is]          ->Divide( hRap_Symm[is], hRap_Gen_Symm[is], 1, 1, "B");
+		hEffvsRap_Symm[is]          ->SetTitle( specTitle[is].Data() );
+		hEffvsRap_Symm[is]          ->GetYaxis()->SetTitle("Efficiency");
+
+		hEvtSelEffvsRap_Symm[is]    = (TH1D *)hRap_Symm[is]->Clone(Form("hEvtSelEffvsRap_Symm_%s", specName[is].Data())); 
+		hEvtSelEffvsRap_Symm[is]    ->Divide( hRap_Symm[is], hRap_woEvtSel_Symm[is], 1, 1, "B");
+		hEvtSelEffvsRap_Symm[is]    ->SetTitle(specTitle[is].Data());
+		hEvtSelEffvsRap_Symm[is]    ->GetYaxis()->SetTitle("Efficiency");
 	}//ispec
+
 }
 //----------------------------------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -841,7 +876,7 @@ void saveFiles( )
 	// write down efficiencies
 	//----------------------------------------------------------------------------------------------------------------------------------------------------------
 
-	TFile *fOut = new TFile(Form("%s/Efficiency_AllSpecs.root", outDir.Data()), "recreate");
+	TFile *fOut = new TFile(Form("%s/Efficiency_AllSpecs_%dRapBins.root", outDir.Data(), nDiffRapBins), "recreate");
 	cout<<"save efficiencies into: "<<fOut->GetName()<<endl;
 	fOut->cd();
 
@@ -850,6 +885,9 @@ void saveFiles( )
 		hEffvsRap_woEvtSel[is] ->Write();
 		hEffvsRap[is]          ->Write();
 		hEvtSelEffvsRap[is]    ->Write();
+		hEffvsRap_woEvtSel_Symm[is] ->Write();
+		hEffvsRap_Symm[is]          ->Write();
+		hEvtSelEffvsRap_Symm[is]    ->Write();
 	}
 
 	fOut->Close();
@@ -857,7 +895,7 @@ void saveFiles( )
 	//----------------------------------------------------------------------------------------------------------------------------------------------------------
 	// write down templates
 	//----------------------------------------------------------------------------------------------------------------------------------------------------------
-	TFile *fOutTemp = new TFile( Form("%s/MassPtTemp_AllSpecs"+massname+".root", outDir.Data()), "recreate");
+	TFile *fOutTemp = new TFile( Form("%s/MassPtTemp_AllSpecs"+massname+"%dRapBins.root", outDir.Data(), nDiffRapBins), "recreate");
 	cout<<"save templates into: "<<fOutTemp->GetName()<<endl;
 	fOutTemp->cd();
 

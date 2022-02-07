@@ -22,6 +22,7 @@ using namespace RooFit;
 
 //------------------------------------------------------------------------------------------------------------
 const Bool_t  mStorePDF = kFALSE;
+const Bool_t SymmetricRapBin = kTRUE;
 
 const double mTinyNum = 1.e-6;
 const double mOffSet  = 0.1;
@@ -58,16 +59,20 @@ TH1D* hPt_Jpsi_in_ny[NnCases][nDiffRapBins+1]; //last content is the sum of all 
 TH1D* H_EffVsY_CohJpsi;
 TH1D* H_EffVsY_CohPsi;
 TH1D* H_EffVsY_CohPsi2Jpsi;
+TH1D* H_AccVsY_CohJpsi;
+
 
 double fD_inPtCut[NnCases][nDiffRapBins+1];    //fD within pt<0.20 GeV/c
 double fDerr_inPtCut[NnCases][nDiffRapBins+1];    //fD within pt<0.20 GeV/c
 double NJpsi_inMFit[NnCases][nDiffRapBins+1]; //# Jpsi within pt<0.20 GeV/c from mass fitting
 double NerrJpsi_inMFit[NnCases][nDiffRapBins+1]; //# Jpsi within pt<0.20 GeV/c from mass fitting
 double Eff_CohJpsi[NnCases][nDiffRapBins+1];     //efficiency of coherent jpsi
-const double temAcc[nDiffRapBins+1] = {0.170, 0.348, 0.348, 0.170, 0.250};//need to be updated by corrected one later
+// const double temAcc[nDiffRapBins+1] = {0.170, 0.348, 0.348, 0.170, 0.250};//need to be updated by corrected one later
+double Acc_CohJpsi[nDiffRapBins+1];     //acceptance of coherent jpsi
 //------------------------------------------------------------------------------------------------------------
 void prepareData();
 void loadEff();
+void loadAcc();
 void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4.2);
 void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double massHig4Fit=4.2,  const double ptLow4Fit=0,     const double ptHig4Fit=3.5);
 void saveFiles();
@@ -79,10 +84,12 @@ void getJpsiPsi_nsns()
 	prepareData();
 	
 	loadEff();
+
+	loadAcc();
 	
 	fitCohMass_4RNRfD(2.6, 4.2);
 	
-	//fitFullMassAndPt_4Decouple(2.6,4.2, -0.01,3.0);
+	fitFullMassAndPt_4Decouple(2.6,4.2, -0.01,3.0);
 }
 //------------------------------------------------------------------------------------------------------------
 
@@ -196,19 +203,51 @@ void prepareData()
 				hPt_Jpsi_in_ny[i_ncase][nDiffRapBins]  -> Add( hPt_Jpsi_in_ny[i_ncase][iy] );
 			}
 		}//iy
+
+		if(SymmetricRapBin)
+		{
+			for (int iy = nDiffRapBins/2; iy < nDiffRapBins; ++iy)
+			{	
+				hCohMass_in_ny[i_ncase][iy]  -> SetTitle( Form("%1.1f < |y| < %1.1f", mDiffRapLow[iy], mDiffRapHi[iy]) );
+				hMass_in_ny[i_ncase][iy]     -> SetTitle( Form("%1.1f < |y| < %1.1f", mDiffRapLow[iy], mDiffRapHi[iy]) );
+				hPt_Jpsi_in_ny[i_ncase][iy]  -> SetTitle( Form("%1.1f < |y| < %1.1f", mDiffRapLow[iy], mDiffRapHi[iy]) );
+				hCohMass_in_ny[i_ncase][iy]  -> Add( hCohMass_in_ny[i_ncase][nDiffRapBins - iy - 1] );
+				hMass_in_ny[i_ncase][iy]     -> Add( hMass_in_ny[i_ncase][nDiffRapBins - iy - 1] );
+				hPt_Jpsi_in_ny[i_ncase][iy]  -> Add( hPt_Jpsi_in_ny[i_ncase][nDiffRapBins - iy - 1] );
+			}
+		}
 	}//i_ncase
 }
 //------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------
 void loadEff()
 {
-	TFile* infile_eff = new TFile("../simulation/out4effAndTemp/Efficiency_AllSpecs.root", "read");
+	TFile* infile_eff = new TFile( Form("../simulation/out4effAndTemp/Efficiency_AllSpecs_%dRapBins.root", nDiffRapBins), "read");
 	cout<<"readin: "<<infile_eff->GetName()<<endl;
 	
 	//use the same neutron configurations for all, due to the fact that the Jpsi reconstruction eff no much differences
-	H_EffVsY_CohJpsi     = (TH1D*) infile_eff->Get("hEffvsRap_CohJpsi");        //hEffvsRap_CohJpsi_0n0n, 0nXn, XnXn
-	H_EffVsY_CohPsi      = (TH1D*) infile_eff->Get("hEffvsRap_CohPsi2S");
-	H_EffVsY_CohPsi2Jpsi = (TH1D*) infile_eff->Get("hEffvsRap_CohPsi2SFeeddown");
+	if(SymmetricRapBin){
+		H_EffVsY_CohJpsi     = (TH1D*) infile_eff->Get("hEffvsRap_Symm_CohJpsi");        //hEffvsRap_CohJpsi_0n0n, 0nXn, XnXn
+		H_EffVsY_CohPsi      = (TH1D*) infile_eff->Get("hEffvsRap_Symm_CohPsi2S");
+		H_EffVsY_CohPsi2Jpsi = (TH1D*) infile_eff->Get("hEffvsRap_Symm_CohPsi2SFeeddown");
+	}
+	else
+	{
+		H_EffVsY_CohJpsi     = (TH1D*) infile_eff->Get("hEffvsRap_CohJpsi");        //hEffvsRap_CohJpsi_0n0n, 0nXn, XnXn
+		H_EffVsY_CohPsi      = (TH1D*) infile_eff->Get("hEffvsRap_CohPsi2S");
+		H_EffVsY_CohPsi2Jpsi = (TH1D*) infile_eff->Get("hEffvsRap_CohPsi2SFeeddown");
+	}
+}
+//------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------
+void loadAcc()
+{
+	TFile* infile_acc = new TFile( Form("../simulation/out4AccFactors/Acceptance_AllSpecs_%dRapBins.root", nDiffRapBins), "read");
+	cout<<"readin: "<<infile_acc->GetName()<<endl;
+	
+	//use the same neutron configurations for all, due to the fact that the Jpsi reconstruction acc no much differences
+	if(SymmetricRapBin)		H_AccVsY_CohJpsi     = (TH1D*) infile_acc->Get("hAccvsRap_Symm_CohJpsi");
+	else 					H_AccVsY_CohJpsi     = (TH1D*) infile_acc->Get("hAccvsRap_CohJpsi");
 }
 //------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------
@@ -222,7 +261,7 @@ void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4
 	c1->SetLogy(0);
 	RooRealVar  mMass("mMass", "m_{#mu#mu} (GeV)", massLow4Fit, massHig4Fit);
 
-	TFile *inf_Temps = TFile::Open("../simulation/out4effAndTemp/MassPtTemp_AllSpecs_massWindow_2.95_3.25_.root");
+	TFile *inf_Temps = TFile::Open(Form("../simulation/out4effAndTemp/MassPtTemp_AllSpecs_massWindow_2.95_3.25_%dRapBins.root", nDiffRapBins));
 	TF1 *fQED;
 	fQED = new TF1("fQED", fReject4QED, massLow4Fit, massHig4Fit, 4);
 	TF1 *fCohJpsiTemp;
@@ -230,14 +269,14 @@ void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4
 	//------------------------------------------------------------------------------------------------------------
 	for(int i_ncase=0; i_ncase<NnCases; i_ncase++)
 	{
-		if(i_ncase != 5 ) continue; //tem skip
+		if(i_ncase != 0 ) continue; //tem skip
 		
 		cout<<"i_ncase: "<<i_ncase<<endl;
 
 		for(int iy=0; iy<nDiffRapBins+1; iy++)
 		{
 			if(iy==nDiffRapBins) continue; //skip all y added fitting 
-			//if(iy != 3)          continue;
+			// if(iy != 0)          continue;
 			
 			cout<<"iy: "<<iy<<" "<<mDiffRapLow[iy]<<" <y< "<<mDiffRapHi[iy]<<endl;
 			
@@ -265,12 +304,16 @@ void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4
 			double eff_CohJpsi      = H_EffVsY_CohJpsi     ->GetBinContent(H_EffVsY_CohJpsi    ->FindBin(yMean));
 			double eff_CohPsi       = H_EffVsY_CohPsi      ->GetBinContent(H_EffVsY_CohPsi     ->FindBin(yMean));
 			double eff_CohPsi2Jpsi  = H_EffVsY_CohPsi2Jpsi ->GetBinContent(H_EffVsY_CohPsi2Jpsi->FindBin(yMean));
+
+			double acc_CohJpsi 		= H_AccVsY_CohJpsi	   ->GetBinContent(H_AccVsY_CohJpsi    ->FindBin(yMean));
 			
 			Eff_CohJpsi[i_ncase][iy] = eff_CohJpsi;
+			Acc_CohJpsi[iy]			 = acc_CohJpsi;
 
 			cout<<"eff_CohJpsi: "    <<eff_CohJpsi    <<endl;
 			cout<<"eff_CohPsi: "     <<eff_CohPsi     <<endl;
 			cout<<"eff_CohPsi2Jpsi: "<<eff_CohPsi2Jpsi<<endl;
+			cout<<"acc_CohJpsi: "    <<acc_CohJpsi    <<endl;
 			
 			TH1D* hCohMass = (TH1D*) hCohMass_in_ny[i_ncase][iy]->Clone("hMass");
 			
@@ -339,9 +382,9 @@ void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4
 			
 			const double nPsi4Init      = nJpsi4Init*0.050;
 
-			RooRealVar nJpsi("nJpsi", "nJpsi", nJpsi4Init*1.01,  nJpsi4Init*0.00, nJpsi4Init*10);
-			RooRealVar nPsi( "nPsi",  "nPsi",  nPsi4Init*1.00,   nPsi4Init*0.00,  nPsi4Init*10 );
-			RooRealVar nQED( "nQED",  "nQED",  nQED4Init,        nQED4Init*0.00,  nQED4Init*10 );
+			RooRealVar nJpsi("nJpsi", "nJpsi", nJpsi4Init*1.01,  nJpsi4Init*0.00, nJpsi4Init*100);
+			RooRealVar nPsi( "nPsi",  "nPsi",  nPsi4Init*1.00,   nPsi4Init*0.00,  nPsi4Init*100 );
+			RooRealVar nQED( "nQED",  "nQED",  nQED4Init,        nQED4Init*0.00,  nQED4Init*100 );
 
 			RooAddPdf  totMassPdf("totMassPdf", "totMassPdf", RooArgList(*jpsiPdf, *psiPdf, *qedPdf), RooArgList(nJpsi, nPsi, nQED));
 
@@ -394,6 +437,7 @@ void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4
 			RooPlot *frameMass = mMass.frame(Range(massLow4Fit, massHig4Fit), Title(""), Bins(nFrameMBins));
 			//frameMass ->GetYaxis()->SetTitleSize(0.10);
 			frameMass ->GetYaxis()->SetTitleOffset(0.90);
+			// frameMass ->GetYaxis()->SetTitleOffset(1.30);
 			dataMass.plotOn(frameMass, MarkerStyle(20), MarkerSize(1), MarkerColor(1), LineColor(1), LineWidth(2), DrawOption("pz"));
 			totMassPdf.plotOn(frameMass, LineColor(2), LineStyle(1), LineWidth(2));
 			totMassPdf.plotOn(frameMass, Components(RooArgSet(*jpsiPdf)), LineColor(kBlue),    LineStyle(5), LineWidth(2));
@@ -412,9 +456,14 @@ void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4
 			frameMass->Draw() ;
 			
 			TString yName = "";
-			if(iy<nDiffRapBins) yName = Form("%1.1f < y^{#mu#mu} < %1.1f",   mDiffRapLow[iy],             mDiffRapHi[iy]            );
-			else                yName = Form("%1.1f < |y^{#mu#mu}| < %1.1f", mDiffRapLow[nDiffRapBins/2], mDiffRapHi[nDiffRapBins-1]);
-			
+			if(iy<nDiffRapBins)
+			{	
+				//different name for symmetric y bins
+				if(SymmetricRapBin && iy > (nDiffRapBins/2 - 1)) yName = Form("%1.1f < |y^{#mu#mu}| < %1.1f", mDiffRapLow[iy],             mDiffRapHi[iy]            );
+				else 											   yName = Form("%1.1f < y^{#mu#mu} < %1.1f",   mDiffRapLow[iy],             mDiffRapHi[iy]            );
+			}
+			else                								   yName = Form("%1.1f < |y^{#mu#mu}| < %1.1f", mDiffRapLow[nDiffRapBins/2], mDiffRapHi[nDiffRapBins-1]);
+	
 			const TString ptName = Form("%1.0f < p_{T}^{#mu#mu} < %1.1f GeV/c",  0.0,   mPtCut4Coh);
 
 			drawLatex(0.15, 0.86, nCasesName[i_ncase], mTextFont, 0.06, mTextColor);
@@ -430,8 +479,15 @@ void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4
 			drawLatex(.45, 0.25+textDy, Form("f_{D} = #frac{FD J/#psi}{primary J/#psi} = %.3f #pm %.4f",      fD,fDErr),  mTextFont, mTextSize, mTextColor);
 
 			//----------------------------------------------------------------------------------------------------------------------------------------------------
-			c1->SaveAs( Form("outplots/massSpec_4JpsiPsi_"+nCasesName[i_ncase]+"_iy%d.png",  iy) );
-			c1->SaveAs( Form("outplots/massSpec_4JpsiPsi_"+nCasesName[i_ncase]+"_iy%d.pdf",  iy) );
+			if(SymmetricRapBin && iy > (nDiffRapBins/2 - 1) && iy < nDiffRapBins){
+				c1->SaveAs( Form("outplots/massSpec_4JpsiPsi_"+nCasesName[i_ncase]+"_iy%d_Symm.png",  iy) );
+				c1->SaveAs( Form("outplots/massSpec_4JpsiPsi_"+nCasesName[i_ncase]+"_iy%d_Symm.pdf",  iy) );
+			}
+			else{
+				c1->SaveAs( Form("outplots/massSpec_4JpsiPsi_"+nCasesName[i_ncase]+"_iy%d.png",  iy) );
+				c1->SaveAs( Form("outplots/massSpec_4JpsiPsi_"+nCasesName[i_ncase]+"_iy%d.pdf",  iy) );			
+			}
+
 			//----------------------------------------------------------------------------------------------------------------------------------------------------
 		
 			delete ResFit;
@@ -456,7 +512,7 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 	c1->SetLogy(0);
 	RooRealVar  mMass("mMass", "m_{#mu#mu} (GeV)", massLow4Fit, massHig4Fit);
 	
-	TFile *inf_Temps = TFile::Open("../simulation/out4effAndTemp/MassPtTemp_AllSpecs_massWindow_2.95_3.25_.root");
+	TFile *inf_Temps = TFile::Open(Form("../simulation/out4effAndTemp/MassPtTemp_AllSpecs_massWindow_2.95_3.25_%dRapBins.root", nDiffRapBins));
 	TF1 *fQED = new TF1("fQED", fReject4QED, massLow4Fit, massHig4Fit, 4);
 	TF1 *fCohJpsiTemp;
 	
@@ -468,9 +524,10 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 		for(int iy=0; iy<nDiffRapBins+1; iy++)
 		{
 			if(iy==nDiffRapBins) continue; //temperory to skip all y added fitting 
-			//if(iy != 0)          continue; //tem skip
+			// if(iy != 0)          continue; //tem skip
 			
-			const double dY = mDiffRapHi[iy] - mDiffRapLow[iy]; //need to be updated if use for 1.6<|y|<2.4
+			double dY = mDiffRapHi[iy] - mDiffRapLow[iy]; //need to be updated if use for 1.6<|y|<2.4
+			if(SymmetricRapBin && iy > (nDiffRapBins/2 -1) && iy<nDiffRapBins) dY *= 2;
 
 			cout<<"iy: "<<iy<<" "<<mDiffRapLow[iy]<<" <y< "<<mDiffRapHi[iy]<<endl;
 	
@@ -591,9 +648,14 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			frameMass->Draw() ;
 			
 			TString yName = "";
-			if(iy<nDiffRapBins) yName = Form( "%1.1f < y^{#mu#mu} < %1.1f",   mDiffRapLow[iy],             mDiffRapHi[iy]             );
-			else                yName = Form( "%1.1f < |y^{#mu#mu}| < %1.1f", mDiffRapLow[nDiffRapBins/2], mDiffRapHi[nDiffRapBins-1] );
-			
+			if(iy<nDiffRapBins)
+			{	
+				//different name for symmetric y bins
+				if(SymmetricRapBin && iy > (nDiffRapBins/2 - 1))   yName = Form("%1.1f < |y^{#mu#mu}| < %1.1f", mDiffRapLow[iy],             mDiffRapHi[iy]            );
+				else 											   yName = Form("%1.1f < y^{#mu#mu} < %1.1f",   mDiffRapLow[iy],             mDiffRapHi[iy]            );
+			}
+			else                								   yName = Form("%1.1f < |y^{#mu#mu}| < %1.1f", mDiffRapLow[nDiffRapBins/2], mDiffRapHi[nDiffRapBins-1]);
+
 			const TString ptName = Form("%1.0f < p_{T}^{#mu#mu} < %1.1f GeV/c",  fabs(ptLow4Fit), ptHig4Fit);
 
 			drawLatex(0.15, 0.86, nCasesName[i_ncase], mTextFont, 0.06, mTextColor);
@@ -607,7 +669,8 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			drawLatex(.55, 0.48+textDy, Form("N^{in J/#psi}_{QED} = %d #pm %d", (int)nQEDinJpsi, (int)nQEDinJpsiErr ), mTextFont, mTextSize, mTextColor);
 
 			//----------------------------------------------------------------------------------------------------------------------------------------------------
-			c1->SaveAs( Form("outplots/massSpec_4ptFitConstrain_"+nCasesName[i_ncase]+"_iy%d.png",  iy) );
+			if(SymmetricRapBin && iy > (nDiffRapBins/2 - 1) && iy < nDiffRapBins) c1->SaveAs( Form("outplots/massSpec_4ptFitConstrain_"+nCasesName[i_ncase]+"_iy%d_Symm.png",  iy) );
+			else c1->SaveAs( Form("outplots/massSpec_4ptFitConstrain_"+nCasesName[i_ncase]+"_iy%d.png",  iy) );
 			//----------------------------------------------------------------------------------------------------------------------------------------------------
 		
 			delete ResFit;
@@ -753,8 +816,8 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			const double Lum =  mCMSLum*(unit_ub2mb); //in ub, need to use mb to compare to Alice
 			
 			//calculate the cross section: xsec = (NJpsiFromMfit/(1+fD+fI))*(1/eff)*(1/BR)*(1/Lum)*(1/dy)
-			const double xsecValue = NJpsi_Coh_cal    * (1./Eff_CohJpsi[i_ncase][iy]) * (1./br_Jpsi2uu) * (1./Lum) * (1./dY) * (1./temAcc[iy]);
-			const double xsecError = NerrJpsi_Coh_cal * (1./Eff_CohJpsi[i_ncase][iy]) * (1./br_Jpsi2uu) * (1./Lum) * (1./dY) * (1./temAcc[iy]);
+			const double xsecValue = NJpsi_Coh_cal    * (1./Eff_CohJpsi[i_ncase][iy]) * (1./br_Jpsi2uu) * (1./Lum) * (1./dY) * (1./Acc_CohJpsi[iy]);
+			const double xsecError = NerrJpsi_Coh_cal * (1./Eff_CohJpsi[i_ncase][iy]) * (1./br_Jpsi2uu) * (1./Lum) * (1./dY) * (1./Acc_CohJpsi[iy]);
 
 			int nFramePtBins = (ptHig4Fit - ptLow4Fit)/hPt->GetBinWidth(1);
 			cout<<nFramePtBins<<endl;
@@ -776,7 +839,7 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			cout<<endl;
 			
 			chi2ndf = framePt->chiSquare("totPtPdf_Norm[mPt]", "h_dataPt", 5);
-			////chi2ndf = framePt->chiSquare("totPtPdf_Norm[mPt]", "h_dataPt", 7);
+			// chi2ndf = framePt->chiSquare("totPtPdf_Norm[mPt]", "h_dataPt", 9);
 	
 			c2 -> Divide(1,2);
 			c2 -> cd(1);
@@ -808,7 +871,7 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			leg->SetTextSize(0.035);
 			leg->AddEntry(framePt->findObject("h_dataPt"),            "Data",        "p");
 			leg->AddEntry(framePt->findObject("totPtPdf_Norm[mPt]"),   Form("Total fit: #chi^{2}/ndf = %1.1f", chi2ndf),   "l");
-//(RooHist::h_dataPt,RooCurve::totPtPdf_Norm[mPt],RooCurve::totPtPdf_Norm[mPt]_Comp[cohJpsiPdf],RooCurve::totPtPdf_Norm[mPt]_Comp[feeddownJpsiPdf],RooCurve::totPtPdf_Norm[mPt]_Comp[incohJpsiPdf],RooCurve::totPtPdf_Norm[mPt]_Comp[dissoJpsiPdf],RooCurve::totPtPdf_Norm[mPt]_Comp[qedPtPdf])
+			//(RooHist::h_dataPt,RooCurve::totPtPdf_Norm[mPt],RooCurve::totPtPdf_Norm[mPt]_Comp[cohJpsiPdf],RooCurve::totPtPdf_Norm[mPt]_Comp[feeddownJpsiPdf],RooCurve::totPtPdf_Norm[mPt]_Comp[incohJpsiPdf],RooCurve::totPtPdf_Norm[mPt]_Comp[dissoJpsiPdf],RooCurve::totPtPdf_Norm[mPt]_Comp[qedPtPdf])
 			const TString curveName[5]  = {"totPtPdf_Norm[mPt]_Comp[cohJpsiPdf]","totPtPdf_Norm[mPt]_Comp[incohJpsiPdf]", "totPtPdf_Norm[mPt]_Comp[dissoJpsiPdf]", "totPtPdf_Norm[mPt]_Comp[feeddownJpsiPdf]","totPtPdf_Norm[mPt]_Comp[qedPtPdf]"};
 			const TString curveTitle[5] = {"Coherent J/#psi", "Incoherent J/#psi", "Incoherent J/#psi with disso.", "Coherent #psi' #rightarrow J/#psi+X", "#gamma#gamma #rightarrow #mu#mu"};
 			for(int icv=0; icv<5; icv++) 
@@ -869,8 +932,14 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			//	histPull_pt->Draw("lsame");
 			//	histPull_pt->Draw("pesame");
 			//
-			c2->SaveAs( Form("outplots/ptSpec_4decouple_"+nCasesName[i_ncase]+"_iy%d.png",  iy) );
-			c2->SaveAs( Form("outplots/ptSpec_4decouple_"+nCasesName[i_ncase]+"_iy%d.pdf",  iy) );
+			if(SymmetricRapBin && iy > (nDiffRapBins/2 - 1) && iy < nDiffRapBins){
+				c2->SaveAs( Form("outplots/ptSpec_4decouple_"+nCasesName[i_ncase]+"_iy%d_Symm.png",  iy) );
+				c2->SaveAs( Form("outplots/ptSpec_4decouple_"+nCasesName[i_ncase]+"_iy%d_Symm.pdf",  iy) );
+			}
+			else{
+				c2->SaveAs( Form("outplots/ptSpec_4decouple_"+nCasesName[i_ncase]+"_iy%d.png",  iy) );
+				c2->SaveAs( Form("outplots/ptSpec_4decouple_"+nCasesName[i_ncase]+"_iy%d.pdf",  iy) );
+			}
 
 			c2 -> Clear();
 		}//iy
