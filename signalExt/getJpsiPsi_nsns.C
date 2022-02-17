@@ -1,6 +1,9 @@
 #include "../common/headers.h"
 #include "../common/function.C"
 #include "../common/funUtil.h"
+#include "../common/LoadSignal.C"
+#include "../common/PdfFactory.C"
+#include "../common/HistWorker.h"
 
 #include "RooRealVar.h"
 #include "RooDataSet.h"
@@ -22,9 +25,8 @@ using namespace RooFit;
 
 //------------------------------------------------------------------------------------------------------------
 const Bool_t  mStorePDF = kFALSE;
-const Bool_t SymmetricRapBin = kTRUE;
+const Bool_t SymmetricRapBin = kFALSE;
 
-const double mTinyNum = 1.e-6;
 const double mOffSet  = 0.1;
 
 int    mTextFont    = 42;
@@ -89,49 +91,26 @@ void getJpsiPsi_nsns()
 	
 	fitCohMass_4RNRfD(2.6, 4.2);
 	
-	fitFullMassAndPt_4Decouple(2.6,4.2, -0.01,3.0);
+	// fitFullMassAndPt_4Decouple(2.6,4.2, -0.01,3.0);
 }
 //------------------------------------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------------------------------------
 void prepareData()
 {
-	TFile* infile = new TFile("../anaData/jpsiHistos/rawSig.root", "read");
-	cout<<"readin: "<<infile->GetName()<<endl;
+	TString inFileDir 		  = "../anaData/jpsiHistos/rawSig.root";
 
-	TH3D *hMvsPtvsRap_NeuDir[nNeus][nNeus];
-	TH3D *hMvsAsyPhivsRap_NeuDir[nNeus][nNeus];
+	LoadMvsPtvsRap_NeuDir * hMvsPtvsRap_NeuDir = new LoadMvsPtvsRap_NeuDir(inFileDir);
 
-	if( nNeus !=2 ) 
-	{
-		cout<<"we are not running the correct 0nXn!!!!!!!"<<endl;
-		return;
-	}
+	TH3D *hMvsPtvsRap_AnAn    = (TH3D*) hMvsPtvsRap_NeuDir->GetHist(); //All Sum, Inclusive
+	TH3D *hMvsPtvsRap_0n0n    = (TH3D*) hMvsPtvsRap_NeuDir->GetHist(0,0)->Clone( "hMvsPtvsRap_0n0n"    );
+	TH3D *hMvsPtvsRap_XnXn    = (TH3D*) hMvsPtvsRap_NeuDir->GetHist(1,1)->Clone( "hMvsPtvsRap_XnXn"    );
 
-	for (int ip = 0; ip < nNeus; ip++) 
-	{
-		cout<<"iplus: "<<ip<<endl;
-
-		for (int im = 0; im < nNeus; im++) 
-		{
-			cout<<"iminus: "<<im<<endl;
-			
-			hMvsPtvsRap_NeuDir[ip][im]     = (TH3D*)infile->Get( Form("hMvsPtvsRap_NeuDir%dp%dm",     ip, im) );
-			
-			cout<<"readin: "<<hMvsPtvsRap_NeuDir[ip][im]->GetName()     <<endl;
-			cout<<"Entries: "<<hMvsPtvsRap_NeuDir[ip][im]->GetEntries() <<endl;
-		}
-	}
+	TH3D *hMvsPtvsRap_0nXn    = (TH3D*) hMvsPtvsRap_NeuDir->GetHist(1,0)->Clone( "hMvsPtvsRap_0nXn"    );
+	TH3D *hMvsPtvsRap_Xn0n    = (TH3D*) hMvsPtvsRap_NeuDir->GetHist(0,1)->Clone( "hMvsPtvsRap_Xn0n"    );
 	
-	TH3D *hMvsPtvsRap_AnAn    = (TH3D*) infile->Get("hMvsPtvsRap"); //All Sum, Inclusive
-	TH3D *hMvsPtvsRap_0n0n    = (TH3D*) hMvsPtvsRap_NeuDir[0][0]->Clone( "hMvsPtvsRap_0n0n"    );
-	TH3D *hMvsPtvsRap_XnXn    = (TH3D*) hMvsPtvsRap_NeuDir[1][1]->Clone( "hMvsPtvsRap_XnXn"    );
-
-	TH3D *hMvsPtvsRap_0nXn    = (TH3D*) hMvsPtvsRap_NeuDir[1][0]->Clone( "hMvsPtvsRap_0nXn"    );
-	TH3D *hMvsPtvsRap_Xn0n    = (TH3D*) hMvsPtvsRap_NeuDir[0][1]->Clone( "hMvsPtvsRap_Xn0n"    );
-	
-	TH3D *hMvsPtvsRap_0nXnSum = (TH3D*) hMvsPtvsRap_NeuDir[0][1]->Clone( "hMvsPtvsRap_0nXnSum" );
-	hMvsPtvsRap_0nXnSum       -> Add(hMvsPtvsRap_NeuDir[1][0]);
+	TH3D *hMvsPtvsRap_0nXnSum = (TH3D*) hMvsPtvsRap_NeuDir->GetHist(0,1)->Clone( "hMvsPtvsRap_0nXnSum" );
+	hMvsPtvsRap_0nXnSum       -> Add(hMvsPtvsRap_NeuDir->GetHist(1,0));
 	
 	cout<<"hMvsPtvsRap_0nXn->GetEntries(): "<<hMvsPtvsRap_0nXn->GetEntries()<<endl;
 	cout<<"hMvsPtvsRap_Xn0n->GetEntries(): "<<hMvsPtvsRap_Xn0n->GetEntries()<<endl;
@@ -152,15 +131,15 @@ void prepareData()
 		{
 			cout<<"iy: "<<iy<<" "<<mDiffRapLow[iy]<<" <y< "<<mDiffRapHi[iy]<<endl;
 
-			int rapBinLow   = hMvsPtvsRap_inWork->GetXaxis()->FindBin( mDiffRapLow[iy] + mTinyNum );
-			int rapBinHi    = hMvsPtvsRap_inWork->GetXaxis()->FindBin( mDiffRapHi[iy]  - mTinyNum );
+			int rapBinLow   = HistWorker::FindXBin(hMvsPtvsRap_inWork, mDiffRapLow[iy], 0 );
+			int rapBinHi    = HistWorker::FindXBin(hMvsPtvsRap_inWork, mDiffRapHi[iy] , 1 );
 			
-			int ptBinLow    = hMvsPtvsRap_inWork->GetYaxis()->FindBin( 0.00            + mTinyNum );
-			int ptBinHi     = hMvsPtvsRap_inWork->GetYaxis()->FindBin( mPtCut4Coh      - mTinyNum ); //only look at pt<0.2 GeV/c for Coh signals, for fD
+			int ptBinLow    = HistWorker::FindYBin(hMvsPtvsRap_inWork, 0.00           , 0 );
+			int ptBinHi     = HistWorker::FindYBin(hMvsPtvsRap_inWork, mPtCut4Coh     , 1 ); //only look at pt<0.2 GeV/c for Coh signals, for fD
 			int nptBinsMax  = hMvsPtvsRap_inWork->GetNbinsY();
 			
-			int mJpsiBinLow = hMvsPtvsRap_inWork->GetZaxis()->FindBin( mJpsiMassLow + mTinyNum );
-			int mJpsiBinHi  = hMvsPtvsRap_inWork->GetZaxis()->FindBin( mJpsiMassHi  - mTinyNum );
+			int mJpsiBinLow = HistWorker::FindZBin(hMvsPtvsRap_inWork, mJpsiMassLow ,   0 );
+			int mJpsiBinHi  = HistWorker::FindZBin(hMvsPtvsRap_inWork, mJpsiMassHi  ,   1 );
 
 			hCohMass_in_ny[i_ncase][iy] = (TH1D *)hMvsPtvsRap_inWork->ProjectionZ( Form("hCohMass_iNeuCase%d_iy%d", i_ncase, iy), rapBinLow, rapBinHi, ptBinLow,    ptBinHi    );
 			
@@ -222,32 +201,17 @@ void prepareData()
 //------------------------------------------------------------------------------------------------------------
 void loadEff()
 {
-	TFile* infile_eff = new TFile( Form("../simulation/out4effAndTemp/Efficiency_AllSpecs_%dRapBins.root", nDiffRapBins), "read");
-	cout<<"readin: "<<infile_eff->GetName()<<endl;
-	
-	//use the same neutron configurations for all, due to the fact that the Jpsi reconstruction eff no much differences
-	if(SymmetricRapBin){
-		H_EffVsY_CohJpsi     = (TH1D*) infile_eff->Get("hEffvsRap_Symm_CohJpsi");        //hEffvsRap_CohJpsi_0n0n, 0nXn, XnXn
-		H_EffVsY_CohPsi      = (TH1D*) infile_eff->Get("hEffvsRap_Symm_CohPsi2S");
-		H_EffVsY_CohPsi2Jpsi = (TH1D*) infile_eff->Get("hEffvsRap_Symm_CohPsi2SFeeddown");
-	}
-	else
-	{
-		H_EffVsY_CohJpsi     = (TH1D*) infile_eff->Get("hEffvsRap_CohJpsi");        //hEffvsRap_CohJpsi_0n0n, 0nXn, XnXn
-		H_EffVsY_CohPsi      = (TH1D*) infile_eff->Get("hEffvsRap_CohPsi2S");
-		H_EffVsY_CohPsi2Jpsi = (TH1D*) infile_eff->Get("hEffvsRap_CohPsi2SFeeddown");
-	}
+	LoadEfficiency Efficiency(Form("../simulation/out4effAndTemp/Efficiency_AllSpecs_%dRapBins.root", nDiffRapBins), SymmetricRapBin);
+	H_EffVsY_CohJpsi 		= (TH1D*)	Efficiency.GetCohJpsi()	 	->Clone();
+	H_EffVsY_CohPsi 		= (TH1D*)	Efficiency.GetCohPsi()	 	->Clone();
+	H_EffVsY_CohPsi2Jpsi 	= (TH1D*)	Efficiency.GetCohPsi2Jpsi()	->Clone();
 }
 //------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------
 void loadAcc()
 {
-	TFile* infile_acc = new TFile( Form("../simulation/out4AccFactors/Acceptance_AllSpecs_%dRapBins.root", nDiffRapBins), "read");
-	cout<<"readin: "<<infile_acc->GetName()<<endl;
-	
-	//use the same neutron configurations for all, due to the fact that the Jpsi reconstruction acc no much differences
-	if(SymmetricRapBin)		H_AccVsY_CohJpsi     = (TH1D*) infile_acc->Get("hAccvsRap_Symm_CohJpsi");
-	else 					H_AccVsY_CohJpsi     = (TH1D*) infile_acc->Get("hAccvsRap_CohJpsi");
+	LoadAcceptance Acceptance(Form("../simulation/out4AccFactors/Acceptance_AllSpecs_%dRapBins.root", nDiffRapBins), SymmetricRapBin);
+	H_AccVsY_CohJpsi		= (TH1D*)	Acceptance.GetAcceptance()	->Clone();
 }
 //------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------
@@ -343,20 +307,9 @@ void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4
 			RooGenericPdf *psiPdf  = new RooGenericPdf("psiPdf",  "psiPdf",
 					"ROOT::Math::crystalball_function(mMass,cbAlpha,cbN,jpsiSigma*sigmaRatio*massRatio,jpsiMu*massRatio) + gausN*TMath::Gaus(mMass, jpsiMu*massRatio, jpsiSigma*massRatio)", 
 					RooArgSet(mMass, cbAlpha, cbN, jpsiSigma, sigmaRatio, jpsiMu, massRatio, gausN)); // psiMu = jpsiMu * massRatio; psiSigma = jpsiSigma * massRatio
-
 			
-			hCohMass->Fit(fQED, "R", "",  massLow4Fit, massHig4Fit); //use side band to initialized QED parameters
-			hCohMass->Fit(fQED, "R", "",  massLow4Fit, massHig4Fit); //use side band to initialized QED parameters
-
-			RooConstVar mP0(  "mP0", "mP0",  fQED->GetParameter(0));
-			RooConstVar mP1(  "mP1", "mP1",  fQED->GetParameter(1));
-			RooConstVar mP2(  "mP2", "mP2",  fQED->GetParameter(2));
-			RooConstVar mP3(  "mP3", "mP3",  fQED->GetParameter(3));
-			//RooRealVar mP0(  "mP0", "mP0",  fQED->GetParameter(0), -1.e8,  1.e8);
-			//RooRealVar mP1(  "mP1", "mP1",  fQED->GetParameter(1), 0.,     1.e5);
-			//RooRealVar mP2(  "mP2", "mP2",  fQED->GetParameter(2), -1.e5,    0.);
-			//RooRealVar mP3(  "mP3", "mP3",  fQED->GetParameter(3), 0.,    1.e4);
-			RooGenericPdf *qedPdf = new RooGenericPdf("qedPdf", "qedPdf", "mP0 + mP1*mMass + mP2*mMass*mMass + mP3*mMass*mMass*mMass", RooArgSet(mP0, mP1, mP2, mP3, mMass));
+			QEDPdf qedPdf_(hCohMass, massLow4Fit, massHig4Fit, 2);
+			RooGenericPdf *qedPdf = qedPdf_.GetPdf();
 
 			//// directly use QED template from simulation
 			//int jpsiMBinLow = hQEDMassHistTemp->GetXaxis()->FindBin(massLow4Fit + mTinyNum);
@@ -371,20 +324,20 @@ void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4
 			//------------------------------------------------------------------------------------------------------------
 			//------------------------------------------------------------------------------------------------------------
 			
-			const int    tem_QEDBinLow  = hCohMass->FindBin(3.30 + mTinyNum);
-			const int    tem_QEDBinHig  = hCohMass->FindBin(3.50 - mTinyNum);
+			const int    tem_QEDBinLow  = HistWorker::FindBin(hCohMass, 3.30, 0);
+			const int    tem_QEDBinHig  = HistWorker::FindBin(hCohMass, 3.50, 1);
 			const double nQED4Init      = hCohMass->Integral(tem_QEDBinLow, tem_QEDBinHig)*(massHig4Fit-massLow4Fit)/(3.50-3.30);
 
-			const int    tem_JpsiBinLow = hCohMass->FindBin(2.80 + mTinyNum);
-			const int    tem_JpsiBinHig = hCohMass->FindBin(3.30 - mTinyNum);
+			const int    tem_JpsiBinLow = HistWorker::FindBin(hCohMass, 2.80, 0);
+			const int    tem_JpsiBinHig = HistWorker::FindBin(hCohMass, 3.30, 1);
 			//const double nJpsi4Init     = hCohMass->Integral(tem_JpsiBinLow, tem_JpsiBinHig)*0.80; //- nQED4Init*(3.30-2.80)/(massHig4Fit-massLow4Fit);
 			const double nJpsi4Init     = hCohMass->Integral(tem_JpsiBinLow, tem_JpsiBinHig) - nQED4Init*(3.30-2.80)/(massHig4Fit-massLow4Fit);
 			
 			const double nPsi4Init      = nJpsi4Init*0.050;
 
-			RooRealVar nJpsi("nJpsi", "nJpsi", nJpsi4Init*1.01,  nJpsi4Init*0.00, nJpsi4Init*100);
-			RooRealVar nPsi( "nPsi",  "nPsi",  nPsi4Init*1.00,   nPsi4Init*0.00,  nPsi4Init*100 );
-			RooRealVar nQED( "nQED",  "nQED",  nQED4Init,        nQED4Init*0.00,  nQED4Init*100 );
+			RooRealVar nJpsi("nJpsi", "nJpsi", nJpsi4Init*1.01,  nJpsi4Init*0.00, nJpsi4Init*10);
+			RooRealVar nPsi( "nPsi",  "nPsi",  nPsi4Init*1.00,   nPsi4Init*0.00,  nPsi4Init*10 );
+			RooRealVar nQED( "nQED",  "nQED",  nQED4Init,        nQED4Init*0.00,  nQED4Init*10 );
 
 			RooAddPdf  totMassPdf("totMassPdf", "totMassPdf", RooArgList(*jpsiPdf, *psiPdf, *qedPdf), RooArgList(nJpsi, nPsi, nQED));
 
@@ -590,11 +543,11 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 
 			//------------------------------------------------------------------------------------------------------------
 			
-			const int    tem_JpsiBinLow = hMass->FindBin(2.95 + mTinyNum);
-			const int    tem_JpsiBinHig = hMass->FindBin(3.25 - mTinyNum);
+			const int    tem_JpsiBinLow = HistWorker::FindBin(hMass, 2.95, 0);
+			const int    tem_JpsiBinHig = HistWorker::FindBin(hMass, 3.25, 1);
 			const double nJpsi4Init     = hMass->Integral(tem_JpsiBinLow, tem_JpsiBinHig);
-			const int    tem_QEDBinLow  = hMass->FindBin(3.25 + mTinyNum);
-			const int    tem_QEDBinHig  = hMass->FindBin(3.50 - mTinyNum);
+			const int    tem_QEDBinLow  = HistWorker::FindBin(hMass, 3.25, 0);
+			const int    tem_QEDBinHig  = HistWorker::FindBin(hMass, 3.50, 1);
 			const double nQED4Init      = hMass->Integral(tem_QEDBinLow, tem_QEDBinHig)*(massHig4Fit-massLow4Fit)/(3.50-3.25);
 
 			RooRealVar nJpsi("nJpsi", "nJpsi", nJpsi4Init*0.80,  0, 1.e6);

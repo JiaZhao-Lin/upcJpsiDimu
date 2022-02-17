@@ -1,3 +1,7 @@
+#ifndef CONSTANTS_H
+#define CONSTANTS_H
+
+
 const double Mmuon = 0.1056583745;
 const double Mpion = 0.13957018;
 const double Mkaon = 0.493677;
@@ -105,3 +109,6 @@ const double mJpsi_PDG = 3.0969; const double  mPsi_PDG = 3.686097;
 const double br_Jpsi2uu  = 0.05961;
 const double br_Psi2uu   = 0.0080;
 const double br_Psi2Jpsi = 0.6140;
+
+
+#endif

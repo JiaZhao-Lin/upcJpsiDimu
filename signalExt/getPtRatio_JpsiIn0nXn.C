@@ -1,6 +1,8 @@
 #include "../common/headers.h"
 #include "../common/function.C"
 #include "../common/funUtil.h"
+#include "../common/LoadSignal.C"
+#include "../common/HistWorker.h"
 
 #include "RooRealVar.h"
 #include "RooDataSet.h"
@@ -19,7 +21,7 @@
 #include "RooPlot.h"
 #include "RooFitResult.h"
 using namespace RooFit;
-const Double_t mTinyNum = 1.e-6;
+
 int    mTextFont    = 42;
 double mTextSize    = 0.045;
 int    mTextColor   = 1;
@@ -96,45 +98,22 @@ void getPtRatio_JpsiIn0nXn( )
 {
 	prepareData( );
 
-	fitMass4QEDYield( );
+	// fitMass4QEDYield( );
 	
-	compPtShape( );
+	// compPtShape( );
 	
-	getPtRatios( );
+	// getPtRatios( );
 }
 //------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------
 void prepareData()
 {
-	TFile* infile = new TFile("../anaData/jpsiHistos/rawSig.root", "read");
-	cout<<"readin: "<<infile->GetName()<<endl;
+	TString inFileDir 		  = "../anaData/jpsiHistos/rawSig.root";
 
-	TH3D *hMvsPtvsRap_NeuDir[nNeus][nNeus];
+	LoadMvsPtvsRap_NeuDir * hMvsPtvsRap_NeuDir = new LoadMvsPtvsRap_NeuDir(inFileDir);
 
-	if( nNeus !=2 ) 
-	{
-		cout<<"we are not running the correct 0nXn!!!!!!!"<<endl;
-		return;
-	}
-
-	for (int ip = 0; ip < nNeus; ip++) 
-	{
-		for (int im = 0; im < nNeus; im++) 
-		{
-			if((ip+im) != 1 ) continue;
-
-			cout<<"iplus:  "<<ip<<endl;
-			cout<<"iminus: "<<im<<endl;
-
-			hMvsPtvsRap_NeuDir[ip][im]     = (TH3D*)infile->Get( Form("hMvsPtvsRap_NeuDir%dp%dm",     ip, im) );
-
-			cout<<"readin:  " << hMvsPtvsRap_NeuDir[ip][im]->GetName()    <<endl;
-			cout<<"Entries: " << hMvsPtvsRap_NeuDir[ip][im]->GetEntries() <<endl;
-		}
-	}
-
-	TH3D *hMvsPtvsRap_0nXn    = (TH3D*) hMvsPtvsRap_NeuDir[1][0]->Clone( "hMvsPtvsRap_0nXn" );
-	TH3D *hMvsPtvsRap_Xn0n    = (TH3D*) hMvsPtvsRap_NeuDir[0][1]->Clone( "hMvsPtvsRap_Xn0n" );
+	TH3D *hMvsPtvsRap_0nXn    = (TH3D*) hMvsPtvsRap_NeuDir->GetHist(1,0)->Clone( "hMvsPtvsRap_0nXn" );
+	TH3D *hMvsPtvsRap_Xn0n    = (TH3D*) hMvsPtvsRap_NeuDir->GetHist(0,1)->Clone( "hMvsPtvsRap_Xn0n" );
 	
 	TH1D* hPtinY_LowMBand_0nXn[nDiffRapBins];
 	TH1D* hPtinY_HigMBand_0nXn[nDiffRapBins];
@@ -153,11 +132,11 @@ void prepareData()
 		int ptBinLow    = 1;
 		int nptBinsMax  = hMvsPtvsRap_0nXn->GetNbinsY();
 		
-		int rapBinLow   = hMvsPtvsRap_0nXn->GetXaxis()->FindBin( mDiffRapLow[iy] + mTinyNum);
-		int rapBinHi    = hMvsPtvsRap_0nXn->GetXaxis()->FindBin( mDiffRapHi[iy]  - mTinyNum);
+		int rapBinLow   = HistWorker::FindXBin(hMvsPtvsRap_0nXn, mDiffRapLow[iy], 0);
+		int rapBinHi    = HistWorker::FindXBin(hMvsPtvsRap_0nXn, mDiffRapHi[iy] , 1);
 
-		int mJpsiBinLow = hMvsPtvsRap_0nXn->GetZaxis()->FindBin( mJpsiMassLow    + mTinyNum);
-		int mJpsiBinHi  = hMvsPtvsRap_0nXn->GetZaxis()->FindBin( mJpsiMassHi     - mTinyNum);
+		int mJpsiBinLow = HistWorker::FindZBin(hMvsPtvsRap_0nXn, mJpsiMassLow   , 0);
+		int mJpsiBinHi  = HistWorker::FindZBin(hMvsPtvsRap_0nXn, mJpsiMassHi    , 1);
 		
 		hMinY_0nXn[iy]         = (TH1D *)hMvsPtvsRap_0nXn   ->ProjectionZ( Form("hMass_0nXn_iy%d",      iy), rapBinLow, rapBinHi, ptBinLow,    nptBinsMax );
 		hJpsiPtinY_0nXn[iy]    = (TH1D *)hMvsPtvsRap_0nXn   ->ProjectionY( Form("hJpsiPt_0nXn_iy%d",    iy), rapBinLow, rapBinHi, mJpsiBinLow, mJpsiBinHi );
@@ -168,10 +147,10 @@ void prepareData()
 		//------------------------------------------------------------------------------------------------------------------------------------------
 		//get sideband
 		//------------------------------------------------------------------------------------------------------------------------------------------
-		int leftSideMBinLow    = hMvsPtvsRap_0nXn->GetZaxis()->FindBin( mLowMassBandLow + mTinyNum );
-		int leftSideMBinHi     = hMvsPtvsRap_0nXn->GetZaxis()->FindBin( mLowMassBandHi  - mTinyNum );
-		int rightSideMBinLow   = hMvsPtvsRap_0nXn->GetZaxis()->FindBin( mHiMassBandLow  + mTinyNum );
-		int rightSideMBinHi    = hMvsPtvsRap_0nXn->GetZaxis()->FindBin( mHiMassBandHi   - mTinyNum );
+		int leftSideMBinLow    = HistWorker::FindZBin(hMvsPtvsRap_0nXn, mLowMassBandLow , 0 );
+		int leftSideMBinHi     = HistWorker::FindZBin(hMvsPtvsRap_0nXn, mLowMassBandHi  , 1 );
+		int rightSideMBinLow   = HistWorker::FindZBin(hMvsPtvsRap_0nXn, mHiMassBandLow  , 0 );
+		int rightSideMBinHi    = HistWorker::FindZBin(hMvsPtvsRap_0nXn, mHiMassBandHi   , 1 );
 		
 		hPtinY_LowMBand_0nXn[iy] = (TH1D *) hMvsPtvsRap_0nXn->ProjectionY( Form("hPtinY_LowMBand_0nXn_iy%d", iy), rapBinLow, rapBinHi, leftSideMBinLow,  leftSideMBinHi  );
 		hPtinY_HigMBand_0nXn[iy] = (TH1D *) hMvsPtvsRap_0nXn->ProjectionY( Form("hPtinY_HigMBand_0nXn_iy%d", iy), rapBinLow, rapBinHi, rightSideMBinLow, rightSideMBinHi );
@@ -323,11 +302,11 @@ void fitMass4QEDYield( )
 			//------------------------------------------------------------------------------------------------------------
 
 			//------------------------------------------------------------------------------------------------------------
-			const int    tem_JpsiBinLow = hMass_inWork->FindBin(2.95 + mTinyNum);
-			const int    tem_JpsiBinHig = hMass_inWork->FindBin(3.25 - mTinyNum);
+			const int    tem_JpsiBinLow = HistWorker::FindBin(hMass_inWork, 2.95, 0);
+			const int    tem_JpsiBinHig = HistWorker::FindBin(hMass_inWork, 3.25, 1);
 			const double nJpsi4Init     = hMass_inWork->Integral(tem_JpsiBinLow, tem_JpsiBinHig);
-			const int    tem_QEDBinLow  = hMass_inWork->FindBin(2.60 + mTinyNum);
-			const int    tem_QEDBinHig  = hMass_inWork->FindBin(2.90 - mTinyNum);
+			const int    tem_QEDBinLow  = HistWorker::FindBin(hMass_inWork, 2.60, 0);
+			const int    tem_QEDBinHig  = HistWorker::FindBin(hMass_inWork, 2.90, 1);
 			const double nQED4Init      = hMass_inWork->Integral(tem_QEDBinLow, tem_QEDBinHig)*(massHig4Fit-massLow4Fit)/(2.90-2.60);
 
 			RooRealVar nJpsi("nJpsi", "nJpsi", nJpsi4Init*0.90,  0, 1.e6);
@@ -449,11 +428,11 @@ void fitMass4QEDYield( )
 		//------------------------------------------------------------------------------------------------------------
 
 		//------------------------------------------------------------------------------------------------------------
-		const int    tem_JpsiBinLow = hMass_inWork->FindBin(2.95 + mTinyNum);
-		const int    tem_JpsiBinHig = hMass_inWork->FindBin(3.25 - mTinyNum);
+		const int    tem_JpsiBinLow = HistWorker::FindBin(hMass_inWork, 2.95, 0);
+		const int    tem_JpsiBinHig = HistWorker::FindBin(hMass_inWork, 3.25, 1);
 		const double nJpsi4Init     = hMass_inWork->Integral(tem_JpsiBinLow, tem_JpsiBinHig);
-		const int    tem_QEDBinLow  = hMass_inWork->FindBin(2.60 + mTinyNum);
-		const int    tem_QEDBinHig  = hMass_inWork->FindBin(2.90 - mTinyNum);
+		const int    tem_QEDBinLow  = HistWorker::FindBin(hMass_inWork, 2.60, 0);
+		const int    tem_QEDBinHig  = HistWorker::FindBin(hMass_inWork, 2.90, 1);
 		const double nQED4Init      = hMass_inWork->Integral(tem_QEDBinLow, tem_QEDBinHig)*(massHig4Fit-massLow4Fit)/(2.90-2.60);
 
 		RooRealVar nJpsi("nJpsi", "nJpsi", nJpsi4Init*0.90,  0, 1.e6);
