@@ -14,12 +14,10 @@ public:
 
 	// virtual void 			Fit() 		= 0;
 	virtual RooGenericPdf * GetPdf()	= 0; 
-	virtual double 			GetN() const= 0;
 
 protected:
 	TH1D 			* 	Hist 	= nullptr;
 	RooGenericPdf	*	Pdf 	= nullptr;
-	double				N;
 };
 
 
