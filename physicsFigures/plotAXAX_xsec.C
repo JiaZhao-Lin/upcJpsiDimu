@@ -177,10 +177,10 @@ void getCMSData()
 {
 	const int     nPots_CMS2022 = 3;
 	const double  Rap_CMS2022[nPots_CMS2022]        = { -2.25, -2.0,   -1.75 };
-	const double  Xsec_CMS2022[nPots_CMS2022]       = { 3.84,  4.311,  4.598 };
+	const double  Xsec_CMS2022[nPots_CMS2022]       = { 3.727,  4.283,  4.792 };
 	const double  RapErrLow_CMS2022[nPots_CMS2022]  = { 0.15,  0.1,	   0.15 };
 	const double  RapErrHig_CMS2022[nPots_CMS2022]  = { 0.15,  0.1,	   0.15 };
-	const double  XsecErr_CMS2022[nPots_CMS2022]    = { 0.05,  0.039,  0.070};
+	const double  XsecErr_CMS2022[nPots_CMS2022]    = { 0.034,  0.036,  0.068};
 
 	ge_XsecVsY_CMS2022  = new TGraphErrors(
 				nPots_CMS2022, 

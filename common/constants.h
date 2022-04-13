@@ -70,16 +70,16 @@ const int    nRapBins          = 12;
 const double mRapLow[nRapBins] = {-2.4, -2.2, -2.1, -2.0, -1.9, -1.8, 1.6, 1.8, 1.9, 2.0, 2.1, 2.2};
 const double mRapHi[nRapBins]  = {-2.2, -2.1, -2.0, -1.9, -1.8, -1.6, 1.8, 1.9, 2.0, 2.1, 2.2, 2.4};
 
-// const int    nDiffRapBins = 6;
-// const double mDiffRapLow[nDiffRapBins] = {-2.4, -2.1, -1.9, 1.6, 1.9, 2.1};
-// const double mDiffRapHi[nDiffRapBins]  = {-2.1, -1.9, -1.6, 1.9, 2.1, 2.4};
+const int    nDiffRapBins = 6;
+const double mDiffRapLow[nDiffRapBins] = {-2.4, -2.1, -1.9, 1.6, 1.9, 2.1};
+const double mDiffRapHi[nDiffRapBins]  = {-2.1, -1.9, -1.6, 1.9, 2.1, 2.4};
 
-const int    nDiffRapBins                = 4;
-const double mDiffRapLow[nDiffRapBins]   = {-2.4, -2.0, 1.6, 2.0};
-const double mDiffRapHi[nDiffRapBins]    = {-2.0, -1.6, 2.0, 2.4};
+// const int    nDiffRapBins                = 4;
+// const double mDiffRapLow[nDiffRapBins]   = {-2.4, -2.0, 1.6, 2.0};
+// const double mDiffRapHi[nDiffRapBins]    = {-2.0, -1.6, 2.0, 2.4};
 
-const double mDiffRapBds[nDiffRapBins+2] = {-2.4, -2.0, -1.6, 1.6, 2.0, 2.4};
-// const double mDiffRapBds[nDiffRapBins+2] = {-2.4, -2.1, -1.9, -1.6, 1.6, 1.9, 2.1, 2.4};
+// const double mDiffRapBds[nDiffRapBins+2] = {-2.4, -2.0, -1.6, 1.6, 2.0, 2.4};
+const double mDiffRapBds[nDiffRapBins+2] = {-2.4, -2.1, -1.9, -1.6, 1.6, 1.9, 2.1, 2.4};
 
 const double mMassLow4MuonAccStudy = 2;
 const double mMassHi4MuonAccStudy  = 5;
