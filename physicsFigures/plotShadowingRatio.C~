@@ -74,6 +74,7 @@ void plotShadowingRatio( )
 
 	TGraphErrors* ge_CMS   = new TGraphErrors(Xs.size(),      &Xs[0],      &R[0],       &Xs_Err[0], &R_Err[0]       );
 	TGraphErrors* ge_ALICE_Run1 = new TGraphErrors(ALICE_x.size(), &ALICE_x[0], &ALICE_R[0], 0,          &ALICE_R_Err[0] );
+	TGraphErrors* ge_ALICE_Run2 = new TGraphErrors(ALICE_Run2_x.size(), &ALICE_Run2_x[0], &ALICE_Run2_R[0], 0,          &ALICE_Run2_R_Err[0] );
 
 	ge_CMS->SetMarkerStyle(20);
 	ge_CMS->SetMarkerColor(1);
@@ -83,22 +84,14 @@ void plotShadowingRatio( )
 	ge_ALICE_Run1->SetMarkerStyle(24);
 	ge_ALICE_Run1->SetMarkerColor(4);
 	ge_ALICE_Run1->SetLineColor(4);
-	ge_ALICE_Run1->Draw("pesame");
-	
-	drawLatex(0.15, 0.84, "Nuclear suppresion factor", 42, 0.06, 1);
-
-	const int nALICE =2; 
-	const double x_ALICE[nALICE]    = {1.e-3, 2.2e-2};
-	const double R_ALICE[nALICE]    = {0.65,  0.80};
-	const double Rerr_ALICE[nALICE] = {0.03,  0.03};
-	
-	TGraphErrors* ge_ALICE_Run2 = new TGraphErrors(nALICE, x_ALICE, R_ALICE, 0, Rerr_ALICE);
-
+	//ge_ALICE_Run1->Draw("pesame");
 	ge_ALICE_Run2->SetMarkerStyle(24);
 	ge_ALICE_Run2->SetMarkerColor(4);
 	ge_ALICE_Run2->SetLineColor(4);
 	ge_ALICE_Run2->Draw("pesame");
-
+	
+	drawLatex(0.15, 0.84, "Nuclear suppresion factor", 42, 0.06, 1);
+	
 	// TGraph *grshade = new TGraph(2*Theory_x_max.size());
 	// for (int i = 0; i < Theory_x_max.size(); i++) {
 	// 	grshade->SetPoint(i, Theory_x_max[i], Theory_R_max[i]);
@@ -110,12 +103,12 @@ void plotShadowingRatio( )
 	// grmin->Draw("l");
 	// grmax->Draw("l");
 
-	TLegend  *leg =  new TLegend(0.62, 0.25, 0.88, 0.50);
+	TLegend  *leg =  new TLegend(0.55, 0.25, 0.88, 0.50);
 	leg->SetFillStyle(0);
 	leg->SetFillColor(0);
 	leg->SetTextSize(0.055);
 	leg->AddEntry(ge_CMS,         "CMS",        "lp");
-	leg->AddEntry(ge_ALICE_Run1,  "ALICE Run1", "lp");
+	//leg->AddEntry(ge_ALICE_Run1,  "ALICE Run1", "lp");
 	leg->AddEntry(ge_ALICE_Run2,  "ALICE Run2", "lp");
 	leg->Draw("same");
 
