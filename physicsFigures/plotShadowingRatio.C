@@ -72,8 +72,8 @@ void plotShadowingRatio( )
 	htem2d->SetTickLength(0.04);
 	htem2d->Draw();
 
-	TGraphErrors* ge_CMS   = new TGraphErrors(Xs.size(),      &Xs[0],      &R[0],       &Xs_Err[0], &R_Err[0]       );
-	TGraphErrors* ge_ALICE_Run1 = new TGraphErrors(ALICE_x.size(), &ALICE_x[0], &ALICE_R[0], 0,          &ALICE_R_Err[0] );
+	TGraphErrors* ge_CMS        = new TGraphErrors(Xs.size(),           &Xs[0],           &R[0],            &Xs_Err[0], &R_Err[0]       );
+	TGraphErrors* ge_ALICE_Run1 = new TGraphErrors(ALICE_x.size(),      &ALICE_x[0],      &ALICE_R[0],      0,          &ALICE_R_Err[0] );
 	TGraphErrors* ge_ALICE_Run2 = new TGraphErrors(ALICE_Run2_x.size(), &ALICE_Run2_x[0], &ALICE_Run2_R[0], 0,          &ALICE_Run2_R_Err[0] );
 
 	ge_CMS->SetMarkerStyle(20);
