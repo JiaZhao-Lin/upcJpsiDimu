@@ -293,6 +293,11 @@ void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4
 			const double Init_cbN         = fCohJpsiTemp->GetParameter(2);
 			const double Init_sigmaRatio  = fCohJpsiTemp->GetParameter(3);
 
+			const double Init_cbAlphaL    = 1.52;
+			const double Init_cbAlphaR    = 1.83;
+			const double Init_cbNL        = 7.82;
+			const double Init_cbNR        = 13.;
+
 			// RooRealVar  cbAlpha(    "cbAlpha",     "cbAlpha",    fCohJpsiTemp->GetParameter(1), Init_cbAlpha*0.0,    Init_cbAlpha*20   );
 			// RooRealVar  cbN(        "cbN",         "cbN",        fCohJpsiTemp->GetParameter(2), Init_cbN*0.0,        Init_cbN*20       );
 			// RooRealVar  sigmaRatio( "sigmaRatio",  "sigmaRatio", fCohJpsiTemp->GetParameter(3), Init_sigmaRatio*0.0, Init_sigmaRatio*20);
@@ -301,15 +306,17 @@ void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4
 			// RooRealVar  jpsiSigma(  "jpsiSigma",   "jpsiSigma",  0.045, 0,    0.15 );
 			// RooConstVar massRatio(  "massRatio",   "massRatio",  mPsi_PDG/mJpsi_PDG);
 
-			RooRealVar  jpsiN(		"jpsiN",		"jpsiN",		100,	0,		1e5  );
-			RooRealVar  psiN(		"psiN",			"psiN",			100,	0,		1e5  );
-			RooRealVar  jpsiMu(     "jpsiMu",		"jpsiMu",     	3.096, 	2.9,  	3.3  );
-			RooRealVar  jpsiSigma(  "jpsiSigma",	"jpsiSigma",  	0.045, 	0,		0.15  );
-			RooRealVar  sigmaRatio( "sigmaRatio",  "sigmaRatio", 	Init_sigmaRatio,	0.1,	Init_sigmaRatio*20 	);
-			RooRealVar  cbAlphaL(   "cbAlphaL",		"cbAlphaL",    	Init_cbAlpha,		0, 		Init_cbAlpha*20 	);
-			RooRealVar  cbNL(       "cbNL",			"cbNL",        	Init_cbN,			0,  	Init_cbN*20 		);
-			RooRealVar  cbAlphaR(   "cbAlphaR",		"cbAlphaR",    	Init_cbAlpha,		0,  	Init_cbAlpha*20 	);
-			RooRealVar  cbNR(       "cbNR",			"cbNR",        	Init_cbN,			0,  	Init_cbN*20 		);
+			RooRealVar  jpsiN(		"jpsiN",		"jpsiN",		9.,   0.1,  1.e2  );
+			RooRealVar  psiN(		"psiN",			"psiN",			9.,   0.1,  1.e2  );
+			RooRealVar  jpsiMu(     "jpsiMu",		"jpsiMu",      3.096, 2.9,  3.3 );
+			RooRealVar  jpsiSigma(  "jpsiSigma",	"jpsiSigma",   0.050, 0.01, 0.2 );
+			RooRealVar  jpsiSigmaL( "jpsiSigmaL",	"jpsiSigmaL",  0.045, 0.01, 0.2 );
+			RooRealVar  jpsiSigmaR( "jpsiSigmaR",	"jpsiSigmaR",  0.045, 0.01, 0.2 );
+			RooRealVar  sigmaRatio( "sigmaRatio",   "sigmaRatio",  Init_sigmaRatio, 0.1, Init_sigmaRatio*20 );
+			RooRealVar  cbAlphaL(   "cbAlphaL",		"cbAlphaL",    Init_cbAlphaL,	0, 20 );
+			RooRealVar  cbNL(       "cbNL",			"cbNL",        Init_cbNL,		0, 20 );
+			RooRealVar  cbAlphaR(   "cbAlphaR",		"cbAlphaR",    Init_cbAlphaR,	0, 20 );
+			RooRealVar  cbNR(       "cbNR",			"cbNR",        Init_cbNR,		0, 20 );
 
 			QEDPdf 	cQEDPdf(	hCohMass, mMass, massLow4Fit, massHig4Fit, 3);
 			cQEDPdf.Init();
@@ -317,13 +324,17 @@ void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4
 
 			JpsiPdf cJpsiPdf(	hCohMass, mMass, massLow4Fit, massHig4Fit	);
 			// cJpsiPdf.InitCrystalBall(cbAlpha, cbN, jpsiSigma, sigmaRatio, jpsiMu, gausN);
-			cJpsiPdf.InitGeneric(jpsiN, jpsiMu, jpsiSigma, sigmaRatio, cbNL, cbAlphaL, cbNR, cbAlphaR);
-			RooGenericPdf *jpsiPdf 	= cJpsiPdf.GetGenericPdf();
+			cJpsiPdf.InitDoubleCrystalBall(jpsiN, jpsiMu, jpsiSigma, sigmaRatio, cbNL, cbAlphaL, cbNR, cbAlphaR);
+			RooGenericPdf *jpsiPdf 	= cJpsiPdf.GetDoubleCrystalBallPdf();
+			// cJpsiPdf.InitDoubleCrystalBall_Asym(jpsiN, jpsiMu, jpsiSigmaL, jpsiSigmaR, sigmaRatio, cbNL, cbAlphaL, cbNR, cbAlphaR);
+			// RooGenericPdf *jpsiPdf 	= cJpsiPdf.GetDoubleCrystalBall_AsymPdf();
 
 			PsiPdf 	cPsiPdf(	hCohMass, mMass, massLow4Fit, massHig4Fit	);
 			// cPsiPdf.InitCrystalBall(cbAlpha, cbN, jpsiSigma, sigmaRatio, jpsiMu, gausN);
-			cPsiPdf.InitGeneric(psiN, jpsiMu, jpsiSigma, sigmaRatio, cbNL, cbAlphaL, cbNR, cbAlphaR);
-			RooGenericPdf *psiPdf 	= cPsiPdf.GetGenericPdf();
+			cPsiPdf.InitDoubleCrystalBall(psiN, jpsiMu, jpsiSigma, sigmaRatio, cbNL, cbAlphaL, cbNR, cbAlphaR);
+			RooGenericPdf *psiPdf 	= cPsiPdf.GetDoubleCrystalBallPdf();
+			// cPsiPdf.InitDoubleCrystalBall_Asym(psiN, jpsiMu, jpsiSigmaL, jpsiSigmaR, sigmaRatio, cbNL, cbAlphaL, cbNR, cbAlphaR);
+			// RooGenericPdf *psiPdf 	= cPsiPdf.GetDoubleCrystalBall_AsymPdf();
 			
 			//// directly use QED template from simulation
 			//int jpsiMBinLow = hQEDMassHistTemp->GetXaxis()->FindBin(massLow4Fit + mTinyNum);
@@ -345,9 +356,9 @@ void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4
 			
 			const double nPsi4Init      = nJpsi4Init*0.050;
 
-			RooRealVar nJpsi("nJpsi", "nJpsi", nJpsi4Init*1.01,  nJpsi4Init*0.00, nJpsi4Init*10);
-			RooRealVar nPsi( "nPsi",  "nPsi",  nPsi4Init*1.00,   nPsi4Init*0.00,  nPsi4Init*10 );
-			RooRealVar nQED( "nQED",  "nQED",  nQED4Init,        nQED4Init*0.00,  nQED4Init*20 );
+			RooRealVar nJpsi("nJpsi", "nJpsi", nJpsi4Init*1.1,  nJpsi4Init*0.20, nJpsi4Init*10.);
+			RooRealVar nPsi( "nPsi",  "nPsi",  nPsi4Init*1.0,   nPsi4Init*0.20,  nPsi4Init*10. );
+			RooRealVar nQED( "nQED",  "nQED",  nQED4Init,       nQED4Init*0.20,  nQED4Init*10. );
 
 			RooAddPdf  totMassPdf("totMassPdf", "totMassPdf", RooArgList(*jpsiPdf, *psiPdf, *qedPdf), RooArgList(nJpsi, nPsi, nQED));
 
@@ -450,12 +461,57 @@ void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4
 				c1->SaveAs( Form("outplots/massSpec_4JpsiPsi_"+nCasesName[i_ncase]+"_iy%d.png",  iy) );
 				c1->SaveAs( Form("outplots/massSpec_4JpsiPsi_"+nCasesName[i_ncase]+"_iy%d.pdf",  iy) );			
 			}
-
 			//----------------------------------------------------------------------------------------------------------------------------------------------------
 		
+			//------------------------------------------------------------------------------------------------------------------------------------------
+			//calculate the fiting pull: (Data-FitCurve)/#Sigma_{Data}
+			c1->cd();
+			RooHist *hpull_mass = frameMass->pullHist("h_dataMass", "totMassPdf_Norm[mMass]"); //"totMassPdf_Norm[mMass]", "h_dataMass"
+			hpull_mass ->SetMarkerStyle(24);
+			hpull_mass ->SetMarkerSize(0.8);
+			hpull_mass ->SetMarkerColor(1);
+			hpull_mass ->SetLineColor(1);
+			hpull_mass ->SetLineWidth(1);
+
+			RooPlot *frameMassPull = mMass.frame( Range(massLow4Fit, massHig4Fit), Title(""), Bins(nFrameMBins) );
+			frameMassPull ->addPlotable(hpull_mass, "pz");
+			frameMassPull ->GetYaxis()->SetRangeUser(-10.0, 10.0);
+			frameMassPull ->SetYTitle("(Data-Fit)/(#sigma_{Data})");
+			frameMassPull ->SetXTitle("M_{#mu#mu} (GeV/c^{2})");
+			frameMassPull ->GetYaxis()->CenterTitle();
+			//frameMassPull ->GetYaxis()->SetNdivisions(6);
+			frameMassPull ->GetYaxis()->SetTitleSize(0.07);
+			frameMassPull ->GetYaxis()->SetTitleOffset(0.70);
+			frameMassPull ->GetYaxis()->SetLabelSize(0.05);
+			//frameMassPull ->GetYaxis()->SetLabelFont(20);
+			frameMassPull ->GetXaxis()->SetTitleSize(0.05);
+			frameMassPull ->GetXaxis()->SetTitleOffset(1.05);
+			frameMassPull ->GetXaxis()->SetLabelSize(0.05);
+			//frameMassPull ->GetXaxis()->SetLabelFont(40);
+			frameMassPull ->SetTickLength(0.04);
+			frameMassPull ->Draw() ;
+			
+			drawLine(massLow4Fit, 0, massHig4Fit, 0, 1, 2, 2);
+			
+			drawLatex(0.15, 0.86, nCasesName[i_ncase],    mTextFont, 0.06, mTextColor);
+			drawLatex(0.15, 0.80, "(Mass Fit Pull Hist)", mTextFont, 0.05, mTextColor);
+			drawLatex(0.55, 0.86, yName,                  mTextFont, 0.05, mTextColor);
+			drawLatex(0.55, 0.80, ptName,                 mTextFont, 0.05, mTextColor);
+			//------------------------------------------------------------------------------------------------------------------------------------------
+			
+			if(SymmetricRapBin && iy > (nDiffRapBins/2 - 1) && iy < nDiffRapBins){
+				c1->SaveAs( Form("outplots/massSpecFitPull_4JpsiPsi_"+nCasesName[i_ncase]+"_iy%d_Symm.png",  iy) );
+				c1->SaveAs( Form("outplots/massSpecFitPull_4JpsiPsi_"+nCasesName[i_ncase]+"_iy%d_Symm.pdf",  iy) );
+			}
+			else{
+				c1->SaveAs( Form("outplots/massSpecFitPull_4JpsiPsi_"+nCasesName[i_ncase]+"_iy%d.png",  iy) );
+				c1->SaveAs( Form("outplots/massSpecFitPull_4JpsiPsi_"+nCasesName[i_ncase]+"_iy%d.pdf",  iy) );
+			}
+
 			delete ResFit;
 			delete hCohMass;
 			delete frameMass;
+			delete frameMassPull;
 		}//iy
 	}//incase
 
@@ -522,6 +578,15 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			else if( iy<nDiffRapBins  ) fCohJpsiTemp = (TF1 *) inf_Temps->Get( Form("fCohJpsiTemp_RapBin%d", iy) );
 			//------------------------------------------------------------------------------------------------------------
 
+			const double Init_cbAlpha     = fCohJpsiTemp->GetParameter(1);
+			const double Init_cbN         = fCohJpsiTemp->GetParameter(2);
+			const double Init_sigmaRatio  = fCohJpsiTemp->GetParameter(3);
+
+			const double Init_cbAlphaL    = 1.52;
+			const double Init_cbAlphaR    = 1.83;
+			const double Init_cbNL        = 7.82;
+			const double Init_cbNR        = 13.;
+
 			//------------------------------------------------------------------------------------------------------------
 			// RooRealVar  cbAlpha(    "cbAlpha",     "cbAlpha",    fCohJpsiTemp->GetParameter(1), 0,  20);
 			// RooRealVar  cbN(        "cbN",         "cbN",        fCohJpsiTemp->GetParameter(2), 0,  20);
@@ -532,30 +597,36 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			// RooConstVar massRatio(  "massRatio",   "massRatio",  mPsi_PDG/mJpsi_PDG);
 
 
-			RooRealVar  jpsiN(		"jpsiN",		"jpsiN",		1000,	0,		1e7  );
-			RooRealVar  psiN(		"psiN",			"psiN",			1000,	0,		1e7  );
-			RooRealVar  jpsiMu(     "jpsiMu",		"jpsiMu",     	3.096, 	3.0,	3.2  );
-			RooRealVar  jpsiSigma(  "jpsiSigma",	"jpsiSigma",  	0.045, 	0,		0.15  );
-			RooRealVar  sigmaRatio( "sigmaRatio",  "sigmaRatio", 	fCohJpsiTemp->GetParameter(3), 0.1,20);
-			RooRealVar  cbAlphaL(   "cbAlphaL",		"cbAlphaL",    	fCohJpsiTemp->GetParameter(1), 0,  20);
-			RooRealVar  cbNL(       "cbNL",			"cbNL",        	fCohJpsiTemp->GetParameter(2), 0,  20);
-			RooRealVar  cbAlphaR(   "cbAlphaR",		"cbAlphaR",    	fCohJpsiTemp->GetParameter(1), 0,  20);
-			RooRealVar  cbNR(       "cbNR",			"cbNR",        	fCohJpsiTemp->GetParameter(2), 0,  20);
+			RooRealVar  jpsiN(		"jpsiN",		"jpsiN",	   9.,     0.1,  1.e2);
+			RooRealVar  psiN(		"psiN",			"psiN",		   9.,     0.1,  1.e2);
+			RooRealVar  jpsiMu(     "jpsiMu",		"jpsiMu",      3.096,  2.9,  3.3 );
+			RooRealVar  jpsiSigma(  "jpsiSigma",	"jpsiSigma",   0.053,  0.01, 0.1 );
+			RooRealVar  jpsiSigmaL( "jpsiSigmaL",	"jpsiSigmaL",  0.045,  0.01, 0.1 );
+			RooRealVar  jpsiSigmaR( "jpsiSigmaR",	"jpsiSigmaR",  0.045,  0.01, 0.1 );
+			RooRealVar  sigmaRatio( "sigmaRatio",   "sigmaRatio",  Init_sigmaRatio, 0.1, Init_sigmaRatio*20 );
+			RooRealVar  cbAlphaL(   "cbAlphaL",		"cbAlphaL",    Init_cbAlphaL,	0, 20 );
+			RooRealVar  cbNL(       "cbNL",			"cbNL",        Init_cbNL,		0, 20 );
+			RooRealVar  cbAlphaR(   "cbAlphaR",		"cbAlphaR",    Init_cbAlphaR,	0, 20 );
+			RooRealVar  cbNR(       "cbNR",			"cbNR",        Init_cbNR,		0, 20 );
 
 
-			QEDPdf 	cQEDPdf(	hMass, mMass, massLow4Fit, massHig4Fit, 10);
+			QEDPdf 	cQEDPdf(	hMass, mMass, massLow4Fit, massHig4Fit, 3);
 			cQEDPdf.Init();
 			RooGenericPdf *qedPdf 	= cQEDPdf.GetPdf();
 
 			JpsiPdf cJpsiPdf(	hMass, mMass, massLow4Fit, massHig4Fit	);
 			// cJpsiPdf.Init(cbAlpha, cbN, jpsiSigma, sigmaRatio, jpsiMu, gausN);
-			cJpsiPdf.InitGeneric(jpsiN, jpsiMu, jpsiSigma, sigmaRatio, cbNL, cbAlphaL, cbNR, cbAlphaR);
-			RooGenericPdf *jpsiPdf 	= cJpsiPdf.GetGenericPdf();
+			cJpsiPdf.InitDoubleCrystalBall(jpsiN, jpsiMu, jpsiSigma, sigmaRatio, cbNL, cbAlphaL, cbNR, cbAlphaR);
+			RooGenericPdf *jpsiPdf 	= cJpsiPdf.GetDoubleCrystalBallPdf();
+			// cJpsiPdf.InitDoubleCrystalBall_Asym(jpsiN, jpsiMu, jpsiSigmaL, jpsiSigmaR, sigmaRatio, cbNL, cbAlphaL, cbNR, cbAlphaR);
+			// RooGenericPdf *jpsiPdf 	= cJpsiPdf.GetDoubleCrystalBall_AsymPdf();
 
 			PsiPdf 	cPsiPdf(	hMass, mMass, massLow4Fit, massHig4Fit	);
 			// cPsiPdf.Init(cbAlpha, cbN, jpsiSigma, sigmaRatio, jpsiMu, gausN);
-			cPsiPdf.InitGeneric(psiN, jpsiMu, jpsiSigma, sigmaRatio, cbNL, cbAlphaL, cbNR, cbAlphaR);
-			RooGenericPdf *psiPdf 	= cPsiPdf.GetGenericPdf();
+			cPsiPdf.InitDoubleCrystalBall(psiN, jpsiMu, jpsiSigma, sigmaRatio, cbNL, cbAlphaL, cbNR, cbAlphaR);
+			RooGenericPdf *psiPdf 	= cPsiPdf.GetDoubleCrystalBallPdf();
+			// cPsiPdf.InitDoubleCrystalBall_Asym(psiN, jpsiMu, jpsiSigmaL, jpsiSigmaR, sigmaRatio, cbNL, cbAlphaL, cbNR, cbAlphaR);
+			// RooGenericPdf *psiPdf 	= cPsiPdf.GetDoubleCrystalBall_AsymPdf();
 			//------------------------------------------------------------------------------------------------------------
 
 			//------------------------------------------------------------------------------------------------------------
@@ -563,7 +634,7 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			const double nQED4Init      = cQEDPdf.GetInitN(3.25, 3.50);
 			const double nJpsi4Init     = cJpsiPdf.GetInitN(2.95, 3.25, nQED4Init);
 
-			RooRealVar nJpsi("nJpsi", "nJpsi", nJpsi4Init*0.80,  0, nJpsi4Init*10);
+			RooRealVar nJpsi("nJpsi", "nJpsi", nJpsi4Init*0.50,  0, nJpsi4Init*10);
 			RooRealVar nPsi( "nPsi",  "nPsi",  nJpsi4Init*0.05,  0, nJpsi4Init*0.05*10);
 			RooRealVar nQED( "nQED",  "nQED",  nQED4Init*0.95,   0, nQED4Init*10);
 			RooAddPdf  totMassPdf("totMassPdf", "totMassPdf", RooArgList(*jpsiPdf, *psiPdf, *qedPdf), RooArgList(nJpsi, nPsi, nQED)); 
@@ -639,9 +710,51 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			else c1->SaveAs( Form("outplots/massSpec_4ptFitConstrain_"+nCasesName[i_ncase]+"_iy%d.png",  iy) );
 			//----------------------------------------------------------------------------------------------------------------------------------------------------
 		
+			//------------------------------------------------------------------------------------------------------------------------------------------
+			//calculate the fiting pull: (Data-FitCurve)/#Sigma_{Data}
+			c1->cd();
+			RooHist *hpull_mass = frameMass->pullHist("h_dataMass", "totMassPdf_Norm[mMass]"); //"totMassPdf_Norm[mMass]", "h_dataMass"
+			hpull_mass ->SetMarkerStyle(24);
+			hpull_mass ->SetMarkerSize(0.8);
+			hpull_mass ->SetMarkerColor(1);
+			hpull_mass ->SetLineColor(1);
+			hpull_mass ->SetLineWidth(1);
+
+			RooPlot *frameMassPull = mMass.frame( Range(massLow4Fit, massHig4Fit), Title(""), Bins(nFrameMBins) );
+			frameMassPull ->addPlotable(hpull_mass, "pz");
+			frameMassPull ->GetYaxis()->SetRangeUser(-10.0, 10.0);
+			frameMassPull ->SetYTitle("(Data-Fit)/(#sigma_{Data})");
+			frameMassPull ->SetXTitle("M_{#mu#mu} (GeV/c^{2})");
+			frameMassPull ->GetYaxis()->CenterTitle();
+			//frameMassPull ->GetYaxis()->SetNdivisions(6);
+			frameMassPull ->GetYaxis()->SetTitleSize(0.07);
+			frameMassPull ->GetYaxis()->SetTitleOffset(0.70);
+			frameMassPull ->GetYaxis()->SetLabelSize(0.05);
+			//frameMassPull ->GetYaxis()->SetLabelFont(20);
+			frameMassPull ->GetXaxis()->SetTitleSize(0.05);
+			frameMassPull ->GetXaxis()->SetTitleOffset(1.05);
+			frameMassPull ->GetXaxis()->SetLabelSize(0.05);
+			//frameMassPull ->GetXaxis()->SetLabelFont(40);
+			frameMassPull ->SetTickLength(0.04);
+			frameMassPull ->Draw() ;
+			
+			drawLine(massLow4Fit, 0, massHig4Fit, 0, 1, 2, 2);
+			drawLatex(0.15, 0.80, "(Mass Fit Pull Hist)", mTextFont, 0.05, mTextColor);
+			drawLatex(0.15, 0.86, nCasesName[i_ncase],    mTextFont, 0.06, mTextColor);
+			drawLatex(0.55, 0.86, yName,                  mTextFont, 0.05, mTextColor);
+			drawLatex(0.55, 0.80, ptName,                 mTextFont, 0.05, mTextColor);
+			//----------------------------------------------------------------------------------------------------------------------------------------------------
+			if(SymmetricRapBin && iy > (nDiffRapBins/2 - 1) && iy < nDiffRapBins) 
+				c1->SaveAs( Form("outplots/massSpecFitPull_4ptFitConstrain_"+nCasesName[i_ncase]+"_iy%d_Symm.png",  iy) );
+			else 
+				c1->SaveAs( Form("outplots/massSpecFitPull_4ptFitConstrain_"+nCasesName[i_ncase]+"_iy%d.png",  iy) );
+			//----------------------------------------------------------------------------------------------------------------------------------------------------
+
+
 			delete ResFit;
 			delete hMass;
 			delete frameMass;
+			delete frameMassPull;
 
 			//------------------------------------------------------------------------------------------------------------
 			//Fit PT Spectral to get fI factor, We only have CohJpsi for 0nXn, XnXn,

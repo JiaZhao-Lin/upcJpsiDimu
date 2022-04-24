@@ -169,7 +169,7 @@ std::vector<std::vector<double>> runUPC_AAModel(const std::vector<double> Ws, TS
 
   for (int i = 0; i < Ws.size(); ++i)
   {
-    TLatex *latex1 = new TLatex(0.33, 0.35-0.05*i, Form("W_{#gamma p} = %.2f GeV, #sigma^{#gamma+A #rightarrow VM+A} (W_{#gamma p}) = %f #pm %f mb",Ws[i],IAs[i],IAs_Err[i]));
+    TLatex *latex1 = new TLatex(0.33, 0.35-0.04*i, Form("W_{#gamma p} = %.2f GeV, #sigma^{#gamma+A #rightarrow VM+A} (W_{#gamma p}) = %f #pm %f mb",Ws[i],IAs[i],IAs_Err[i]));
     latex1->SetNDC();
     latex1->SetTextSize(20);
     latex1->SetTextFont(43);

@@ -48,7 +48,7 @@ std::vector<std::vector<double>> fit2D()
       // f->SetMarkerColor(kBlue);
       f->Draw("same surf");
 
-      drawLatex(0.1, 0.95, Form("(#sigma(y = %.1f), #sigma(y = %.1f)) = (%.4f #pm %.4f, %.4f #pm %.4f)", Rap[i], -Rap[i],
+      drawLatex(0.05, 0.95, Form("(#sigma(y = %.2f), #sigma(y = %.2f)) = (%.4f #pm %.4f, %.4f #pm %.4f)", Rap[i], -Rap[i],
                               f->GetParameter(0), f->GetParError(0), f->GetParameter(1), f->GetParError(1)),      42,       0.05,      1);
       
       c->SaveAs(Form("outplots/fit2D_%d.png",i));

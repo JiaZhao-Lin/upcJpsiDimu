@@ -45,7 +45,7 @@ void calAccFactor()
 	readFiles();
 	getAcc();
 	drawAcc();
-	saveFiles();
+	// saveFiles();
 }
 
 void readFiles()

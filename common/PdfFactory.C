@@ -1,7 +1,7 @@
 #include "PdfFactory.h"
 #include "HistWorker.h"
 
-Double_t CrystalBall2(Double_t x, Double_t N, Double_t mu, Double_t sigma, 
+Double_t DoubleCrystalBall(Double_t x, Double_t N, Double_t mu, Double_t sigma, 
 						Double_t cbNL, Double_t cbAlphaL, Double_t cbNR, Double_t cbAlphaR)
 {
 
@@ -24,6 +24,37 @@ Double_t CrystalBall2(Double_t x, Double_t N, Double_t mu, Double_t sigma,
 	else 
 	{
 		return N * C * TMath::Power(D+norm, -cbNR);
+	}
+}
+
+Double_t DoubleCrystalBall_Asym(Double_t x, Double_t N, Double_t mu, Double_t sigmaL, Double_t sigmaR,
+						Double_t cbNL, Double_t cbAlphaL, Double_t cbNR, Double_t cbAlphaR)
+{
+
+	Double_t A = TMath::Power(cbNL/fabs(cbAlphaL), cbNL) * TMath::Exp(-cbAlphaL*cbAlphaL/2.);
+	Double_t B = cbNL/fabs(cbAlphaL) - fabs(cbAlphaL);
+
+	Double_t C = TMath::Power(cbNR/fabs(cbAlphaR), cbNR) * TMath::Exp(-cbAlphaR*cbAlphaR/2.);
+	Double_t D = cbNR/fabs(cbAlphaR) - fabs(cbAlphaR);
+
+	Double_t normL = (x-mu)/sigmaL;
+	Double_t normR = (x-mu)/sigmaR;
+
+	if(normL < -cbAlphaL) 
+	{
+		return N * A * TMath::Power(B-normL, -cbNL);
+	}
+	else if (normL < 0)
+	{
+		return N * TMath::Exp(-0.5*normL*normL);
+	}
+	else if(normR < cbAlphaR) 
+	{
+		return N * TMath::Exp(-0.5*normR*normR);
+	}
+	else 
+	{
+		return N * C * TMath::Power(D+normR, -cbNR);
 	}
 }
 
@@ -103,8 +134,9 @@ struct JpsiPdf : public PdfFactory
 	//Priviate but not so priviate members-----------------------------------------------
 	const double massLow4Fit, massHig4Fit;
 	RooRealVar  & mMass;
-	RooAddPdf 		*jpsiPdfDCB;
-	RooGenericPdf 	*jpsiGenericPdf;
+	RooAddPdf 		*jpsiRooCrystalBallPdf;
+	RooGenericPdf 	*jpsiDoubleCrystalBallPdf;
+	RooGenericPdf	*jpsiDoubleCrystalBall_AsymPdf;
 
 	//-----------------------------------------------------------------------------------
 
@@ -125,21 +157,29 @@ struct JpsiPdf : public PdfFactory
 					RooArgSet(mMass, cbAlpha, cbN, jpsiSigma, sigmaRatio, jpsiMu, gausN));
 	}
 
-	void InitRooCrystalBall(RooRealVar& jpsiN, RooRealVar& jpsiMu, RooRealVar& jpsiSigma, RooRealVar& sigmaRatio, RooRealVar& cbNL, RooRealVar& cbAlphaL, RooRealVar& cbNR, RooRealVar& cbAlphaR)
-	{
-		RooCrystalBall * jpsiPdfShape = new RooCrystalBall("jpsiPdfShape", "jpsiPdfShape", mMass, jpsiMu, jpsiSigma, cbAlphaL, cbNL, cbAlphaR, cbNR);
-		jpsiPdfDCB = new RooAddPdf("jpsiPdfDCB", "jpsiPdfDCB", RooArgList(*jpsiPdfShape), RooArgList(jpsiN));
-	}
+	// void InitRooCrystalBall(RooRealVar& jpsiN, RooRealVar& jpsiMu, RooRealVar& jpsiSigma, RooRealVar& sigmaRatio, RooRealVar& cbNL, RooRealVar& cbAlphaL, RooRealVar& cbNR, RooRealVar& cbAlphaR)
+	// {
+	// 	RooCrystalBall * jpsiPdfShape = new RooCrystalBall("jpsiPdfShape", "jpsiPdfShape", mMass, jpsiMu, jpsiSigma, cbAlphaL, cbNL, cbAlphaR, cbNR);
+	// 	jpsiRooCrystalBallPdf = new RooAddPdf("jpsiRooCrystalBallPdf", "jpsiRooCrystalBallPdf", RooArgList(*jpsiPdfShape), RooArgList(jpsiN));
+	// }
 
-	void InitGeneric(RooRealVar& jpsiN, RooRealVar& jpsiMu, RooRealVar& jpsiSigma, RooRealVar& sigmaRatio, RooRealVar& cbNL, RooRealVar& cbAlphaL, RooRealVar& cbNR, RooRealVar& cbAlphaR)
+	void InitDoubleCrystalBall(RooRealVar& jpsiN, RooRealVar& jpsiMu, RooRealVar& jpsiSigma, RooRealVar& sigmaRatio, RooRealVar& cbNL, RooRealVar& cbAlphaL, RooRealVar& cbNR, RooRealVar& cbAlphaR)
 	{
-		jpsiGenericPdf = new RooGenericPdf("jpsiGenericPdf", "jpsiGenericPdf",
-					"CrystalBall2(mMass, jpsiN, jpsiMu, jpsiSigma, cbNL, cbAlphaL, cbNR, cbAlphaR)", 
+		jpsiDoubleCrystalBallPdf = new RooGenericPdf("jpsiDoubleCrystalBallPdf", "jpsiDoubleCrystalBallPdf",
+					"DoubleCrystalBall(mMass, jpsiN, jpsiMu, jpsiSigma, cbNL, cbAlphaL, cbNR, cbAlphaR)", 
 					RooArgSet(mMass, jpsiN, jpsiMu, jpsiSigma, cbNL, cbAlphaL, cbNR, cbAlphaR));
 	}
 
-	RooAddPdf* 		GetPdfRooCrystalBall() 	{if(!jpsiPdfDCB)		throw std::runtime_error("JpsiPdf ----> No PDF DCB!!!");	return jpsiPdfDCB;}
-	RooGenericPdf* 	GetGenericPdf()			{if(!jpsiGenericPdf)	throw std::runtime_error("JpsiPdf ----> No GenericPdf!!!");	return jpsiGenericPdf;}
+	void InitDoubleCrystalBall_Asym(RooRealVar& jpsiN, RooRealVar& jpsiMu, RooRealVar& jpsiSigmaL, RooRealVar& jpsiSigmaR, RooRealVar& sigmaRatio, RooRealVar& cbNL, RooRealVar& cbAlphaL, RooRealVar& cbNR, RooRealVar& cbAlphaR)
+	{
+		jpsiDoubleCrystalBall_AsymPdf = new RooGenericPdf("jpsiDoubleCrystalBall_AsymPdf", "jpsiDoubleCrystalBall_AsymPdf",
+					"DoubleCrystalBall_Asym(mMass, jpsiN, jpsiMu, jpsiSigmaL, jpsiSigmaR, cbNL, cbAlphaL, cbNR, cbAlphaR)", 
+					RooArgSet(mMass, jpsiN, jpsiMu, jpsiSigmaL, jpsiSigmaR, cbNL, cbAlphaL, cbNR, cbAlphaR));
+	}
+
+	// RooAddPdf* 		GetRooCrystalBallPdf() 			{if(!jpsiRooCrystalBallPdf)			throw std::runtime_error("JpsiPdf ----> No jpsiRooCrystalBallPdf!!!");	return jpsiRooCrystalBallPdf;}
+	RooGenericPdf* 	GetDoubleCrystalBallPdf()		{if(!jpsiDoubleCrystalBallPdf)		throw std::runtime_error("JpsiPdf ----> No DoubleCrystalBallPdf!!!");	return jpsiDoubleCrystalBallPdf;}
+	RooGenericPdf* 	GetDoubleCrystalBall_AsymPdf()	{if(!jpsiDoubleCrystalBall_AsymPdf)	throw std::runtime_error("JpsiPdf ----> No DoubleCrystalBall_Asym!!!");	return jpsiDoubleCrystalBall_AsymPdf;}
 
 
 	double GetInitN(const double BinLow, const double BinHigh, const double nQED4Init)
@@ -161,8 +201,9 @@ struct PsiPdf : public PdfFactory
 	const double massLow4Fit, massHig4Fit;
 	RooRealVar  & mMass;
 	RooConstVar massRatio = RooConstVar(  "massRatio",   "massRatio",  mPsi_PDG/mJpsi_PDG);
-	RooAddPdf 		*psiPdfDCB;
-	RooGenericPdf 	*psiGenericPdf;
+	RooAddPdf 		*psiRooCrystalBallPdf;
+	RooGenericPdf 	*psiDoubleCrystalBallPdf;
+	RooGenericPdf 	*psiDoubleCrystalBall_AsymPdf;
 	//-----------------------------------------------------------------------------------
 
 	//Constructor------------------------------------------------------------------------
@@ -181,21 +222,29 @@ struct PsiPdf : public PdfFactory
 					"ROOT::Math::crystalball_function(mMass,cbAlpha,cbN,jpsiSigma*sigmaRatio*massRatio,jpsiMu*massRatio) + gausN*TMath::Gaus(mMass, jpsiMu*massRatio, jpsiSigma*massRatio)", 
 					RooArgSet(mMass, cbAlpha, cbN, jpsiSigma, sigmaRatio, jpsiMu, massRatio, gausN)); // psiMu = jpsiMu * massRatio; psiSigma = jpsiSigma * massRatio
 	}
-	void InitRooCrystalBall(RooRealVar& psiN, RooRealVar& psiMu, RooRealVar& psiSigma, RooRealVar& sigmaRatio, RooRealVar& cbNL, RooRealVar& cbAlphaL, RooRealVar& cbNR, RooRealVar& cbAlphaR)
-	{
-		RooCrystalBall * psiPdfShape = new RooCrystalBall("psiPdfShape", "psiPdfShape", mMass, psiMu, psiSigma, cbAlphaL, cbNL, cbAlphaR, cbNR);
-		psiPdfDCB = new RooAddPdf("psiPdfDCB", "psiPdfDCB", RooArgList(*psiPdfShape), RooArgList(psiN));
-	}
+	// void InitRooCrystalBall(RooRealVar& psiN, RooRealVar& psiMu, RooRealVar& psiSigma, RooRealVar& sigmaRatio, RooRealVar& cbNL, RooRealVar& cbAlphaL, RooRealVar& cbNR, RooRealVar& cbAlphaR)
+	// {
+	// 	RooCrystalBall * psiPdfShape = new RooCrystalBall("psiPdfShape", "psiPdfShape", mMass, psiMu, psiSigma, cbAlphaL, cbNL, cbAlphaR, cbNR);
+	// 	psiRooCrystalBallPdf = new RooAddPdf("psiRooCrystalBallPdf", "psiRooCrystalBallPdf", RooArgList(*psiPdfShape), RooArgList(psiN));
+	// }
 
-	void InitGeneric(RooRealVar& psiN, RooRealVar& jpsiMu, RooRealVar& jpsiSigma, RooRealVar& sigmaRatio, RooRealVar& cbNL, RooRealVar& cbAlphaL, RooRealVar& cbNR, RooRealVar& cbAlphaR)
+	void InitDoubleCrystalBall(RooRealVar& psiN, RooRealVar& jpsiMu, RooRealVar& jpsiSigma, RooRealVar& sigmaRatio, RooRealVar& cbNL, RooRealVar& cbAlphaL, RooRealVar& cbNR, RooRealVar& cbAlphaR)
 	{
-		psiGenericPdf = new RooGenericPdf("psiGenericPdf", "psiGenericPdf",
-					"CrystalBall2(mMass, psiN, jpsiMu*massRatio, jpsiSigma*massRatio, cbNL, cbAlphaL, cbNR, cbAlphaR)", 
+		psiDoubleCrystalBallPdf = new RooGenericPdf("psiDoubleCrystalBallPdf", "psiDoubleCrystalBallPdf",
+					"DoubleCrystalBall(mMass, psiN, jpsiMu*massRatio, jpsiSigma*massRatio, cbNL, cbAlphaL, cbNR, cbAlphaR)", 
 					RooArgSet(mMass, psiN, jpsiMu, jpsiSigma, cbNL, cbAlphaL, cbNR, cbAlphaR, massRatio));
 	}
 
-	RooAddPdf* GetPdfRooCrystalBall()	{if(!psiPdfDCB)		throw std::runtime_error("PsiPdf ----> No PDF DCB!!!");	return psiPdfDCB;}
-	RooGenericPdf* 	GetGenericPdf()		{if(!psiGenericPdf)	throw std::runtime_error("PsiPdf ----> No GenericPdf!!!");	return psiGenericPdf;}
+	void InitDoubleCrystalBall_Asym(RooRealVar& psiN, RooRealVar& jpsiMu, RooRealVar& jpsiSigmaL, RooRealVar& jpsiSigmaR, RooRealVar& sigmaRatio, RooRealVar& cbNL, RooRealVar& cbAlphaL, RooRealVar& cbNR, RooRealVar& cbAlphaR)
+	{
+		psiDoubleCrystalBall_AsymPdf = new RooGenericPdf("psiDoubleCrystalBall_AsymPdf", "psiDoubleCrystalBall_AsymPdf",
+					"DoubleCrystalBall_Asym(mMass, psiN, jpsiMu*massRatio, jpsiSigmaL*massRatio, jpsiSigmaR*massRatio, cbNL, cbAlphaL, cbNR, cbAlphaR)", 
+					RooArgSet(mMass, psiN, jpsiMu, jpsiSigmaL, jpsiSigmaR, cbNL, cbAlphaL, cbNR, cbAlphaR, massRatio));
+	}
+
+	// RooAddPdf* 		GetPdfRooCrystalBall()			{if(!psiRooCrystalBallPdf)			throw std::runtime_error("PsiPdf ----> No RooCrystalBallPdf!!!");			return psiRooCrystalBallPdf;}
+	RooGenericPdf* 	GetDoubleCrystalBallPdf()		{if(!psiDoubleCrystalBallPdf)		throw std::runtime_error("PsiPdf ----> No DoubleCrystalBallPdf!!!");		return psiDoubleCrystalBallPdf;}
+	RooGenericPdf* 	GetDoubleCrystalBall_AsymPdf()	{if(!psiDoubleCrystalBall_AsymPdf)	throw std::runtime_error("PsiPdf ----> No psiDoubleCrystalBall_AsymPdf!!!");return psiDoubleCrystalBall_AsymPdf;}
 	//-----------------------------------------------------------------------------------
 };
 
