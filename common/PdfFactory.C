@@ -226,9 +226,9 @@ struct PsiPdf : public PdfFactory
 
 	void InitDoubleCrystalBall_Asym(RooRealVar& psiN, RooRealVar& jpsiMu, RooRealVar& jpsiSigmaL, RooRealVar& jpsiSigmaR, RooRealVar& sigmaRatio, RooRealVar& cbNL, RooRealVar& cbAlphaL, RooRealVar& cbNR, RooRealVar& cbAlphaR)
 	{
-		psiDoubleCrystalBall_AsymPdf = new RooGenericPdf("psiDoubleCrystalBall_AsymPdf", "psiDoubleCrystalBall_AsymPdf",
-					"DoubleCrystalBall_Asym(mMass, psiN, jpsiMu*massRatio, jpsiSigmaL*massRatio, jpsiSigmaR*massRatio, cbNL, cbAlphaL, cbNR, cbAlphaR)", 
-					RooArgSet(mMass, psiN, jpsiMu, jpsiSigmaL, jpsiSigmaR, cbNL, cbAlphaL, cbNR, cbAlphaR, massRatio));
+		//psiDoubleCrystalBall_AsymPdf = new RooGenericPdf("psiDoubleCrystalBall_AsymPdf", "psiDoubleCrystalBall_AsymPdf",
+		//			"DoubleCrystalBall_Asym(mMass, psiN, jpsiMu*massRatio, jpsiSigmaL*massRatio, jpsiSigmaR*massRatio, cbNL, cbAlphaL, cbNR, cbAlphaR)", 
+		//			RooArgSet(mMass, psiN, jpsiMu, jpsiSigmaL, jpsiSigmaR, cbNL, cbAlphaL, cbNR, cbAlphaR, massRatio));
 	}
 
 	// RooAddPdf* 		GetPdfRooCrystalBall()			{if(!psiRooCrystalBallPdf)			throw std::runtime_error("PsiPdf ----> No RooCrystalBallPdf!!!");			return psiRooCrystalBallPdf;}
