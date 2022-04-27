@@ -36,43 +36,44 @@ double y2W(const double y)
 void plotSigmaVsW()
 {
 	auto c = new TCanvas();
-	TH2D* SigmaVsW = new TH2D("SigmaVsW", ";W_{#gamma p} (GeV);#sigma_{#gamma A #rightarrow J/#Psi A} [mb]", 10,0,700, 10, 0, 0.2);
+	TH2D* SigmaVsW = new TH2D("SigmaVsW", ";W_{#gamma p} (GeV);#sigma_{#gamma A #rightarrow J/#Psi A} (mb)", 10,0,450, 10, 0, 0.15);
 
-	SigmaVsW->GetYaxis()->SetTitleSize(0.06);
+	SigmaVsW->GetYaxis()->SetTitleSize(0.065);
 	SigmaVsW->GetYaxis()->SetTitleOffset(0.85);
 	SigmaVsW->GetYaxis()->SetLabelSize(0.04);
-	SigmaVsW->GetXaxis()->SetTitleSize(0.06);
-	SigmaVsW->GetXaxis()->SetTitleOffset(0.75);
+	SigmaVsW->GetXaxis()->SetTitleSize(0.05);
+	SigmaVsW->GetXaxis()->SetTitleOffset(0.89);
 	SigmaVsW->GetXaxis()->SetLabelSize(0.04);
 	SigmaVsW->SetTickLength(0.04);
 	SigmaVsW->Draw();
 
 	TGraphErrors* ge_CMS        = new TGraphErrors(Ws.size(),           &Ws[0],           &Sigmas[0],            0, &Sigmas_Err[0]       );
-	TGraphErrors* ge_CGC        = new TGraphErrors(CGC_JpsiNoFluct_W.size(),	&CGC_JpsiNoFluct_W[0],	&CGC_JpsiNoFluct_CohXsec[0],	0,	0);
+	TGraphErrors* ge_CGCnoFluct = new TGraphErrors(CGC_JpsiNoFluct_W.size(),	&CGC_JpsiNoFluct_W[0],	&CGC_JpsiNoFluct_CohXsec[0],	0,	0);
 	TGraphErrors* ge_IA        	= new TGraphErrors(W_IA.size(),	&W_IA[0],	&Sigma_IA[0],	0,	0);
+	
 	ge_CMS->SetMarkerStyle(20);
 	ge_CMS->SetMarkerColor(1);
 	ge_CMS->SetLineColor(1);
+	ge_CMS->SetLineWidth(2);
+	ge_CMS->Draw("Pesame");
 
-	// ge_CGC->SetMarkerStyle(24);
-	ge_CGC->SetMarkerColor(4);
-	ge_CGC->SetLineColor(4);
+	ge_CGCnoFluct->SetMarkerColor(4);
+	ge_CGCnoFluct->SetLineColor(4);
+	ge_CGCnoFluct->SetLineWidth(2);
+	ge_CGCnoFluct->Draw("csame");
 
-	// ge_IA->SetMarkerStyle(24);
 	ge_IA->SetMarkerColor(2);
 	ge_IA->SetLineColor(2);
+	ge_IA->SetLineWidth(2);
+	ge_IA->Draw("csame");
 
-	ge_CMS->Draw("Pesame");
-	ge_CGC->Draw("same");
-	ge_IA->Draw("same");
-
-	TLegend  *leg =  new TLegend();
+	TLegend  *leg =  new TLegend(0.15, 0.65, 0.48, 0.90);
 	leg->SetFillStyle(0);
 	leg->SetFillColor(0);
 	leg->SetTextSize(0.055);
 	leg->AddEntry(ge_CMS,	"CMS",			"lp");
-	leg->AddEntry(ge_CGC,	"CGC NoFluct",	"lp");
-	leg->AddEntry(ge_IA,	"IA",	"lp");
+	leg->AddEntry(ge_CGCnoFluct,	"CGC NoFluct",	"l");
+	leg->AddEntry(ge_IA,	"IA",	        "l");
 	leg->Draw("same");
 
 	c->SaveAs("outplots/SigmaVsW.png");
@@ -106,7 +107,7 @@ void plotShadowingRatio( )
 	auto c = new TCanvas();
 	c->SetLogx();
 
-	TH2D* htem2d = new TH2D("htem2d", "", 10,3.e-5,5e-2, 10, 0, 1);
+	TH2D* htem2d = new TH2D("htem2d", "", 10,3.0e-5,5.0e-2, 10, 0, 1);
 	htem2d->SetYTitle("R^{Pb}_{g}(x, #mu^{2}=0.24 GeV^{2})");
 	htem2d->SetXTitle("x");
 
@@ -126,15 +127,18 @@ void plotShadowingRatio( )
 	ge_CMS->SetMarkerStyle(20);
 	ge_CMS->SetMarkerColor(1);
 	ge_CMS->SetLineColor(1);
+	ge_CMS->SetLineWidth(2);
 	ge_CMS->Draw("Pesame");
 
 	ge_ALICE_Run1->SetMarkerStyle(24);
 	ge_ALICE_Run1->SetMarkerColor(4);
 	ge_ALICE_Run1->SetLineColor(4);
+	ge_ALICE_Run1->SetLineWidth(2);
 	//ge_ALICE_Run1->Draw("pesame");
 	ge_ALICE_Run2->SetMarkerStyle(24);
 	ge_ALICE_Run2->SetMarkerColor(4);
 	ge_ALICE_Run2->SetLineColor(4);
+	ge_ALICE_Run2->SetLineWidth(2);
 	ge_ALICE_Run2->Draw("pesame");
 	
 	drawLatex(0.15, 0.84, "Nuclear suppresion factor", 42, 0.06, 1);
