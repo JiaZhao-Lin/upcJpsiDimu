@@ -33,6 +33,52 @@ double y2W(const double y)
 	return sqrt( (2 * Gamma_beam * Mass_N * JpsiMass) * exp(y) );
 }
 
+void plotSigmaVsW()
+{
+	auto c = new TCanvas();
+	TH2D* SigmaVsW = new TH2D("SigmaVsW", ";W_{#gamma p} (GeV);#sigma_{#gamma A #rightarrow J/#Psi A} [mb]", 10,0,700, 10, 0, 0.2);
+
+	SigmaVsW->GetYaxis()->SetTitleSize(0.06);
+	SigmaVsW->GetYaxis()->SetTitleOffset(0.85);
+	SigmaVsW->GetYaxis()->SetLabelSize(0.04);
+	SigmaVsW->GetXaxis()->SetTitleSize(0.06);
+	SigmaVsW->GetXaxis()->SetTitleOffset(0.75);
+	SigmaVsW->GetXaxis()->SetLabelSize(0.04);
+	SigmaVsW->SetTickLength(0.04);
+	SigmaVsW->Draw();
+
+	TGraphErrors* ge_CMS        = new TGraphErrors(Ws.size(),           &Ws[0],           &Sigmas[0],            0, &Sigmas_Err[0]       );
+	TGraphErrors* ge_CGC        = new TGraphErrors(CGC_JpsiNoFluct_W.size(),	&CGC_JpsiNoFluct_W[0],	&CGC_JpsiNoFluct_CohXsec[0],	0,	0);
+	TGraphErrors* ge_IA        	= new TGraphErrors(W_IA.size(),	&W_IA[0],	&Sigma_IA[0],	0,	0);
+	ge_CMS->SetMarkerStyle(20);
+	ge_CMS->SetMarkerColor(1);
+	ge_CMS->SetLineColor(1);
+
+	// ge_CGC->SetMarkerStyle(24);
+	ge_CGC->SetMarkerColor(4);
+	ge_CGC->SetLineColor(4);
+
+	// ge_IA->SetMarkerStyle(24);
+	ge_IA->SetMarkerColor(2);
+	ge_IA->SetLineColor(2);
+
+	ge_CMS->Draw("Pesame");
+	ge_CGC->Draw("same");
+	ge_IA->Draw("same");
+
+	TLegend  *leg =  new TLegend();
+	leg->SetFillStyle(0);
+	leg->SetFillColor(0);
+	leg->SetTextSize(0.055);
+	leg->AddEntry(ge_CMS,	"CMS",			"lp");
+	leg->AddEntry(ge_CGC,	"CGC NoFluct",	"lp");
+	leg->AddEntry(ge_IA,	"IA",	"lp");
+	leg->Draw("same");
+
+	c->SaveAs("outplots/SigmaVsW.png");
+	c->SaveAs("outplots/SigmaVsW.pdf");
+}
+
 void plotShadowingRatio( )
 {
 	{auto Temp = fit2D(); Raps = Temp[0]; Raps_Err = Temp[1]; Sigmas = Temp[2]; Sigmas_Err = Temp[3];}
@@ -55,6 +101,7 @@ void plotShadowingRatio( )
 	}
 	
 	Cal_R_Error();
+	plotSigmaVsW();
 
 	auto c = new TCanvas();
 	c->SetLogx();

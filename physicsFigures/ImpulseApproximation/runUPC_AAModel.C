@@ -28,6 +28,8 @@ static const double pi       = 3.141592654;
 static const double twoPi    = 2 * pi;
 static const double alpha    = 1/137.035999074;
 
+std::vector<double> W_IA, Sigma_IA, Sigma_IA_Err;
+
 double formFactor(Double_t *t, Double_t *par)
 {
   double A_nucleus = par[0];
@@ -94,6 +96,8 @@ std::vector<std::vector<double>> runUPC_AAModel(const std::vector<double> Ws, TS
     double IA = gammaP_xs * Phi_A;
     h_IA->SetBinContent(ibin+1, IA);
     h_IA->SetBinError(ibin+1, IA*0.02);//2% error for now
+
+    W_IA.push_back(w); Sigma_IA.push_back(IA/1e6); Sigma_IA_Err.push_back(IA/1e6*0.02);
   }
 
   TCanvas* c2 = new TCanvas("c2","c2",1,1,900,600);
