@@ -45,9 +45,15 @@ const std::vector<TVector2>  flux_XnXn    = { { 6.521,		3.716 },	{ 6.521,	4.367	
 // const std::vector<TVector2>  flux_XnXn    = { { 38.009, 0.276 },  { 25.471, 0.514 } }; //n(E)
 
 //----------------CrystalBall:			  Rap: |-2.25|,	|-2.0|,	|-1.75| --------------------------------------
-const std::vector<double>  Xsec_0n0n      = { 2.512,	2.928,	3.008 },     XsecErr_0n0n      = { 0.035,	0.032,	0.057 };
-const std::vector<double>  Xsec_0nXnSum   = { 0.929,	1.092,	1.267 },     XsecErr_0nXnSum   = { 0.018,	0.018,	0.035 };
-const std::vector<double>  Xsec_XnXn      = { 0.259,	0.310,	0.324 },     XsecErr_XnXn      = { 0.009,	0.009,	0.017 };
+// const std::vector<double>  Xsec_0n0n      = { 2.512,	2.928,	3.008 },     XsecErr_0n0n      = { 0.035,	0.032,	0.057 };
+// const std::vector<double>  Xsec_0nXnSum   = { 0.929,	1.092,	1.267 },     XsecErr_0nXnSum   = { 0.018,	0.018,	0.035 };
+// const std::vector<double>  Xsec_XnXn      = { 0.259,	0.310,	0.324 },     XsecErr_XnXn      = { 0.009,	0.009,	0.017 };
+//------------------------------------------------------------------------------------------------------------
+
+//----------------CrystalBall PUCorrected:Rap: |-2.25|,	|-2.0|,	|-1.75| --------------------------------------
+const std::vector<double>  Xsec_0n0n      = { 2.823,	3.307,	3.371 },     XsecErr_0n0n      = { 0.039,	0.042,	0.064 };
+const std::vector<double>  Xsec_0nXnSum   = { 0.702,	0.819,	1.006 },     XsecErr_0nXnSum   = { 0.019,	0.028,	0.037 };
+const std::vector<double>  Xsec_XnXn      = { 0.201,	0.242,	0.246 },     XsecErr_XnXn      = { 0.009,	0.014,	0.017 };
 //------------------------------------------------------------------------------------------------------------
 
 //----------------CrystalBall + Gaussian: Rap: |-2.25|,	|-2.0|,	|-1.75| --------------------------------------
