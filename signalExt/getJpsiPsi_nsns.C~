@@ -4,6 +4,7 @@
 #include "../common/LoadSignal.C"
 #include "../common/PdfFactory.C"
 #include "../common/HistWorker.h"
+#include "PileUp_Corr.C"
 
 #include "RooRealVar.h"
 #include "RooDataSet.h"
@@ -54,7 +55,7 @@ int    qedColor = kGreen-3, qedStyle = 1;
 
 
 const int NnCases = 6;
-const int RunCase = 4;
+const int RunCase = -1;
 const TString nCasesName[NnCases] = {"AnAn", "OnOn", "0nXn", "Xn0n", "OnXnSum", "XnXn"};
 TH1D* hCohMass_in_ny[NnCases][nDiffRapBins+1]; //last content is the sum of all y-bins, within coherent pt threshold
 TH1D* hMass_in_ny[NnCases][nDiffRapBins+1];    //last content is the sum of all y-bins, for all pt 
@@ -91,7 +92,7 @@ void getJpsiPsi_nsns()
 	loadAcc();
 	
 	fitCohMass_4RNRfD(2.6, 4.2);
-	
+	PileUp_Corr(NJpsi_inMFit, NerrJpsi_inMFit, nDiffRapBins+1);
 	fitFullMassAndPt_4Decouple(2.6,4.2, -0.01,3.0);
 }
 //------------------------------------------------------------------------------------------------------------
@@ -234,7 +235,7 @@ void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4
 	//------------------------------------------------------------------------------------------------------------
 	for(int i_ncase=0; i_ncase<NnCases; i_ncase++)
 	{
-		if(i_ncase != RunCase ) continue; //tem skip
+		if(i_ncase != RunCase && RunCase != -1) continue; //tem skip
 		
 		cout<<"i_ncase: "<<i_ncase<<endl;
 
@@ -298,8 +299,8 @@ void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4
 			const double Init_cbNL        = 7.82;
 			const double Init_cbNR        = 13.;
 
-			RooRealVar  cbAlpha(    "cbAlpha",     "cbAlpha",    Init_cbAlphaL,	0, 20   );
-			RooRealVar  cbN(        "cbN",         "cbN",        Init_cbNL,		0, 20   );
+			RooRealVar  cbAlpha(    "cbAlpha",     "cbAlpha",    Init_cbAlpha,	0, 20   );
+			RooRealVar  cbN(        "cbN",         "cbN",        Init_cbN,		0, 20   );
 			RooRealVar  jpsiMu(     "jpsiMu",      "jpsiMu",     3.096, 2.9,  3.3  );
 			RooRealVar  jpsiSigma(  "jpsiSigma",   "jpsiSigma",  0.045, 0.01, 0.2 );
 
@@ -537,7 +538,7 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 	for(int i_ncase=0; i_ncase<NnCases; i_ncase++)
 	{
 		cout<<"i_ncase: "<<i_ncase<<endl;
-		if(i_ncase != RunCase ) continue; //tem skip
+		if(i_ncase != RunCase && RunCase != -1) continue; //tem skip
 
 		for(int iy=0; iy<nDiffRapBins+1; iy++)
 		{
@@ -587,8 +588,8 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			const double Init_cbNR        = 13.;
 
 			//------------------------------------------------------------------------------------------------------------
-			RooRealVar  cbAlpha(    "cbAlpha",     "cbAlpha",    Init_cbAlphaL,	0, 20   );
-			RooRealVar  cbN(        "cbN",         "cbN",        Init_cbNL,		0, 20   );
+			RooRealVar  cbAlpha(    "cbAlpha",     "cbAlpha",    Init_cbAlpha,	0, 20   );
+			RooRealVar  cbN(        "cbN",         "cbN",        Init_cbN,		0, 20   );
 			RooRealVar  jpsiMu(     "jpsiMu",      "jpsiMu",     3.096, 2.9,  3.3  );
 			RooRealVar  jpsiSigma(  "jpsiSigma",   "jpsiSigma",  0.045, 0.01, 0.2 );
 
