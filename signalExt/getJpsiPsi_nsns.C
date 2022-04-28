@@ -92,7 +92,9 @@ void getJpsiPsi_nsns()
 	loadAcc();
 	
 	fitCohMass_4RNRfD(2.6, 4.2);
+
 	PileUp_Corr(NJpsi_inMFit, NerrJpsi_inMFit, nDiffRapBins+1);
+	
 	fitFullMassAndPt_4Decouple(2.6,4.2, -0.01,3.0);
 }
 //------------------------------------------------------------------------------------------------------------

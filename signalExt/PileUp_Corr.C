@@ -1,6 +1,7 @@
 
-TMatrixD MigrationMatrix(4,4);
-TMatrixD MigrationMatrixInvert(4,4);
+const int nDmatrixs = 4; 
+TMatrixD MigrationMatrix(nDmatrixs,nDmatrixs);
+TMatrixD MigrationMatrixInvert(nDmatrixs,nDmatrixs);
 
 TMatrixD getPileUp_CorrFactor()
 {
@@ -20,13 +21,13 @@ TMatrixD getPileUp_CorrFactor()
 											   	PX0_00,	0,		PX0_X0,	0,
 											   	PXX_00,	PXX_0X,	PXX_X0,	PXX_XX };
 
-	MigrationMatrix = TMatrixD(4,	4,	MigrationMatrixElement);
+	MigrationMatrix       = TMatrixD(nDmatrixs,	nDmatrixs,	MigrationMatrixElement);
 	MigrationMatrixInvert = MigrationMatrix; MigrationMatrixInvert.Invert();
 
 	cout<<"getPileUp_CorrFactor--->The MigrationMatrix is:"<<endl<<endl;
-	for (int i = 0; i < 4; ++i)
+	for (int i = 0; i < nDmatrixs; ++i)
 	{
-		for (int j = 0; j < 4; ++j)
+		for (int j = 0; j < nDmatrixs; ++j)
 		{
 			cout<<MigrationMatrixInvert[i][j]<<",	";
 		}
@@ -40,41 +41,55 @@ TMatrixD getPileUp_CorrFactor()
 void PileUp_Corr( double NJpsi_inMFit[][7], double NerrJpsi_inMFit[][7], const double nDiffRapBins )
 {
 	getPileUp_CorrFactor();
-	for (int i = 0; i < nDiffRapBins; ++i)
+
+	for (int iy = 0; iy < nDiffRapBins; ++iy)
 	{
-		double tem[4] = {NJpsi_inMFit[1][i],	NJpsi_inMFit[2][i],	NJpsi_inMFit[3][i],	NJpsi_inMFit[5][i]};
-		TMatrixD N_Meastured_iy(4,	1, tem); 
+		double tem[nDmatrixs] = 
+		{
+			NJpsi_inMFit[1][iy],
+			NJpsi_inMFit[2][iy],
+			NJpsi_inMFit[3][iy],
+			NJpsi_inMFit[5][iy]
+		};
+
+		TMatrixD N_Meastured_iy(nDmatrixs,	1, tem); 
 		TMatrixD N_True_iy = MigrationMatrixInvert * N_Meastured_iy;
-		NJpsi_inMFit[1][i] = N_True_iy[0][0];
-		NJpsi_inMFit[2][i] = N_True_iy[1][0];
-		NJpsi_inMFit[3][i] = N_True_iy[2][0];
-		NJpsi_inMFit[5][i] = N_True_iy[3][0];
 
-		NJpsi_inMFit[4][i] = N_True_iy[1][0] + N_True_iy[2][0];
-
-		auto delta0 = sqrt( pow(MigrationMatrixInvert[0][0] * NerrJpsi_inMFit[1][i],2) + 
-							pow(MigrationMatrixInvert[0][1] * NerrJpsi_inMFit[2][i],2) + 
-							pow(MigrationMatrixInvert[0][2] * NerrJpsi_inMFit[3][i],2) + 
-							pow(MigrationMatrixInvert[0][3] * NerrJpsi_inMFit[5][i],2) );
-		auto delta1 = sqrt( pow(MigrationMatrixInvert[1][0] * NerrJpsi_inMFit[1][i],2) + 
-							pow(MigrationMatrixInvert[1][1] * NerrJpsi_inMFit[2][i],2) + 
-							pow(MigrationMatrixInvert[1][2] * NerrJpsi_inMFit[3][i],2) + 
-							pow(MigrationMatrixInvert[1][3] * NerrJpsi_inMFit[5][i],2) );
-		auto delta2 = sqrt( pow(MigrationMatrixInvert[2][0] * NerrJpsi_inMFit[1][i],2) + 
-							pow(MigrationMatrixInvert[2][1] * NerrJpsi_inMFit[2][i],2) + 
-							pow(MigrationMatrixInvert[2][2] * NerrJpsi_inMFit[3][i],2) + 
-							pow(MigrationMatrixInvert[2][3] * NerrJpsi_inMFit[5][i],2) );
-		auto delta3 = sqrt( pow(MigrationMatrixInvert[3][0] * NerrJpsi_inMFit[1][i],2) + 
-							pow(MigrationMatrixInvert[3][1] * NerrJpsi_inMFit[2][i],2) + 
-							pow(MigrationMatrixInvert[3][2] * NerrJpsi_inMFit[3][i],2) + 
-							pow(MigrationMatrixInvert[3][3] * NerrJpsi_inMFit[5][i],2) );
-		NerrJpsi_inMFit[1][i] = delta0;
-		NerrJpsi_inMFit[2][i] = delta1;
-		NerrJpsi_inMFit[3][i] = delta2;
-		NerrJpsi_inMFit[5][i] = delta3;
+		cout<<"N_True_iy.GetNrows(): "<<N_True_iy.GetNrows()<<endl;
+		cout<<"N_True_iy.GetNcols(): "<<N_True_iy.GetNcols()<<endl;
 		
-		NerrJpsi_inMFit[4][i] = sqrt( pow(NerrJpsi_inMFit[2][i],2) + pow(NerrJpsi_inMFit[3][i],2) );
+		NJpsi_inMFit[1][iy] = N_True_iy[0][0];
+		NJpsi_inMFit[2][iy] = N_True_iy[1][0];
+		NJpsi_inMFit[3][iy] = N_True_iy[2][0];
+		NJpsi_inMFit[5][iy] = N_True_iy[3][0];
 
+		NJpsi_inMFit[4][iy] = N_True_iy[1][0] + N_True_iy[2][0]; //0nXnSum =  0nXn + Xn0n
+
+		auto delta0 = sqrt( pow(MigrationMatrixInvert[0][0] * NerrJpsi_inMFit[1][iy], 2) +
+							pow(MigrationMatrixInvert[0][1] * NerrJpsi_inMFit[2][iy], 2) +
+							pow(MigrationMatrixInvert[0][2] * NerrJpsi_inMFit[3][iy], 2) +
+							pow(MigrationMatrixInvert[0][3] * NerrJpsi_inMFit[5][iy], 2) );
+
+		auto delta1 = sqrt( pow(MigrationMatrixInvert[1][0] * NerrJpsi_inMFit[1][iy], 2) +
+							pow(MigrationMatrixInvert[1][1] * NerrJpsi_inMFit[2][iy], 2) +
+							pow(MigrationMatrixInvert[1][2] * NerrJpsi_inMFit[3][iy], 2) +
+							pow(MigrationMatrixInvert[1][3] * NerrJpsi_inMFit[5][iy], 2) );
+		
+		auto delta2 = sqrt( pow(MigrationMatrixInvert[2][0] * NerrJpsi_inMFit[1][iy], 2) +
+							pow(MigrationMatrixInvert[2][1] * NerrJpsi_inMFit[2][iy], 2) +
+							pow(MigrationMatrixInvert[2][2] * NerrJpsi_inMFit[3][iy], 2) +
+							pow(MigrationMatrixInvert[2][3] * NerrJpsi_inMFit[5][iy], 2) );
+		
+		auto delta3 = sqrt( pow(MigrationMatrixInvert[3][0] * NerrJpsi_inMFit[1][iy], 2) +
+							pow(MigrationMatrixInvert[3][1] * NerrJpsi_inMFit[2][iy], 2) +
+							pow(MigrationMatrixInvert[3][2] * NerrJpsi_inMFit[3][iy], 2) +
+							pow(MigrationMatrixInvert[3][3] * NerrJpsi_inMFit[5][iy], 2) );
+		
+		NerrJpsi_inMFit[1][iy] = delta0;
+		NerrJpsi_inMFit[2][iy] = delta1;
+		NerrJpsi_inMFit[3][iy] = delta2;
+		NerrJpsi_inMFit[5][iy] = delta3;
+		
+		NerrJpsi_inMFit[4][iy] = sqrt( pow(NerrJpsi_inMFit[2][iy],2) + pow(NerrJpsi_inMFit[3][iy],2) ); //0nXnSumErr = 
 	}
-
 }
