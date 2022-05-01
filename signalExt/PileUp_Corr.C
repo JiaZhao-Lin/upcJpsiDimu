@@ -1,25 +1,90 @@
 
-const int nDmatrixs = 4; 
+const int nDmatrixs = 3; 
 TMatrixD MigrationMatrix(nDmatrixs,nDmatrixs);
 TMatrixD MigrationMatrixInvert(nDmatrixs,nDmatrixs);
 
+const double f_00	=	0.889779, f_0X	=	(0.053063600+0.050845800)/2,	f_XX	=	0.0014546+0.00140865+0.00150574+0.0019427;
+std::vector<double> f_v{f_00, f_0X,	f_XX};
+
+double Cal_Chi2(const double Ps, const double Pm)
+{
+	std::vector<double> f_Err_v;
+	TVector3	f_ZB	=	{f_00,	f_0X,	f_XX};
+	double nDen = 1e6; double nDenErr = sqrt(nDen);
+	for (int i = 0; i < 3; ++i)
+	{
+		double ratioErr = TMath::Abs( ((1.-2.*f_v[i])*pow(sqrt(nDen*f_v[i]),2)+pow(f_v[i]*nDenErr,2))/pow(nDen,2) );
+		ratioErr = sqrt(ratioErr);
+		f_Err_v.push_back(ratioErr);
+	}
+
+	double A = pow( (1 - Ps), 2) * (1-Pm);
+	double B = Ps * (1-Pm) * (1-Ps);
+	double C = Pm + (1-Pm) * Ps*Ps;
+
+	TVector3	tem(A,	B,	C);
+	double chi2 = 0;
+	chi2 += pow((f_ZB - tem).X(),2) / pow(f_Err_v[0],2);
+	chi2 += pow((f_ZB - tem).Y(),2) / pow(f_Err_v[1],2);
+	chi2 += pow((f_ZB - tem).Z(),2) / pow(f_Err_v[2],2);
+	return chi2;
+}
+
+double Cal_Squares(const double Ps, const double Pm)
+{
+	TVector3	f_ZB	=	{f_00,	f_0X,	f_XX};
+
+	double A = pow( (1 - Ps), 2) * (1-Pm);
+	double B = Ps * (1-Pm) * (1-Ps);
+	double C = Pm + (1-Pm) * Ps*Ps;
+
+	TVector3	tem(A,	B,	C);
+
+	return (f_ZB - tem).Mag2();
+}
+
+void getInteractionProbability()
+{
+	const TVector2 CenterPoint{0.0559,	0.00174};
+	const double SearchPs_Range 	= 0.02;
+	const double SearchPm_Range 	= 0.01;
+	const double StepSizePs		= 0.0001;
+	const double StepSizePm		= 0.00001;
+	const int NStepPs			= 2*SearchPs_Range/StepSizePs;
+	const int NStepPm			= 2*SearchPm_Range/StepSizePm;
+
+	double LeastSquares = Cal_Squares(CenterPoint.X(),	CenterPoint.Y());
+	TVector2 LeastSquaresPoint	(CenterPoint);
+	TVector2 StartPoint		(CenterPoint.X() - SearchPs_Range, CenterPoint.Y() - SearchPm_Range);
+
+
+	for (int i = 0; i < NStepPs + 1; ++i)
+	{
+		for (int j = 0; j < NStepPm + 1; ++j)
+		{
+			TVector2 CurrentPoint(StartPoint.X() + StepSizePs * i,	StartPoint.Y() + StepSizePm * j);
+			double CurrentSquares = Cal_Squares(CurrentPoint.X(),	CurrentPoint.Y());
+
+			if ( CurrentSquares < LeastSquares)
+			{
+				LeastSquares = CurrentSquares;
+				LeastSquaresPoint = TVector2(CurrentPoint);
+			}
+		}
+	}
+	cout<<"getInteractionProbability-->"<<endl;
+	cout<<"Ps: "<<LeastSquaresPoint.X()<<" , Pm: "<<LeastSquaresPoint.Y()<<endl<<endl;
+}
+
+
 TMatrixD getPileUp_CorrFactor()
 {
-	const double Pzb00 = 0.889779;
-	const double Pzb0X = 0.0275305+0.0255331;
-	const double PzbX0 = 0.0256458+0.0252;
-	const double PzbXX = 0.00150574+0.0019427+0.0014546+0.00140865;
+	// const double Ps = 0.0559; const double Pm = 0.00174;	//ATLAST Number
+	const double Ps = 0.0552; const double Pm = 0.00327;	//From CMS ZB Data with Least Square Method
 
-	const double P00_00 = Pzb00;
-	const double P0X_00 = Pzb0X; const double P0X_0X = Pzb00 + Pzb0X;
-	const double PX0_00 = PzbX0; const double PX0_X0 = Pzb00 + PzbX0;
-	const double PXX_00 = PzbXX; const double PXX_0X = PzbX0 + PzbXX; const double PXX_X0 = Pzb0X + PzbXX;
-	const double PXX_XX = 1.0;
-
-	const double MigrationMatrixElement[16] = {	P00_00,	0,		0,		0,
-											   	P0X_00,	P0X_0X,	0,		0,
-											   	PX0_00,	0,		PX0_X0,	0,
-											   	PXX_00,	PXX_0X,	PXX_X0,	PXX_XX };
+	const double MigrationMatrixElement[nDmatrixs*nDmatrixs] = {	(1-Ps)*(1-Ps)*(1-Pm)	,		0 				,	0,
+											   						2*Ps*(1-Ps-Pm+Pm*Ps/2)	,		(1-Ps)*(1-Pm)	,	0,
+											   						Pm+Ps*Ps				,		Pm+Ps*(1-Pm)	,	1};
 
 	MigrationMatrix       = TMatrixD(nDmatrixs,	nDmatrixs,	MigrationMatrixElement);
 	MigrationMatrixInvert = MigrationMatrix; MigrationMatrixInvert.Invert();
@@ -47,8 +112,7 @@ void PileUp_Corr( double NJpsi_inMFit[][7], double NerrJpsi_inMFit[][7], const d
 		double tem[nDmatrixs] = 
 		{
 			NJpsi_inMFit[1][iy],
-			NJpsi_inMFit[2][iy],
-			NJpsi_inMFit[3][iy],
+			NJpsi_inMFit[4][iy],
 			NJpsi_inMFit[5][iy]
 		};
 
@@ -59,37 +123,24 @@ void PileUp_Corr( double NJpsi_inMFit[][7], double NerrJpsi_inMFit[][7], const d
 		cout<<"N_True_iy.GetNcols(): "<<N_True_iy.GetNcols()<<endl;
 		
 		NJpsi_inMFit[1][iy] = N_True_iy[0][0];
-		NJpsi_inMFit[2][iy] = N_True_iy[1][0];
-		NJpsi_inMFit[3][iy] = N_True_iy[2][0];
-		NJpsi_inMFit[5][iy] = N_True_iy[3][0];
-
-		NJpsi_inMFit[4][iy] = N_True_iy[1][0] + N_True_iy[2][0]; //0nXnSum =  0nXn + Xn0n
+		NJpsi_inMFit[4][iy] = N_True_iy[1][0];
+		NJpsi_inMFit[5][iy] = N_True_iy[2][0];
 
 		auto delta0 = sqrt( pow(MigrationMatrixInvert[0][0] * NerrJpsi_inMFit[1][iy], 2) +
-							pow(MigrationMatrixInvert[0][1] * NerrJpsi_inMFit[2][iy], 2) +
-							pow(MigrationMatrixInvert[0][2] * NerrJpsi_inMFit[3][iy], 2) +
-							pow(MigrationMatrixInvert[0][3] * NerrJpsi_inMFit[5][iy], 2) );
+							pow(MigrationMatrixInvert[0][1] * NerrJpsi_inMFit[4][iy], 2) +
+							pow(MigrationMatrixInvert[0][2] * NerrJpsi_inMFit[5][iy], 2) );
 
 		auto delta1 = sqrt( pow(MigrationMatrixInvert[1][0] * NerrJpsi_inMFit[1][iy], 2) +
-							pow(MigrationMatrixInvert[1][1] * NerrJpsi_inMFit[2][iy], 2) +
-							pow(MigrationMatrixInvert[1][2] * NerrJpsi_inMFit[3][iy], 2) +
-							pow(MigrationMatrixInvert[1][3] * NerrJpsi_inMFit[5][iy], 2) );
+							pow(MigrationMatrixInvert[1][1] * NerrJpsi_inMFit[4][iy], 2) +
+							pow(MigrationMatrixInvert[1][2] * NerrJpsi_inMFit[5][iy], 2) );
 		
 		auto delta2 = sqrt( pow(MigrationMatrixInvert[2][0] * NerrJpsi_inMFit[1][iy], 2) +
-							pow(MigrationMatrixInvert[2][1] * NerrJpsi_inMFit[2][iy], 2) +
-							pow(MigrationMatrixInvert[2][2] * NerrJpsi_inMFit[3][iy], 2) +
-							pow(MigrationMatrixInvert[2][3] * NerrJpsi_inMFit[5][iy], 2) );
-		
-		auto delta3 = sqrt( pow(MigrationMatrixInvert[3][0] * NerrJpsi_inMFit[1][iy], 2) +
-							pow(MigrationMatrixInvert[3][1] * NerrJpsi_inMFit[2][iy], 2) +
-							pow(MigrationMatrixInvert[3][2] * NerrJpsi_inMFit[3][iy], 2) +
-							pow(MigrationMatrixInvert[3][3] * NerrJpsi_inMFit[5][iy], 2) );
+							pow(MigrationMatrixInvert[2][1] * NerrJpsi_inMFit[4][iy], 2) +
+							pow(MigrationMatrixInvert[2][2] * NerrJpsi_inMFit[5][iy], 2) );
 		
 		NerrJpsi_inMFit[1][iy] = delta0;
-		NerrJpsi_inMFit[2][iy] = delta1;
-		NerrJpsi_inMFit[3][iy] = delta2;
-		NerrJpsi_inMFit[5][iy] = delta3;
+		NerrJpsi_inMFit[4][iy] = delta1;
+		NerrJpsi_inMFit[5][iy] = delta2;
 		
-		NerrJpsi_inMFit[4][iy] = sqrt( pow(NerrJpsi_inMFit[2][iy],2) + pow(NerrJpsi_inMFit[3][iy],2) ); //0nXnSumErr = 
 	}
 }

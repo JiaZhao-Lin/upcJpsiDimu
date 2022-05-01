@@ -47,15 +47,23 @@ void plotSigmaVsW()
 	SigmaVsW->SetTickLength(0.04);
 	SigmaVsW->Draw();
 
-	TGraphErrors* ge_CMS        = new TGraphErrors(Ws.size(),           &Ws[0],           &Sigmas[0],            0, &Sigmas_Err[0]       );
+	TGraphErrors* ge_CMS        		= new TGraphErrors(Ws.size(),	&Ws[0],	&Sigmas[0],	0,	&Sigmas_Err[0]	);
+	TGraphErrors* ge_ALICE_Run2_MidRap	= new TGraphErrors(ALICE_Run2_MidRap_W.size(),	&ALICE_Run2_MidRap_W[0],	&ALICE_Run2_MidRap_Sigma[0],	0,	&ALICE_Run2_MidRap_Sigma_Err[0]	);
+
 	TGraphErrors* ge_CGCnoFluct = new TGraphErrors(CGC_JpsiNoFluct_W.size(),	&CGC_JpsiNoFluct_W[0],	&CGC_JpsiNoFluct_CohXsec[0],	0,	0);
 	TGraphErrors* ge_IA        	= new TGraphErrors(W_IA.size(),	&W_IA[0],	&Sigma_IA[0],	0,	0);
-	
+
 	ge_CMS->SetMarkerStyle(20);
 	ge_CMS->SetMarkerColor(1);
 	ge_CMS->SetLineColor(1);
 	ge_CMS->SetLineWidth(2);
 	ge_CMS->Draw("Pesame");
+
+	ge_ALICE_Run2_MidRap->SetMarkerStyle(24);
+	ge_ALICE_Run2_MidRap->SetMarkerColor(4);
+	ge_ALICE_Run2_MidRap->SetLineColor(4);
+	ge_ALICE_Run2_MidRap->SetLineWidth(2);
+	ge_ALICE_Run2_MidRap->Draw("Pesame");
 
 	ge_CGCnoFluct->SetMarkerColor(4);
 	ge_CGCnoFluct->SetLineColor(4);
@@ -72,6 +80,7 @@ void plotSigmaVsW()
 	leg->SetFillColor(0);
 	leg->SetTextSize(0.055);
 	leg->AddEntry(ge_CMS,	"CMS",			"lp");
+	leg->AddEntry(ge_ALICE_Run2_MidRap,	"ALICE MidRap",			"lp");
 	leg->AddEntry(ge_CGCnoFluct,	"CGC NoFluct",	"l");
 	leg->AddEntry(ge_IA,	"IA",	        "l");
 	leg->Draw("same");
@@ -120,9 +129,10 @@ void plotShadowingRatio( )
 	htem2d->SetTickLength(0.04);
 	htem2d->Draw();
 
-	TGraphErrors* ge_CMS        = new TGraphErrors(Xs.size(),           &Xs[0],           &R[0],            &Xs_Err[0], &R_Err[0]       );
-	TGraphErrors* ge_ALICE_Run1 = new TGraphErrors(ALICE_x.size(),      &ALICE_x[0],      &ALICE_R[0],      0,          &ALICE_R_Err[0] );
-	TGraphErrors* ge_ALICE_Run2 = new TGraphErrors(ALICE_Run2_x.size(), &ALICE_Run2_x[0], &ALICE_Run2_R[0], 0,          &ALICE_Run2_R_Err[0] );
+	TGraphErrors* ge_CMS        	= new TGraphErrors(Xs.size(),           &Xs[0],           &R[0],            &Xs_Err[0], &R_Err[0]       );
+	TGraphErrors* ge_ALICE_Run1 	= new TGraphErrors(ALICE_x.size(),      &ALICE_x[0],      &ALICE_R[0],      0,          &ALICE_R_Err[0] );
+	TGraphErrors* ge_ALICE_Run2 	= new TGraphErrors(ALICE_Run2_x.size(), &ALICE_Run2_x[0], &ALICE_Run2_R[0], 0,          &ALICE_Run2_R_Err[0] );
+	TGraphErrors* ge_ALICE_Run2_Psi = new TGraphErrors(ALICE_Run2_Psi_x.size(), &ALICE_Run2_Psi_x[0], &ALICE_Run2_Psi_R[0], 0,          &ALICE_Run2_R_Err[0] );
 
 	ge_CMS->SetMarkerStyle(20);
 	ge_CMS->SetMarkerColor(1);
@@ -140,6 +150,12 @@ void plotShadowingRatio( )
 	ge_ALICE_Run2->SetLineColor(4);
 	ge_ALICE_Run2->SetLineWidth(2);
 	ge_ALICE_Run2->Draw("pesame");
+
+	ge_ALICE_Run2_Psi->SetMarkerStyle(24);
+	ge_ALICE_Run2_Psi->SetMarkerColor(2);
+	ge_ALICE_Run2_Psi->SetLineColor(2);
+	ge_ALICE_Run2_Psi->SetLineWidth(2);
+	ge_ALICE_Run2_Psi->Draw("pesame");
 	
 	drawLatex(0.15, 0.84, "Nuclear suppresion factor", 42, 0.06, 1);
 	
@@ -161,6 +177,7 @@ void plotShadowingRatio( )
 	leg->AddEntry(ge_CMS,         "CMS",        "lp");
 	//leg->AddEntry(ge_ALICE_Run1,  "ALICE Run1", "lp");
 	leg->AddEntry(ge_ALICE_Run2,  "ALICE Run2", "lp");
+	leg->AddEntry(ge_ALICE_Run2_Psi,  "ALICE Run2 Psi", "lp");
 	leg->Draw("same");
 
 	c->SaveAs("outplots/ShadowingRatiovsX.png");

@@ -55,7 +55,7 @@ int    qedColor = kGreen-3, qedStyle = 1;
 
 
 const int NnCases = 6;
-const int RunCase = -1;
+const std::vector<int> RunCase = {1,4,5};
 const TString nCasesName[NnCases] = {"AnAn", "OnOn", "0nXn", "Xn0n", "OnXnSum", "XnXn"};
 TH1D* hCohMass_in_ny[NnCases][nDiffRapBins+1]; //last content is the sum of all y-bins, within coherent pt threshold
 TH1D* hMass_in_ny[NnCases][nDiffRapBins+1];    //last content is the sum of all y-bins, for all pt 
@@ -237,7 +237,7 @@ void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4
 	//------------------------------------------------------------------------------------------------------------
 	for(int i_ncase=0; i_ncase<NnCases; i_ncase++)
 	{
-		if(i_ncase != RunCase && RunCase != -1) continue; //tem skip
+		if(std::find(RunCase.begin(), RunCase.end(), i_ncase) == RunCase.end()) continue; //tem skip
 		
 		cout<<"i_ncase: "<<i_ncase<<endl;
 
@@ -540,7 +540,7 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 	for(int i_ncase=0; i_ncase<NnCases; i_ncase++)
 	{
 		cout<<"i_ncase: "<<i_ncase<<endl;
-		if(i_ncase != RunCase && RunCase != -1) continue; //tem skip
+		if(std::find(RunCase.begin(), RunCase.end(), i_ncase) == RunCase.end()) continue; //tem skip
 
 		for(int iy=0; iy<nDiffRapBins+1; iy++)
 		{
