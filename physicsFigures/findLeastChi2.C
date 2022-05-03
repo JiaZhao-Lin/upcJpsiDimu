@@ -2,7 +2,7 @@
 #include "PhysParameters.h"
 
 
-const TVector2 CenterPoint{0.01,	0.07};
+const TVector2 CenterPoint{0.02,	0.05};
 const double SearchX_Range 	= 0.02;
 const double SearchY_Range 	= 0.05;
 const double StepSizeX		= 0.0001;

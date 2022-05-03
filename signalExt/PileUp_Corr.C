@@ -46,7 +46,7 @@ double Cal_Squares(const double Ps, const double Pm)
 void getInteractionProbability()
 {
 	const TVector2 CenterPoint{0.0559,	0.00174};
-	const double SearchPs_Range 	= 0.02;
+	const double SearchPs_Range 	= 0.01;
 	const double SearchPm_Range 	= 0.01;
 	const double StepSizePs		= 0.0001;
 	const double StepSizePm		= 0.00001;
@@ -74,17 +74,18 @@ void getInteractionProbability()
 	}
 	cout<<"getInteractionProbability-->"<<endl;
 	cout<<"Ps: "<<LeastSquaresPoint.X()<<" , Pm: "<<LeastSquaresPoint.Y()<<endl<<endl;
+	cout<<"us: "<<-log(1-LeastSquaresPoint.X())<<" , um: "<<-log(1-LeastSquaresPoint.Y())<<endl<<endl;
 }
 
 
 TMatrixD getPileUp_CorrFactor()
 {
 	// const double Ps = 0.0559; const double Pm = 0.00174;	//ATLAST Number
-	const double Ps = 0.0552; const double Pm = 0.00327;	//From CMS ZB Data with Least Square Method
+	const double Ps = 0.0552; const double Pm = 0.00325;	//From CMS ZB Data with Least Square Method
 
 	const double MigrationMatrixElement[nDmatrixs*nDmatrixs] = {	(1-Ps)*(1-Ps)*(1-Pm)	,		0 				,	0,
-											   						2*Ps*(1-Ps-Pm+Pm*Ps/2)	,		(1-Ps)*(1-Pm)	,	0,
-											   						Pm+Ps*Ps				,		Pm+Ps*(1-Pm)	,	1};
+											   						2*Ps*(1-Ps)*(1-Pm)		,		(1-Ps)*(1-Pm)	,	0,
+											   						Pm+Ps*Ps*(1-Pm)			,		Pm+Ps*(1-Pm)	,	1};
 
 	MigrationMatrix       = TMatrixD(nDmatrixs,	nDmatrixs,	MigrationMatrixElement);
 	MigrationMatrixInvert = MigrationMatrix; MigrationMatrixInvert.Invert();
@@ -94,7 +95,7 @@ TMatrixD getPileUp_CorrFactor()
 	{
 		for (int j = 0; j < nDmatrixs; ++j)
 		{
-			cout<<MigrationMatrixInvert[i][j]<<",	";
+			cout<<MigrationMatrix[i][j]<<",	";
 		}
 		cout<<endl;
 	}
@@ -143,4 +144,9 @@ void PileUp_Corr( double NJpsi_inMFit[][7], double NerrJpsi_inMFit[][7], const d
 		NerrJpsi_inMFit[5][iy] = delta2;
 		
 	}
+}
+
+void PileUp_Corr()
+{
+	getInteractionProbability();
 }

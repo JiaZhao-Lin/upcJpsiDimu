@@ -33,7 +33,7 @@ void nk2Ny();
 
 void getPhotonFlux()
 {
-	TString inFileDir 		  = "flux/Flux_XnXn.txt";
+	TString inFileDir 		  = "flux/Flux_AnAn.txt";
 	TString inFileDir1 		  = "flux/PofB_0n0n.txt";
 	TString inFileDir2 		  = "flux/PofB_0nXnSum.txt";
 	TString inFileDir3 		  = "flux/PofB_XnXn.txt";
@@ -164,7 +164,7 @@ void getPhotonFlux()
 	else cout << "ERROR!!! Unable to open PofB file!!!";	
 		/* code */
 
-	// plotFlux();
+	plotFlux();
 	plotPofB();
 }
 
@@ -173,13 +173,11 @@ void plotFlux()
 	nk2Ny();
 	TCanvas *c = new TCanvas();
 	c->SetLogy();
+
+	TH2D* htem2d = new TH2D("htem2d", ";y;dN/dy", 10,-4,4, 10, 1e-2, 1e3);
+
 	TGraph* gr = new TGraph(yTable.size(), & yTable[0], & NyTable[0]);
-
-	// TF1 *f = new TF1("f","pol9",0,100);
-	// gr->Fit("f","R");
-
 	TGraph* points = new TGraph();
-	points->SetMarkerColor(kRed);
 
 	for (int i = 0; i < PhotonEnergy_CMS2022.size(); ++i)
 	{
@@ -187,28 +185,28 @@ void plotFlux()
 		points->SetPoint(i,Raps_CMS2022[i],PhotonFlux_CMS2022[i]);
 	}
 
-	auto mg = new TMultiGraph();
-	mg->Add(gr);
-	mg->Add(points);
-	
+	gr->SetLineColor(kBlack);
+	gr->SetLineWidth(3);
+	points->SetMarkerStyle(kFullCircle);
+	points->SetMarkerColor(kRed);
 
-	mg->SetTitle(";y;dN/dy");
-	mg->Draw("AP");
-	mg->GetXaxis()->SetRangeUser(-4,4);
-	mg->GetYaxis()->SetRangeUser(1e-2,1e4);
+	htem2d->Draw();
+	gr->Draw("SAME");
+	// points->Draw("SAME P");
+
 	drawLatex(0.3, 0.85, "UPC Pb+Pb #sqrt{s_{NN}} = 5.02 TeV (" + Case +")",      42,       0.05,      1);
 	// drawLatex(0.3, 0.80, Form("Emin = %.0e GeV to Emax = %.f GeV (CM frame)", Emin, Emax),      42,       0.04,      1);
 	for (int i = 0; i < PhotonEnergy_CMS2022.size(); ++i)
 	{
-		drawLatex(0.15, 0.35-i*0.04, Form("y = %.2f, E = %.2f GeV, dN/dy = %.3f ",Raps_CMS2022[i],PhotonEnergy_CMS2022[i],PhotonFlux_CMS2022[i]),      42,       0.04,      1);
+		// drawLatex(0.15, 0.35-i*0.04, Form("y = %.2f, E = %.2f GeV, dN/dy = %.3f ",Raps_CMS2022[i],PhotonEnergy_CMS2022[i],PhotonFlux_CMS2022[i]),      42,       0.04,      1);
 	}
 
-	// c->SaveAs( "out4Flux/" + Name + "_dNdy.png" );
-	// c->SaveAs( "out4Flux/" + Name + "_dNdy.pdf" );
+	c->SaveAs( "out4Flux/" + Name + "_dNdy.png" );
+	c->SaveAs( "out4Flux/" + Name + "_dNdy.pdf" );
 	delete c;
 	delete gr;
 	delete points;
-	delete mg;
+	delete htem2d;
 }
 
 void plotPofB()
@@ -216,13 +214,13 @@ void plotPofB()
 	TCanvas *c = new TCanvas();
 	c->SetLogx();
 
-	TH2D* FluxNeuConfig = new TH2D("FluxNeuConfig", ";b;P_{i}", 10,6,1e3, 10, 0, 1);
+	TH2D* FluxNeuConfig = new TH2D("FluxNeuConfig", ";b (fm);P_{fn}(b)", 10,6,1e3, 10, 0, 1.1);
 
 	FluxNeuConfig->GetYaxis()->SetTitleSize(0.06);
 	FluxNeuConfig->GetYaxis()->SetTitleOffset(0.85);
 	FluxNeuConfig->GetYaxis()->SetLabelSize(0.04);
 	FluxNeuConfig->GetXaxis()->SetTitleSize(0.06);
-	FluxNeuConfig->GetXaxis()->SetTitleOffset(0.75);
+	FluxNeuConfig->GetXaxis()->SetTitleOffset(0.95);
 	FluxNeuConfig->GetXaxis()->SetLabelSize(0.04);
 	FluxNeuConfig->SetTickLength(0.04);
 	FluxNeuConfig->Draw();
@@ -234,7 +232,7 @@ void plotPofB()
 	gr1->SetLineColor(kBlue);
 	gr1->SetMarkerColor(kBlue);
 	gr1->SetLineWidth(3);
-	gr2->SetTitle("0nXnSum");
+	gr2->SetTitle("0nXn");
 	gr2->SetLineColor(kBlack);
 	gr2->SetMarkerColor(kBlack);
 	gr2->SetLineWidth(3);
@@ -248,7 +246,7 @@ void plotPofB()
 	gr3->Draw("same");
 	// gPad->BuildLegend();
 
-	auto legend = new TLegend();
+	auto legend = new TLegend(0.55, 0.25, 0.88, 0.50);
 	legend->AddEntry(gr1);
 	legend->AddEntry(gr2);
 	legend->AddEntry(gr3);

@@ -36,7 +36,9 @@ double y2W(const double y)
 void plotSigmaVsW()
 {
 	auto c = new TCanvas();
-	TH2D* SigmaVsW = new TH2D("SigmaVsW", ";W_{#gamma p} (GeV);#sigma_{#gamma A #rightarrow J/#Psi A} (mb)", 10,0,450, 10, 0, 0.15);
+	// c->SetLogx();
+	c->SetLogy();
+	TH2D* SigmaVsW = new TH2D("SigmaVsW", ";W_{#gamma p} (GeV);#sigma_{#gamma A #rightarrow J/#Psi A} (mb)", 10,0,450, 10, 0.01, 1);
 
 	SigmaVsW->GetYaxis()->SetTitleSize(0.065);
 	SigmaVsW->GetYaxis()->SetTitleOffset(0.85);
@@ -155,7 +157,7 @@ void plotShadowingRatio( )
 	ge_ALICE_Run2_Psi->SetMarkerColor(2);
 	ge_ALICE_Run2_Psi->SetLineColor(2);
 	ge_ALICE_Run2_Psi->SetLineWidth(2);
-	ge_ALICE_Run2_Psi->Draw("pesame");
+	// ge_ALICE_Run2_Psi->Draw("pesame");
 	
 	drawLatex(0.15, 0.84, "Nuclear suppresion factor", 42, 0.06, 1);
 	
@@ -177,7 +179,7 @@ void plotShadowingRatio( )
 	leg->AddEntry(ge_CMS,         "CMS",        "lp");
 	//leg->AddEntry(ge_ALICE_Run1,  "ALICE Run1", "lp");
 	leg->AddEntry(ge_ALICE_Run2,  "ALICE Run2", "lp");
-	leg->AddEntry(ge_ALICE_Run2_Psi,  "ALICE Run2 Psi", "lp");
+	// leg->AddEntry(ge_ALICE_Run2_Psi,  "ALICE Run2 Psi", "lp");
 	leg->Draw("same");
 
 	c->SaveAs("outplots/ShadowingRatiovsX.png");

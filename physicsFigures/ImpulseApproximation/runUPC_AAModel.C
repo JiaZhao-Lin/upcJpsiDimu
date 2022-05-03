@@ -167,9 +167,13 @@ std::vector<std::vector<double>> runUPC_AAModel(const std::vector<double> Ws, TS
     IAs_Err.push_back(s_err/1e6);
   }
   TCanvas* c3 = new TCanvas("c3","c3",1,1,900,600);
-  THStack *hs = new THStack("hs", ";W_{#gamma p} (GeV); #sigma^{#gamma+A #rightarrow VM+A} (W_{#gamma p}) [nb]");
-  hs->Add(h_IA); hs->Add(h_IA_);
-  hs->Draw("NOSTACK P");
+  // THStack *hs = new THStack("hs", ";W_{#gamma p} (GeV); #sigma^{#gamma+A #rightarrow VM+A} (W_{#gamma p}) [nb]");
+  // hs->Add(h_IA); hs->Add(h_IA_);
+  // hs->Draw("NOSTACK P");
+  TH2D* htem2d = new TH2D("hs", ";W_{#gamma p} (GeV); #sigma^{#gamma+A #rightarrow VM+A} (W_{#gamma p}) [nb]", 10,4.5,505.5,10,0,0.22e6);
+  htem2d->Draw();
+  h_IA->Draw("same HIST L");
+  h_IA_->Draw("same AP");
 
   for (int i = 0; i < Ws.size(); ++i)
   {

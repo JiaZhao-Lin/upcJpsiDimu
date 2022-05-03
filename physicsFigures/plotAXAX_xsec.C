@@ -108,7 +108,7 @@ void drawCMSvsAlice()
 	setPad(0.12, 0.08, 0.07, 0.13);
 
 	//TH2D* htem2d = new TH2D("htem2d", "", 10, -4.1, 1.0, 10, 0, 14.0);
-	TH2D* htem2d = new TH2D("htem2d", "", 10, -4.1, 1.0, 10, 0, 8.0);
+	TH2D* htem2d = new TH2D("htem2d", "", 10, -4.1, 0, 10, 0, 8.0);
 	htem2d ->SetYTitle("d#sigma_{J/#psi}/dy (mb)");
 	htem2d ->SetXTitle("y");
 	htem2d ->GetYaxis()->CenterTitle();
@@ -177,10 +177,10 @@ void getCMSData()
 {
 	const int     nPots_CMS2022 = 3;
 	const double  Rap_CMS2022[nPots_CMS2022]        = { -2.25, -2.0,   -1.75 };
-	const double  Xsec_CMS2022[nPots_CMS2022]       = { 3.727,  4.283,  4.792 };
+	const double  Xsec_CMS2022[nPots_CMS2022]       = { 3.690,  4.289,  4.582 };
 	const double  RapErrLow_CMS2022[nPots_CMS2022]  = { 0.15,  0.1,	   0.15 };
 	const double  RapErrHig_CMS2022[nPots_CMS2022]  = { 0.15,  0.1,	   0.15 };
-	const double  XsecErr_CMS2022[nPots_CMS2022]    = { 0.034,  0.036,  0.068};
+	const double  XsecErr_CMS2022[nPots_CMS2022]    = { 0.041,  0.037,  0.068};
 
 	ge_XsecVsY_CMS2022  = new TGraphErrors(
 				nPots_CMS2022, 
