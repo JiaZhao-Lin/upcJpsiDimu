@@ -57,7 +57,9 @@ void plotAcc(Bool_t  mStorePDF = kFALSE)
 	c1->cd();
 	gPad->SetLogz(1);
 	TH2D *hMuPtvsEta = (TH2D *)hMuPtvsEtavsRap->Project3D("hMuPtvsEta_zy");
+	hMuPtvsEta->GetXaxis()->SetTitleSize(0.06);
 	hMuPtvsEta->GetXaxis()->SetTitleOffset(0.8);
+	hMuPtvsEta->GetYaxis()->SetTitleSize(0.06);
 	hMuPtvsEta->GetYaxis()->SetTitleOffset(0.85);
 	hMuPtvsEta->GetYaxis()->SetRangeUser(0.8, 4);
 	hMuPtvsEta->Draw("colz");
@@ -76,7 +78,9 @@ void plotAcc(Bool_t  mStorePDF = kFALSE)
 	c1->cd();
 	gPad->SetLogz(1);
 	TH2D *hTrigMuPtvsEta = (TH2D *)hTrigMuPtvsEtavsRap->Project3D("hTrigMuPtvsEta_zy");
+	hTrigMuPtvsEta->GetXaxis()->SetTitleSize(0.06);
 	hTrigMuPtvsEta->GetXaxis()->SetTitleOffset(0.8);
+	hTrigMuPtvsEta->GetYaxis()->SetTitleSize(0.06);
 	hTrigMuPtvsEta->GetYaxis()->SetTitleOffset(0.85);
 	hTrigMuPtvsEta->GetYaxis()->SetRangeUser(0.8, 4);
 	hTrigMuPtvsEta->Draw("colz");
@@ -116,9 +120,12 @@ void plotAcc(Bool_t  mStorePDF = kFALSE)
 		//hMuPtvsEtavsRap->GetXaxis()->SetRange(rapBinLow, rapBinHi);
 		hMuPtvsEtavsRap->GetXaxis()->SetRangeUser(mRapLow[irap], mRapHi[irap]);
 		hMuPtvsEta_Rap[irap] = (TH2D *)hMuPtvsEtavsRap->Project3D(Form("hMuPtvsEta_RapBin%d_zy", irap));
-		hMuPtvsEta_Rap[irap]->GetYaxis()->SetTitleOffset(0.85);
-		hMuPtvsEta_Rap[irap]->GetYaxis()->SetRangeUser(0.8, 4);
-		hMuPtvsEta_Rap[irap]->Draw("colz");
+		hMuPtvsEta_Rap[irap] ->GetXaxis()->SetTitleSize(0.07);
+		hMuPtvsEta_Rap[irap] ->GetXaxis()->SetTitleOffset(0.85);
+		hMuPtvsEta_Rap[irap] ->GetYaxis()->SetTitleSize(0.07);
+		hMuPtvsEta_Rap[irap] ->GetYaxis()->SetTitleOffset(0.85);
+		hMuPtvsEta_Rap[irap] ->GetYaxis()->SetRangeUser(0.8, 4);
+		hMuPtvsEta_Rap[irap] ->Draw("colz");
 
 		drawLatex(0.39, 0.95, "Daughter #mu", mFont, 0.07, 1);
 		drawLatex(0.35, 0.28, Form("%1.1f < y_{#mu#mu} < %1.1f", mRapLow[irap], mRapHi[irap]), mFont, 0.07, 1);
@@ -134,6 +141,9 @@ void plotAcc(Bool_t  mStorePDF = kFALSE)
 		hTrigMuPtvsEtavsRap->GetXaxis()->SetRangeUser(mRapLow[irap], mRapHi[irap]);
 		hTrigMuPtvsEta_Rap[irap] = (TH2D *)hTrigMuPtvsEtavsRap->Project3D(Form("hTrigMuPtvsEta_RapBin%d_zy", irap));
 		hTrigMuPtvsEta_Rap[irap] ->SetTitle(Form("%1.1f < y < %1.1f", mRapLow[irap], mRapHi[irap]));
+		hTrigMuPtvsEta_Rap[irap] ->GetXaxis()->SetTitleSize(0.07);
+		hTrigMuPtvsEta_Rap[irap] ->GetXaxis()->SetTitleOffset(0.85);
+		hTrigMuPtvsEta_Rap[irap] ->GetYaxis()->SetTitleSize(0.07);
 		hTrigMuPtvsEta_Rap[irap] ->GetYaxis()->SetTitleOffset(0.85);
 		hTrigMuPtvsEta_Rap[irap] ->GetYaxis()->SetRangeUser(0.8, 4);
 		hTrigMuPtvsEta_Rap[irap] ->Draw("colz");
@@ -146,7 +156,10 @@ void plotAcc(Bool_t  mStorePDF = kFALSE)
 		hNegMuPtvsPosMuPtvsRap->GetXaxis()->SetRangeUser(mRapLow[irap], mRapHi[irap]);
 		hNegMuPtvsPosMuPt_Rap[irap] = (TH2D *)hNegMuPtvsPosMuPtvsRap->Project3D(Form("hNegMuPtvsPosMuPt_RapBin%d_zy", irap));
 		hNegMuPtvsPosMuPt_Rap[irap]->SetTitle(Form("%1.1f < y < %1.1f", mRapLow[irap], mRapHi[irap]));
-		hNegMuPtvsPosMuPt_Rap[irap]->GetYaxis()->SetTitleOffset(0.85);
+		hNegMuPtvsPosMuPt_Rap[irap] ->GetXaxis()->SetTitleSize(0.07);
+		hNegMuPtvsPosMuPt_Rap[irap] ->GetXaxis()->SetTitleOffset(0.85);
+		hNegMuPtvsPosMuPt_Rap[irap] ->GetYaxis()->SetTitleSize(0.07);
+		hNegMuPtvsPosMuPt_Rap[irap] ->GetYaxis()->SetTitleOffset(0.85);
 		hNegMuPtvsPosMuPt_Rap[irap]->GetXaxis()->SetRangeUser(0, 4.0);
 		hNegMuPtvsPosMuPt_Rap[irap]->GetYaxis()->SetRangeUser(0, 4.0);
 		hNegMuPtvsPosMuPt_Rap[irap]->Draw("colz");
@@ -157,7 +170,10 @@ void plotAcc(Bool_t  mStorePDF = kFALSE)
 		hNegMuEtavsPosMuEtavsRap->GetXaxis()->SetRangeUser(mRapLow[irap], mRapHi[irap]);
 		hNegMuEtavsPosMuEta_Rap[irap] = (TH2D *)hNegMuEtavsPosMuEtavsRap->Project3D(Form("hNegMuEtavsPosMuEta_RapBin%d_zy", irap));
 		hNegMuEtavsPosMuEta_Rap[irap]->SetTitle(Form("%1.1f < y < %1.1f", mRapLow[irap], mRapHi[irap]));
-		hNegMuEtavsPosMuEta_Rap[irap]->GetYaxis()->SetTitleOffset(0.85);
+		hNegMuEtavsPosMuEta_Rap[irap] ->GetXaxis()->SetTitleSize(0.07);
+		hNegMuEtavsPosMuEta_Rap[irap] ->GetXaxis()->SetTitleOffset(0.85);
+		hNegMuEtavsPosMuEta_Rap[irap] ->GetYaxis()->SetTitleSize(0.07);
+		hNegMuEtavsPosMuEta_Rap[irap] ->GetYaxis()->SetTitleOffset(0.85);
 		
 		if(mRapLow[irap]>0)
 		{
@@ -183,8 +199,8 @@ void plotAcc(Bool_t  mStorePDF = kFALSE)
 		//hDeltaPtvsDeltaEta_Rap[irap]->Draw("colz");
 		//drawLatex(0.36, 0.95, Form("%1.1f < y < %1.1f", mRapLow[irap], mRapHi[irap]), mFont, 0.07, 1);
 
-		if(mStorePDF) c2->SaveAs(Form("%s/JpsiAnaAcc_RapBin%d.pdf", dirName.Data(), irap));
-		else          c2->SaveAs(Form("%s/JpsiAnaAcc_RapBin%d.png", dirName.Data(), irap));
+		if(mStorePDF) c2->SaveAs(Form("%s/JpsiAnaAcc_muon_inJpsiRapBin%d.pdf", dirName.Data(), irap));
+		else          c2->SaveAs(Form("%s/JpsiAnaAcc_muon_inJpsiRapBin%d.png", dirName.Data(), irap));
 	}
 
 	cout << "End of program !" << endl;
