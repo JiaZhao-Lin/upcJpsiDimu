@@ -33,18 +33,36 @@ double y2W(const double y)
 	return sqrt( (2 * Gamma_beam * Mass_N * JpsiMass) * exp(y) );
 }
 
-void plotSigmaVsW()
+void plotSigmaVsW( const int flag4Axis = 1 ) //0: logY only, 1: logX and LogY
 {
 	auto c = new TCanvas();
 	// c->SetLogx();
-	c->SetLogy();
-	TH2D* SigmaVsW = new TH2D("SigmaVsW", ";W_{#gamma p} (GeV);#sigma_{#gamma A #rightarrow J/#Psi A} (mb)", 10,0,450, 10, 0.01, 1);
+
+	//gPad->SetPad(0.0,0.25,1.0,0.96);
+	gPad->SetTopMargin(0.05);
+	gPad->SetBottomMargin(0.12);
+	//gPad->SetLeftMargin(0.05);
+	gPad->SetRightMargin(0.05);
+	
+	TH2D* SigmaVsW;
+	
+	if(flag4Axis==0) //logY only
+	{
+		c->SetLogy();
+		SigmaVsW = new TH2D("SigmaVsW", ";W_{#gamma p} (GeV);#sigma(#gamma A #rightarrow J/#psi A) (mb)", 10,0,420, 10, 0.015, 0.20);
+	}
+	else //logX and logY
+	{
+		c->SetLogx();
+		c->SetLogy();
+		SigmaVsW = new TH2D("SigmaVsW", ";W_{#gamma p} (GeV);#sigma(#gamma A #rightarrow J/#psi A) (mb)", 10,28,550, 10, 0.015, 0.20);
+	}
 
 	SigmaVsW->GetYaxis()->SetTitleSize(0.065);
 	SigmaVsW->GetYaxis()->SetTitleOffset(0.85);
 	SigmaVsW->GetYaxis()->SetLabelSize(0.04);
 	SigmaVsW->GetXaxis()->SetTitleSize(0.05);
-	SigmaVsW->GetXaxis()->SetTitleOffset(0.89);
+	SigmaVsW->GetXaxis()->SetTitleOffset(0.95);
 	SigmaVsW->GetXaxis()->SetLabelSize(0.04);
 	SigmaVsW->SetTickLength(0.04);
 	SigmaVsW->Draw();
@@ -70,25 +88,36 @@ void plotSigmaVsW()
 	ge_CGCnoFluct->SetMarkerColor(4);
 	ge_CGCnoFluct->SetLineColor(4);
 	ge_CGCnoFluct->SetLineWidth(2);
-	ge_CGCnoFluct->Draw("csame");
+	ge_CGCnoFluct->Draw("lsame");
 
 	ge_IA->SetMarkerColor(2);
 	ge_IA->SetLineColor(2);
 	ge_IA->SetLineWidth(2);
-	ge_IA->Draw("csame");
+	ge_IA->Draw("lsame");
 
-	TLegend  *leg =  new TLegend(0.15, 0.65, 0.48, 0.90);
+	//drawLatex(0.15, 0.86, "Pb+Pb #rightarrow Pb+Pb+J/#psi #sqrt{s_{NN}} = 5.02 TeV",  42,        0.05,      1 );
+	drawLatex(0.15, 0.86, "Pb+Pb UPC #sqrt{s_{NN}} = 5.02 TeV",  42,        0.05,      1 );
+
+	TLegend  *leg =  new TLegend(0.15, 0.60, 0.48, 0.82);
 	leg->SetFillStyle(0);
 	leg->SetFillColor(0);
 	leg->SetTextSize(0.055);
-	leg->AddEntry(ge_CMS,	"CMS",			"lp");
-	leg->AddEntry(ge_ALICE_Run2_MidRap,	"ALICE MidRap",			"lp");
-	leg->AddEntry(ge_CGCnoFluct,	"CGC NoFluct",	"l");
-	leg->AddEntry(ge_IA,	"IA",	        "l");
+	leg->AddEntry(ge_CMS,               "CMS",           "lp");
+	leg->AddEntry(ge_ALICE_Run2_MidRap, "ALICE",         "lp");
+	leg->AddEntry(ge_CGCnoFluct,        "CGC",           "l");
+	leg->AddEntry(ge_IA,                "IA",            "l");
 	leg->Draw("same");
-
-	c->SaveAs("outplots/SigmaVsW.png");
-	c->SaveAs("outplots/SigmaVsW.pdf");
+	
+	if(flag4Axis==0)
+	{
+		c->SaveAs("outplots/SigmaVsW_logY.png");
+		c->SaveAs("outplots/SigmaVsW_logY.pdf");
+	}
+	else if (flag4Axis==1)
+	{
+		c->SaveAs("outplots/SigmaVsW_logXY.png");
+		c->SaveAs("outplots/SigmaVsW_logXY.pdf");
+	}
 }
 
 void plotShadowingRatio( )
