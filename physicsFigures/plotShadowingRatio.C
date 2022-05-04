@@ -49,17 +49,19 @@ void plotSigmaVsW( const int flag4Axis = 1 ) //0: logY only, 1: logX and LogY
 	if(flag4Axis==0) //logY only
 	{
 		c->SetLogy();
-		SigmaVsW = new TH2D("SigmaVsW", ";W_{#gamma p} (GeV);#sigma(#gamma A #rightarrow J/#psi A) (mb)", 10,0,420, 10, 0.015, 0.20);
+		SigmaVsW = new TH2D("SigmaVsW", ";W_{#gammaPb} (GeV);#sigma(#gamma A #rightarrow J/#psi A) (mb)", 10,0,420, 10, 0.015, 0.20);
 	}
-	else //logX and logY
+	else //logX and logY as default one
 	{
 		c->SetLogx();
 		c->SetLogy();
-		SigmaVsW = new TH2D("SigmaVsW", ";W_{#gamma p} (GeV);#sigma(#gamma A #rightarrow J/#psi A) (mb)", 10,28,550, 10, 0.015, 0.20);
+		SigmaVsW = new TH2D("SigmaVsW", ";W_{#gammaPb} (GeV);#sigma(#gamma A #rightarrow J/#psi A) (mb)", 10,28,520, 10, 0.015, 0.11);
 	}
 
+	SigmaVsW->GetYaxis()->CenterTitle();
 	SigmaVsW->GetYaxis()->SetTitleSize(0.065);
-	SigmaVsW->GetYaxis()->SetTitleOffset(0.85);
+	SigmaVsW->GetYaxis()->SetTitleSize(0.065);
+	SigmaVsW->GetYaxis()->SetTitleOffset(0.75);
 	SigmaVsW->GetYaxis()->SetLabelSize(0.04);
 	SigmaVsW->GetXaxis()->SetTitleSize(0.05);
 	SigmaVsW->GetXaxis()->SetTitleOffset(0.95);
@@ -98,7 +100,7 @@ void plotSigmaVsW( const int flag4Axis = 1 ) //0: logY only, 1: logX and LogY
 	//drawLatex(0.15, 0.86, "Pb+Pb #rightarrow Pb+Pb+J/#psi #sqrt{s_{NN}} = 5.02 TeV",  42,        0.05,      1 );
 	drawLatex(0.15, 0.86, "Pb+Pb UPC #sqrt{s_{NN}} = 5.02 TeV",  42,        0.05,      1 );
 
-	TLegend  *leg =  new TLegend(0.15, 0.60, 0.48, 0.82);
+	TLegend  *leg =  new TLegend(0.15, 0.52, 0.48, 0.82);
 	leg->SetFillStyle(0);
 	leg->SetFillColor(0);
 	leg->SetTextSize(0.055);
@@ -145,17 +147,26 @@ void plotShadowingRatio( )
 	plotSigmaVsW();
 
 	auto c = new TCanvas();
+
+	gPad->SetTopMargin(0.05);
+	gPad->SetBottomMargin(0.12);
+	//gPad->SetLeftMargin(0.05);
+	gPad->SetRightMargin(0.05);
+
+
 	c->SetLogx();
 
-	TH2D* htem2d = new TH2D("htem2d", "", 10,3.0e-5,5.0e-2, 10, 0, 1);
+	//TH2D* htem2d = new TH2D("htem2d", "", 10,3.0e-5,5.0e-2, 10, 0, 1);
+	TH2D* htem2d = new TH2D("htem2d", "", 10,4.0e-5,1.1e-2, 10, 0.2, 1.1);
 	htem2d->SetYTitle("R^{Pb}_{g}(x, #mu^{2}=0.24 GeV^{2})");
 	htem2d->SetXTitle("x");
 
 	htem2d->GetYaxis()->SetTitleSize(0.06);
 	htem2d->GetYaxis()->SetTitleOffset(0.85);
 	htem2d->GetYaxis()->SetLabelSize(0.04);
+	htem2d->GetXaxis()->CenterTitle();
 	htem2d->GetXaxis()->SetTitleSize(0.07);
-	htem2d->GetXaxis()->SetTitleOffset(0.60);
+	htem2d->GetXaxis()->SetTitleOffset(0.69);
 	htem2d->GetXaxis()->SetLabelSize(0.04);
 	htem2d->SetTickLength(0.04);
 	htem2d->Draw();
@@ -188,7 +199,6 @@ void plotShadowingRatio( )
 	ge_ALICE_Run2_Psi->SetLineWidth(2);
 	// ge_ALICE_Run2_Psi->Draw("pesame");
 	
-	drawLatex(0.15, 0.84, "Nuclear suppresion factor", 42, 0.06, 1);
 	
 	// TGraph *grshade = new TGraph(2*Theory_x_max.size());
 	// for (int i = 0; i < Theory_x_max.size(); i++) {
@@ -201,15 +211,18 @@ void plotShadowingRatio( )
 	// grmin->Draw("l");
 	// grmax->Draw("l");
 
-	TLegend  *leg =  new TLegend(0.55, 0.25, 0.88, 0.50);
+	TLegend  *leg =  new TLegend(0.17, 0.60, 0.55, 0.80);
 	leg->SetFillStyle(0);
 	leg->SetFillColor(0);
-	leg->SetTextSize(0.055);
+	leg->SetTextSize(0.050);
 	leg->AddEntry(ge_CMS,         "CMS",        "lp");
-	//leg->AddEntry(ge_ALICE_Run1,  "ALICE Run1", "lp");
-	leg->AddEntry(ge_ALICE_Run2,  "ALICE Run2", "lp");
+	//leg->AddEntry(ge_ALICE_Run1,  "ALICE Run1", "lp"); //Run1
+	leg->AddEntry(ge_ALICE_Run2,  "ALICE", "lp"); //Run2
 	// leg->AddEntry(ge_ALICE_Run2_Psi,  "ALICE Run2 Psi", "lp");
 	leg->Draw("same");
+
+	drawLatex(0.15, 0.86, "Pb+Pb UPC #sqrt{s_{NN}} = 5.02 TeV",  42,        0.05,      1 );
+	drawLatex(0.42, 0.22, "Nuclear suppression factor", 42, 0.06, 1);
 
 	c->SaveAs("outplots/ShadowingRatiovsX.png");
 	c->SaveAs("outplots/ShadowingRatiovsX.pdf");
