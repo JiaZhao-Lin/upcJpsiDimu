@@ -61,25 +61,25 @@ void getPhotonFlux()
 	if (myfile.is_open())
 	{
 		std::string line;
-	    // Read one line at a time into the variable line:
-	    while(std::getline(myfile, line))
-	    {
-	        std::vector<double>   	lineData;
-	        std::stringstream  		lineStream(line);
+		// Read one line at a time into the variable line:
+		while(std::getline(myfile, line))
+		{
+			std::vector<double>   	lineData;
+			std::stringstream  		lineStream(line);
 
-	        double value;
-	        // Read an integer at a time from the line
-	        while(lineStream >> value)
-	        {
-	            // Add the integers from a line to a 1D array (vector)
-	            lineData.push_back(value);
-	        }
-	        cout<<line<<endl;
-	        // When all the integers have been read, add the 1D array
-	        energy		.push_back(lineData[0]);
-	        flux 		.push_back(lineData[1]);
-	        fluxTable	.push_back(lineData[2]);
-	    }
+			double value;
+			// Read an integer at a time from the line
+			while(lineStream >> value)
+			{
+				// Add the integers from a line to a 1D array (vector)
+				lineData.push_back(value);
+			}
+			cout<<line<<endl;
+			// When all the integers have been read, add the 1D array
+			energy		.push_back(lineData[0]);
+			flux 		.push_back(lineData[1]);
+			fluxTable	.push_back(lineData[2]);
+		}
 	}
 	else cout << "ERROR!!! Unable to open Flux file!!!";
 
@@ -87,26 +87,26 @@ void getPhotonFlux()
 	if (myfile1.is_open())
 	{
 		std::string line;
-	    // Read one line at a time into the variable line:
-	    while(std::getline(myfile1, line))
-	    {
-	        std::vector<double>   	lineData;
-	        std::stringstream  		lineStream(line);
+		// Read one line at a time into the variable line:
+		while(std::getline(myfile1, line))
+		{
+			std::vector<double>   	lineData;
+			std::stringstream  		lineStream(line);
 
-	        double value;
-	        // Read an integer at a time from the line
-	        while(lineStream >> value)
-	        {
-	            // Add the integers from a line to a 1D array (vector)
-	            lineData.push_back(value);
-	        }
-	        cout<<line<<endl;
-	        // When all the integers have been read, add the 1D array
-	        biter_0n0n			.push_back(lineData[0]);
-	        PofPhotonB_0n0n 	.push_back(lineData[1]);
-	        PofHadronB_0n0n 	.push_back(lineData[2]);
-	        PofB_0n0n 	 		.push_back(lineData[3]);
-	    }
+			double value;
+			// Read an integer at a time from the line
+			while(lineStream >> value)
+			{
+				// Add the integers from a line to a 1D array (vector)
+				lineData.push_back(value);
+			}
+			cout<<line<<endl;
+			// When all the integers have been read, add the 1D array
+			biter_0n0n			.push_back(lineData[0]);
+			PofPhotonB_0n0n 	.push_back(lineData[1]);
+			PofHadronB_0n0n 	.push_back(lineData[2]);
+			PofB_0n0n 	 		.push_back(lineData[3]);
+		}
 	}
 	else cout << "ERROR!!! Unable to open PofB file!!!";
 
@@ -114,55 +114,55 @@ void getPhotonFlux()
 	if (myfile2.is_open())
 	{
 		std::string line;
-	    // Read one line at a time into the variable line:
-	    while(std::getline(myfile2, line))
-	    {
-	        std::vector<double>   	lineData;
-	        std::stringstream  		lineStream(line);
+		// Read one line at a time into the variable line:
+		while(std::getline(myfile2, line))
+		{
+			std::vector<double>   	lineData;
+			std::stringstream  		lineStream(line);
 
-	        double value;
-	        // Read an integer at a time from the line
-	        while(lineStream >> value)
-	        {
-	            // Add the integers from a line to a 1D array (vector)
-	            lineData.push_back(value);
-	        }
-	        cout<<line<<endl;
-	        // When all the integers have been read, add the 1D array
-	        biter_0nXnSum			.push_back(lineData[0]);
-	        PofPhotonB_0nXnSum 		.push_back(lineData[1]);
-	        PofHadronB_0nXnSum 		.push_back(lineData[2]);
-	        PofB_0nXnSum 	 		.push_back(lineData[3]);
-	    }
+			double value;
+			// Read an integer at a time from the line
+			while(lineStream >> value)
+			{
+				// Add the integers from a line to a 1D array (vector)
+				lineData.push_back(value);
+			}
+			cout<<line<<endl;
+			// When all the integers have been read, add the 1D array
+			biter_0nXnSum			.push_back(lineData[0]);
+			PofPhotonB_0nXnSum 		.push_back(lineData[1]);
+			PofHadronB_0nXnSum 		.push_back(lineData[2]);
+			PofB_0nXnSum 	 		.push_back(lineData[3]);
+		}
 	}
 	else cout << "ERROR!!! Unable to open PofB file!!!";
 
 	if (myfile3.is_open())
 	{
 		std::string line;
-	    // Read one line at a time into the variable line:
-	    while(std::getline(myfile3, line))
-	    {
-	        std::vector<double>   	lineData;
-	        std::stringstream  		lineStream(line);
+		// Read one line at a time into the variable line:
+		while(std::getline(myfile3, line))
+		{
+			std::vector<double>   	lineData;
+			std::stringstream  		lineStream(line);
 
-	        double value;
-	        // Read an integer at a time from the line
-	        while(lineStream >> value)
-	        {
-	            // Add the integers from a line to a 1D array (vector)
-	            lineData.push_back(value);
-	        }
-	        cout<<line<<endl;
-	        // When all the integers have been read, add the 1D array
-	        biter_XnXn			.push_back(lineData[0]);
-	        PofPhotonB_XnXn 	.push_back(lineData[1]);
-	        PofHadronB_XnXn 	.push_back(lineData[2]);
-	        PofB_XnXn 	 		.push_back(lineData[3]);
-	    }
+			double value;
+			// Read an integer at a time from the line
+			while(lineStream >> value)
+			{
+				// Add the integers from a line to a 1D array (vector)
+				lineData.push_back(value);
+			}
+			cout<<line<<endl;
+			// When all the integers have been read, add the 1D array
+			biter_XnXn			.push_back(lineData[0]);
+			PofPhotonB_XnXn 	.push_back(lineData[1]);
+			PofHadronB_XnXn 	.push_back(lineData[2]);
+			PofB_XnXn 	 		.push_back(lineData[3]);
+		}
 	}
 	else cout << "ERROR!!! Unable to open PofB file!!!";	
-		/* code */
+	/* code */
 
 	plotFlux();
 	plotPofB();
@@ -308,4 +308,4 @@ void nk2Ny()
 }
 
 
-	
+
