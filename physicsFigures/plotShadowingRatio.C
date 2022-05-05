@@ -33,7 +33,7 @@ double y2W(const double y)
 	return sqrt( (2 * Gamma_beam * Mass_N * JpsiMass) * exp(y) );
 }
 
-void plotSigmaVsW( const int flag4Axis = 0 ) //0: logY only, 1: logX and LogY
+void plotSigmaVsW( const int flag4Axis = 1 ) //0: logY only, 1: logX and LogY
 {
 	for (int i = 0; i < ALICE_Run2_FwdRap_y.size(); ++i)
 	{
@@ -89,6 +89,7 @@ void plotSigmaVsW( const int flag4Axis = 0 ) //0: logY only, 1: logX and LogY
 	TGraphErrors* ge_IA        	= new TGraphErrors(W_IA.size(),	&W_IA[0],	&Sigma_IA[0],	0,	0);
 
 	ge_CMS->SetMarkerStyle(20);
+	ge_CMS->SetMarkerSize(1.0);
 	ge_CMS->SetMarkerColor(1);
 	ge_CMS->SetLineColor(1);
 	ge_CMS->SetLineWidth(2);
@@ -112,12 +113,14 @@ void plotSigmaVsW( const int flag4Axis = 0 ) //0: logY only, 1: logX and LogY
 	// gae_Xsec_ALICE_Run1->SetLineWidth(2);
 	// gae_Xsec_ALICE_Run1->Draw("Pesame");
 
-	ge_CGCnoFluct->SetMarkerColor(4);
+	ge_CGCnoFluct->SetMarkerColor(1);
 	ge_CGCnoFluct->SetLineColor(4);
+	ge_CGCnoFluct->SetLineStyle(2);
 	ge_CGCnoFluct->SetLineWidth(2);
 	ge_CGCnoFluct->Draw("lsame");
 
 	ge_IA->SetMarkerColor(2);
+	ge_IA->SetLineStyle(5);
 	ge_IA->SetLineColor(2);
 	ge_IA->SetLineWidth(2);
 	ge_IA->Draw("lsame");
