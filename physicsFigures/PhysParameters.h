@@ -14,9 +14,9 @@ const std::vector<double> Theory_x_min  = {4.15416e-2, 3.30337e-2, 2.04374e-2, 9
 const std::vector<double> ALICE_Run2_x  	= {1.e-3},	ALICE_Run2_R		=	{0.65},	ALICE_Run2_R_Err	=	{0.03};
 const std::vector<double> ALICE_Run2_Psi_x  = {0.00061691554},	ALICE_Run2_Psi_R 	=	{sqrt(0.76/2/81.026/ 0.069885)},	ALICE_Run2_Psi_R_Err	=	{sqrt(0.76/2/81.026/ 0.069885) * sqrt(pow(0.3/4.10,2) + pow(0.001398,2))};
 //-------------------------------------------Run2 ALICE Sigma ----------------------------------------------
-const std::vector<double> ALICE_Run2_MidRap_W  = {124.68568},	ALICE_Run2_MidRap_Sigma	=	{4.10/2/81.026},	ALICE_Run2_MidRap_Sigma_Err	=	{4.10/2/81.026 * 0.3/4.10};
-const std::vector<double> ALICE_Run2_FwdRap_y  = {-3.875, -3.625, -3.375, -3.125, -2.875, -2.625},	ALICE_Run2_FwdRap_dSigmady	=	{1.615, 1.938, 2.377, 2.831, 3.018, 3.531},	ALICE_Run2_FwdRap_dSigmady_Err	=	{0.147,0.190,0.229,0.280,0.294,0.362};
-const std::vector<double> ALICE_Run2_FwdRap_Flux={201.308, 193.547, 185.785, 178.023, 170.258, 162.492};
+const std::vector<double> ALICE_Run2_MidRap_W  = {124.68568},      ALICE_Run2_MidRap_Sigma	    = {4.07/2/81.026},	ALICE_Run2_MidRap_Sigma_Err	=	{4.07/2/81.026 * 0.25495/4.07};
+const std::vector<double> ALICE_Run2_FwdRap_y  = {-3.875, -3.625}, ALICE_Run2_FwdRap_dSigmady	=	{1.615, 1.938},	ALICE_Run2_FwdRap_dSigmady_Err	=	{0.147,0.190};
+const std::vector<double> ALICE_Run2_FwdRap_Flux={201.308, 193.547};
 std::vector<double> ALICE_Run2_FwdRap_W  = {},	ALICE_Run2_FwdRap_Sigma	=	{},	ALICE_Run2_FwdRap_Sigma_Err	=	{};
 //------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------
@@ -65,16 +65,16 @@ const std::vector<TVector2>  flux_XnXn    = { { 6.521,		3.716 },	{ 6.521,	4.367	
 // const std::vector<double>  Xsec_XnXn      = { 0.201,	0.243,	0.247 },     XsecErr_XnXn      = { 0.009,	0.014,	0.017 };
 //------------------------------------------------------------------------------------------------------------
 
-//----------------CrystalBall PU CMS:	  Rap: |-2.25|,	|-2.0|,	|-1.75| --------------------------------------
-const std::vector<double>  Xsec_0n0n      = { 2.824,	3.307,	3.371 },     XsecErr_0n0n      = { 0.039,	0.042,	0.064 };
-const std::vector<double>  Xsec_0nXnSum   = { 0.700,	0.824,	0.998 },     XsecErr_0nXnSum   = { 0.019,	0.020,	0.037 };
-const std::vector<double>  Xsec_XnXn      = { 0.201,	0.243,	0.247 },     XsecErr_XnXn      = { 0.009,	0.014,	0.017 };
-//------------------------------------------------------------------------------------------------------------
+////----------------CrystalBall PU CMS:	  Rap: |-2.25|,	|-2.0|,	|-1.75| --------------------------------------
+//const std::vector<double>  Xsec_0n0n      = { 2.824,	3.307,	3.371 },     XsecErr_0n0n      = { 0.039,	0.042,	0.064 };
+//const std::vector<double>  Xsec_0nXnSum   = { 0.700,	0.824,	0.998 },     XsecErr_0nXnSum   = { 0.019,	0.020,	0.037 };
+//const std::vector<double>  Xsec_XnXn      = { 0.201,	0.243,	0.247 },     XsecErr_XnXn      = { 0.009,	0.014,	0.017 };
+////------------------------------------------------------------------------------------------------------------
 
 //----------------CrystalBall PU Shuai:	  Rap: |-2.25|,	|-2.0|,	|-1.75| --------------------------------------
-// const std::vector<double>  Xsec_0n0n      = { 2.823,	3.307,	3.371 },     XsecErr_0n0n      = { 0.039,	0.042,	0.064 };
-// const std::vector<double>  Xsec_0nXnSum   = { 0.702,	0.819,	1.006 },     XsecErr_0nXnSum   = { 0.019,	0.028,	0.037 };
-// const std::vector<double>  Xsec_XnXn      = { 0.201,	0.243,	0.246 },     XsecErr_XnXn      = { 0.009,	0.014,	0.017 };
+ const std::vector<double>  Xsec_0n0n      = { 2.823,	3.307,	3.371 },     XsecErr_0n0n      = { 0.039,	0.042,	0.064 };
+ const std::vector<double>  Xsec_0nXnSum   = { 0.702,	0.819,	1.006 },     XsecErr_0nXnSum   = { 0.019,	0.028,	0.037 };
+ const std::vector<double>  Xsec_XnXn      = { 0.201,	0.243,	0.246 },     XsecErr_XnXn      = { 0.009,	0.014,	0.017 };
 //------------------------------------------------------------------------------------------------------------
 
 //----------------CrystalBall + Gaussian: Rap: |-2.25|,	|-2.0|,	|-1.75| --------------------------------------
