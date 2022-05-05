@@ -33,12 +33,12 @@ double y2W(const double y)
 	return sqrt( (2 * Gamma_beam * Mass_N * JpsiMass) * exp(y) );
 }
 
-void plotSigmaVsW( const int flag4Axis = 1 ) //0: logY only, 1: logX and LogY
+void plotSigmaVsW( const int flag4Axis = 0 ) //0: logY only, 1: logX and LogY
 {
 	for (int i = 0; i < ALICE_Run2_FwdRap_y.size(); ++i)
 	{
-		ALICE_Run2_FwdRap_W.push_back( y2W(ALICE_Run2_FwdRap_y[i]) );
-		ALICE_Run2_FwdRap_Sigma.push_back( ALICE_Run2_FwdRap_dSigmady[i] / ALICE_Run2_FwdRap_Flux[i] );
+		ALICE_Run2_FwdRap_W        .push_back( y2W(ALICE_Run2_FwdRap_y[i]) );
+		ALICE_Run2_FwdRap_Sigma    .push_back( ALICE_Run2_FwdRap_dSigmady[i] / ALICE_Run2_FwdRap_Flux[i] );
 		ALICE_Run2_FwdRap_Sigma_Err.push_back( ALICE_Run2_FwdRap_Sigma[i] * ALICE_Run2_FwdRap_dSigmady_Err[i] / ALICE_Run2_FwdRap_dSigmady[i] );
 	}
 
@@ -57,23 +57,23 @@ void plotSigmaVsW( const int flag4Axis = 1 ) //0: logY only, 1: logX and LogY
 	if(flag4Axis==0) //logY only
 	{
 		c->SetLogy();
-		SigmaVsW = new TH2D("SigmaVsW", ";W_{#gammaPb} (GeV);#sigma(#gamma A #rightarrow J/#psi A) (mb)", 10,0,420, 10, 0.015, 0.20);
+		SigmaVsW = new TH2D("SigmaVsW", ";W_{#gammaPb} (GeV);#sigma(#gamma A #rightarrow J/#psi A) (mb)", 10,0,420, 10, 0.005, 0.20);
 	}
 	else //logX and logY as default one
 	{
 		c->SetLogx();
 		c->SetLogy();
 		//SigmaVsW = new TH2D("SigmaVsW", ";W_{#gammaPb} (GeV);#sigma(#gamma A #rightarrow J/#psi A) (mb)", 10,28,520, 10, 0.015, 0.11);
-		SigmaVsW = new TH2D("SigmaVsW", ";W_{#gammaPb} (GeV);#sigma(#gamma A #rightarrow J/#psi A) (mb)", 10,16,520, 10, 0.0030, 0.11);
+		SigmaVsW = new TH2D("SigmaVsW", ";W_{#gammaPb} (GeV);#sigma(#gamma A #rightarrow J/#psi A) (mb)", 10,14,520, 10, 0.006, 0.10);
 	}
 
 	SigmaVsW->GetYaxis()->CenterTitle();
 	SigmaVsW->GetYaxis()->SetTitleSize(0.065);
 	SigmaVsW->GetYaxis()->SetTitleSize(0.065);
-	SigmaVsW->GetYaxis()->SetTitleOffset(0.75);
+	SigmaVsW->GetYaxis()->SetTitleOffset(0.85);
 	SigmaVsW->GetYaxis()->SetLabelSize(0.04);
 	SigmaVsW->GetXaxis()->SetTitleSize(0.05);
-	SigmaVsW->GetXaxis()->SetTitleOffset(0.95);
+	SigmaVsW->GetXaxis()->SetTitleOffset(0.98);
 	SigmaVsW->GetXaxis()->SetLabelSize(0.04);
 	SigmaVsW->SetTickLength(0.04);
 	SigmaVsW->Draw();
@@ -123,19 +123,50 @@ void plotSigmaVsW( const int flag4Axis = 1 ) //0: logY only, 1: logX and LogY
 	ge_IA->Draw("lsame");
 
 	//drawLatex(0.15, 0.86, "Pb+Pb #rightarrow Pb+Pb+J/#psi #sqrt{s_{NN}} = 5.02 TeV",  42,        0.05,      1 );
-	drawLatex(0.15, 0.86, "Pb+Pb UPC #sqrt{s_{NN}} = 5.02 TeV",  42,        0.05,      1 );
 
-	TLegend  *leg =  new TLegend(0.55, 0.22, 0.88, 0.52);
-	leg->SetFillStyle(0);
-	leg->SetFillColor(0);
-	leg->SetTextSize(0.055);
-	leg->AddEntry(ge_CMS,               "CMS",           "lp");
-	leg->AddEntry(ge_ALICE_Run2_MidRap, "ALICE Mid",     "lp");
-	leg->AddEntry(ge_ALICE_Run2_FwdRap, "ALICE Fwd",     "lp");
-	leg->AddEntry(ge_CGCnoFluct,        "CGC",           "l");
-	leg->AddEntry(ge_IA,                "IA",            "l");
-	leg->Draw("same");
-	
+	if(flag4Axis == 1)
+	{
+		drawLatex(0.15, 0.87, "Pb+Pb UPC #sqrt{s_{NN}} = 5.02 TeV",  42,        0.05,      1 );
+		
+		TLegend  *legData =  new TLegend(0.13, 0.66, 0.35, 0.82);
+		legData->SetFillStyle(0);
+		legData->SetFillColor(0);
+		legData->SetTextSize(0.045);
+		legData->AddEntry(ge_CMS,               "CMS",               "p");
+		legData->AddEntry(ge_ALICE_Run2_FwdRap, "ALICE (-4 < y < -3.5)", "p");
+		legData->AddEntry(ge_ALICE_Run2_MidRap, "ALICE (|y| < 0.15)",  "p");
+		legData->Draw("same");
+
+		TLegend  *legTheory =  new TLegend(0.50, 0.20, 0.80, 0.30);
+		legTheory->SetFillStyle(0);
+		legTheory->SetFillColor(0);
+		legTheory->SetTextSize(0.045);
+		legTheory->AddEntry(ge_CGCnoFluct,        "CGC",                   "l");
+		legTheory->AddEntry(ge_IA,                "Impulse Approximation", "l");
+		legTheory->Draw("same");
+	}
+	else
+	{
+		drawLatex(0.15, 0.87, "Pb+Pb UPC #sqrt{s_{NN}} = 5.02 TeV",  42,        0.06,      1 );
+
+		TLegend  *legData =  new TLegend(0.30, 0.20, 0.55, 0.35);
+		legData->SetFillStyle(0);
+		legData->SetFillColor(0);
+		legData->SetTextSize(0.045);
+		legData->AddEntry(ge_CMS,               "CMS",                   "p");
+		legData->AddEntry(ge_ALICE_Run2_FwdRap, "ALICE (-4 < y < -3.5)", "p");
+		legData->AddEntry(ge_ALICE_Run2_MidRap, "ALICE (|y| < 0.15)",    "p");
+		legData->Draw("same");
+
+		TLegend  *legTheory =  new TLegend(0.75, 0.20, 0.95, 0.30);
+		legTheory->SetFillStyle(0);
+		legTheory->SetFillColor(0);
+		legTheory->SetTextSize(0.045);
+		legTheory->AddEntry(ge_CGCnoFluct,        "CGC",                   "l");
+		legTheory->AddEntry(ge_IA,                "IA", "l");
+		legTheory->Draw("same");
+
+	}
 	if(flag4Axis==0)
 	{
 		c->SaveAs("outplots/SigmaVsW_logY.png");
@@ -146,6 +177,8 @@ void plotSigmaVsW( const int flag4Axis = 1 ) //0: logY only, 1: logX and LogY
 		c->SaveAs("outplots/SigmaVsW_logXY.png");
 		c->SaveAs("outplots/SigmaVsW_logXY.pdf");
 	}
+
+	delete c;
 }
 
 void plotShadowingRatio( )
@@ -252,4 +285,5 @@ void plotShadowingRatio( )
 
 	c->SaveAs("outplots/ShadowingRatiovsX.png");
 	c->SaveAs("outplots/ShadowingRatiovsX.pdf");
+	delete c;
 }
