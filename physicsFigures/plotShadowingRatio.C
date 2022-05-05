@@ -55,7 +55,8 @@ void plotSigmaVsW( const int flag4Axis = 1 ) //0: logY only, 1: logX and LogY
 	{
 		c->SetLogx();
 		c->SetLogy();
-		SigmaVsW = new TH2D("SigmaVsW", ";W_{#gammaPb} (GeV);#sigma(#gamma A #rightarrow J/#psi A) (mb)", 10,28,520, 10, 0.015, 0.11);
+		//SigmaVsW = new TH2D("SigmaVsW", ";W_{#gammaPb} (GeV);#sigma(#gamma A #rightarrow J/#psi A) (mb)", 10,28,520, 10, 0.015, 0.11);
+		SigmaVsW = new TH2D("SigmaVsW", ";W_{#gammaPb} (GeV);#sigma(#gamma A #rightarrow J/#psi A) (mb)", 10,16,520, 10, 0.0040, 0.11);
 	}
 
 	SigmaVsW->GetYaxis()->CenterTitle();
@@ -70,6 +71,9 @@ void plotSigmaVsW( const int flag4Axis = 1 ) //0: logY only, 1: logX and LogY
 	SigmaVsW->Draw();
 
 	TGraphErrors* ge_CMS        		= new TGraphErrors(Ws.size(),	&Ws[0],	&Sigmas[0],	0,	&Sigmas_Err[0]	);
+	
+	auto *gae_Xsec_ALICE_Run1 = new TGraphAsymmErrors(ALICE_W_Run1.size(), &ALICE_W_Run1[0],&ALICE_Xsec_Run1[0],0,0, &ALICE_XsecErr2_Run1[0], &ALICE_XsecErr1_Run1[0]);
+	
 	TGraphErrors* ge_ALICE_Run2_MidRap	= new TGraphErrors(ALICE_Run2_MidRap_W.size(),	&ALICE_Run2_MidRap_W[0],	&ALICE_Run2_MidRap_Sigma[0],	0,	&ALICE_Run2_MidRap_Sigma_Err[0]	);
 
 	TGraphErrors* ge_CGCnoFluct = new TGraphErrors(CGC_JpsiNoFluct_W.size(),	&CGC_JpsiNoFluct_W[0],	&CGC_JpsiNoFluct_CohXsec[0],	0,	0);
@@ -86,6 +90,12 @@ void plotSigmaVsW( const int flag4Axis = 1 ) //0: logY only, 1: logX and LogY
 	ge_ALICE_Run2_MidRap->SetLineColor(4);
 	ge_ALICE_Run2_MidRap->SetLineWidth(2);
 	ge_ALICE_Run2_MidRap->Draw("Pesame");
+	
+	gae_Xsec_ALICE_Run1->SetMarkerStyle(24);
+	gae_Xsec_ALICE_Run1->SetMarkerColor(1);
+	gae_Xsec_ALICE_Run1->SetLineColor(1);
+	gae_Xsec_ALICE_Run1->SetLineWidth(2);
+	gae_Xsec_ALICE_Run1->Draw("Pesame");
 
 	ge_CGCnoFluct->SetMarkerColor(4);
 	ge_CGCnoFluct->SetLineColor(4);
