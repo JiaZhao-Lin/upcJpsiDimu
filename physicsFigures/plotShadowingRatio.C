@@ -243,7 +243,7 @@ void plotShadowingRatio( )
 	ge_CMS->SetMarkerColor(1);
 	ge_CMS->SetLineColor(1);
 	ge_CMS->SetLineWidth(2);
-	ge_CMS->Draw("Pesame");
+	ge_CMS->Draw("pezsame");
 
 	ge_ALICE_Run1->SetMarkerStyle(24);
 	ge_ALICE_Run1->SetMarkerColor(4);
@@ -254,7 +254,7 @@ void plotShadowingRatio( )
 	ge_ALICE_Run2->SetMarkerColor(4);
 	ge_ALICE_Run2->SetLineColor(4);
 	ge_ALICE_Run2->SetLineWidth(2);
-	ge_ALICE_Run2->Draw("pesame");
+	ge_ALICE_Run2->Draw("pezsame");
 
 	ge_ALICE_Run2_Psi->SetMarkerStyle(24);
 	ge_ALICE_Run2_Psi->SetMarkerColor(2);
