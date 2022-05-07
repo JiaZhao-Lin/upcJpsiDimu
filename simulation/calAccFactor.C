@@ -133,7 +133,7 @@ void drawAcc()
 		gPad->SetLogy(0);
 
 		setHisto(hRap_Den[is],      20, 1, 1, 1, 2);
-		setHisto(hRap_Num[is],          25, 1, 4, 4, 2);
+		setHisto(hRap_Num[is],      25, 1, 4, 4, 2);
 
 		hRap_Den[is]      ->GetYaxis()->SetTitle("Entries");
 		hRap_Den[is]      ->GetXaxis()->CenterTitle();

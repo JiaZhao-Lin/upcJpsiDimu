@@ -33,7 +33,7 @@ double y2W(const double y)
 	return sqrt( (2 * Gamma_beam * Mass_N * JpsiMass) * exp(y) );
 }
 
-void plotSigmaVsW( const int flag4Axis = 1 ) //0: logY only, 1: logX and LogY
+void plotSigmaVsW( const int flag4Axis = 0 ) //0: logY only, 1: logX and LogY
 {
 	for (int i = 0; i < ALICE_Run2_FwdRap_y.size(); ++i)
 	{
@@ -57,14 +57,14 @@ void plotSigmaVsW( const int flag4Axis = 1 ) //0: logY only, 1: logX and LogY
 	if(flag4Axis==0) //logY only
 	{
 		c->SetLogy();
-		SigmaVsW = new TH2D("SigmaVsW", ";W_{#gammaPb} (GeV);#sigma(#gamma A #rightarrow J/#psi A) (mb)", 10,0,420, 10, 0.005, 0.20);
+		SigmaVsW = new TH2D("SigmaVsW", ";W_{#gammaPb} (GeV);#sigma(#gamma A #rightarrow J/#psi A) (mb);", 10,0,420, 10, 0.005, 0.20);
 	}
 	else //logX and logY as default one
 	{
 		c->SetLogx();
 		c->SetLogy();
 		//SigmaVsW = new TH2D("SigmaVsW", ";W_{#gammaPb} (GeV);#sigma(#gamma A #rightarrow J/#psi A) (mb)", 10,28,520, 10, 0.015, 0.11);
-		SigmaVsW = new TH2D("SigmaVsW", ";W_{#gammaPb} (GeV);#sigma(#gamma A #rightarrow J/#psi A) (mb)", 10,14,520, 10, 0.006, 0.10);
+		SigmaVsW = new TH2D("SigmaVsW", ";W_{#gammaPb} (GeV);#sigma(#gamma A #rightarrow J/#psi A) (mb);", 10,14,520, 10, 0.006, 0.10);
 	}
 
 	SigmaVsW->GetYaxis()->CenterTitle();
@@ -76,11 +76,11 @@ void plotSigmaVsW( const int flag4Axis = 1 ) //0: logY only, 1: logX and LogY
 	SigmaVsW->GetXaxis()->SetTitleOffset(0.98);
 	SigmaVsW->GetXaxis()->SetLabelSize(0.04);
 	SigmaVsW->SetTickLength(0.04);
-	SigmaVsW->Draw();
+	SigmaVsW->Draw("");
 
 	TGraphErrors* ge_CMS        		= new TGraphErrors(Ws.size(),	&Ws[0],	&Sigmas[0],	0,	&Sigmas_Err[0]	);
 	
-	auto *gae_Xsec_ALICE_Run1 = new TGraphAsymmErrors(ALICE_W_Run1.size(), &ALICE_W_Run1[0],&ALICE_Xsec_Run1[0],0,0, &ALICE_XsecErr2_Run1[0], &ALICE_XsecErr1_Run1[0]);
+	TGraphAsymmErrors *gae_Xsec_ALICE_Run1 = new TGraphAsymmErrors(ALICE_W_Run1.size(), &ALICE_W_Run1[0],&ALICE_Xsec_Run1[0],0,0, &ALICE_XsecErr2_Run1[0], &ALICE_XsecErr1_Run1[0]);
 	
 	TGraphErrors* ge_ALICE_Run2_MidRap	= new TGraphErrors(ALICE_Run2_MidRap_W.size(),	&ALICE_Run2_MidRap_W[0],	&ALICE_Run2_MidRap_Sigma[0],	0,	&ALICE_Run2_MidRap_Sigma_Err[0]	);
 	TGraphErrors* ge_ALICE_Run2_FwdRap	= new TGraphErrors(ALICE_Run2_FwdRap_W.size(),	&ALICE_Run2_FwdRap_W[0],	&ALICE_Run2_FwdRap_Sigma[0],	0,	&ALICE_Run2_FwdRap_Sigma_Err[0]	);
@@ -89,23 +89,23 @@ void plotSigmaVsW( const int flag4Axis = 1 ) //0: logY only, 1: logX and LogY
 	TGraphErrors* ge_IA        	= new TGraphErrors(W_IA.size(),	&W_IA[0],	&Sigma_IA[0],	0,	0);
 
 	ge_CMS->SetMarkerStyle(20);
-	ge_CMS->SetMarkerSize(1.0);
+	ge_CMS->SetMarkerSize(1.1);
 	ge_CMS->SetMarkerColor(1);
 	ge_CMS->SetLineColor(1);
 	ge_CMS->SetLineWidth(2);
-	ge_CMS->Draw("Pesame");
+	ge_CMS->Draw("pezsame");
 
 	ge_ALICE_Run2_MidRap->SetMarkerStyle(24);
 	ge_ALICE_Run2_MidRap->SetMarkerColor(4);
 	ge_ALICE_Run2_MidRap->SetLineColor(4);
 	ge_ALICE_Run2_MidRap->SetLineWidth(2);
-	ge_ALICE_Run2_MidRap->Draw("Pesame");
+	ge_ALICE_Run2_MidRap->Draw("pezsame");
 
 	ge_ALICE_Run2_FwdRap->SetMarkerStyle(25);
 	ge_ALICE_Run2_FwdRap->SetMarkerColor(4);
 	ge_ALICE_Run2_FwdRap->SetLineColor(4);
 	ge_ALICE_Run2_FwdRap->SetLineWidth(2);
-	ge_ALICE_Run2_FwdRap->Draw("Pesame");
+	ge_ALICE_Run2_FwdRap->Draw("pezsame");
 	
 	// gae_Xsec_ALICE_Run1->SetMarkerStyle(24);
 	// gae_Xsec_ALICE_Run1->SetMarkerColor(1);
@@ -206,6 +206,7 @@ void plotShadowingRatio( )
 	}
 	
 	Cal_R_Error();
+	
 	plotSigmaVsW();
 
 	auto c = new TCanvas();
