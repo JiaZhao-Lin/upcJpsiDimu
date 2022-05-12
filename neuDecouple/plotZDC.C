@@ -38,25 +38,31 @@ void plotZDC(Bool_t isPaper=kTRUE, Bool_t drawNeuRange = 1)
 
 	TH2D* hZDCMinusvsZDCPlus = (TH2D*)f->Get("hZDCMinusvsZDCPlus"); // In principle, the neutron peak should not be affected by UPC or hadronic collisions
 
-	TString triplegaus = "[0]*TMath::Gaus(x,[1],[2],1)"
+	TString triplegaus = 
+		"[0]*TMath::Gaus(x,[1],[2],1)"
 		"+ [3]*TMath::Gaus(x,[4],[5],1)"
 		"+ [6]*TMath::Gaus(x,[7],[5]*[8],1)";
 
-	for(Int_t idir=0; idir<nDirs; idir++){
+	for(Int_t idir=0; idir<nDirs; idir++)
+	{
 		multiGaus[idir] = new TF1(Form("multiGaus_%s", mDir[idir].Data()), triplegaus.Data(), 0, 5.e4);
 		multiGaus[idir]->SetParNames("N1", "#mu1", "#sigma1", "N2", "#mu2", "#sigma2", "N3", "#mu3", "scale w.r.t. #sigma2");
 		multiGaus[idir]->SetParLimits(8, 1, 2);
 		setFun(multiGaus[idir], kBlue-4, 2);
 	}
 
-	Double_t pars[nDirs][9] = {
+	Double_t pars[nDirs][9] = 
+	{
 		{ 2e7, 7.5e3, 1.6e3, 6e6, 15e3, 2.3e3, 1e6, 22.5e3, 1.4 },
-		{ 2e7, 12e3, 3.0e3, 6e6, 25e3, 4.2e3, 1e6, 35e3, 1.4 }
+		{ 2e7, 12e3,  3.0e3, 6e6, 25e3, 4.2e3, 1e6, 35e3,   1.4 }
 	};
 
 	const Int_t mGausColor[3] = {kRed-4, kGreen+2, kViolet-3};
-	for(Int_t idir=0; idir<nDirs; idir++){
-		for (Int_t i = 0; i < nGaus; i++) {
+
+	for(Int_t idir=0; idir<nDirs; idir++)
+	{
+		for (Int_t i = 0; i < nGaus; i++) 
+		{
 			singleGaus[idir][i] = new TF1(Form("singleGaus_%s%d", mDir[idir].Data(), i), "[0]*TMath::Gaus(x,[1],[2],1)", 0, 5e4);
 			setFun(singleGaus[idir][i], mGausColor[i], 2, 2);
 		}
@@ -65,8 +71,8 @@ void plotZDC(Bool_t isPaper=kTRUE, Bool_t drawNeuRange = 1)
 	hZDC[0] = (TH1D*)hZDCMinusvsZDCPlus->ProjectionX(Form("hZDC%s", mDir[0].Data()));
 	hZDC[1] = (TH1D*)hZDCMinusvsZDCPlus->ProjectionY(Form("hZDC%s", mDir[1].Data()));
 
-	const Double_t arrY = 3e3;
-	const Double_t arrSize = 7e-3;
+	const Double_t arrY     = 3e3;
+	const Double_t arrSize  = 7e-3;
 	const Int_t    arrColor = kBlue - 4;
 	const Int_t    arrWidth = 2;
 
@@ -96,8 +102,10 @@ void plotZDC(Bool_t isPaper=kTRUE, Bool_t drawNeuRange = 1)
 	palette->SetX2NDC(0.935);
 	palette->SetY1NDC(0.21);
 	palette->SetY2NDC(0.92);
+
 	drawLatex(0.56, 0.94, "PbPb 5.02 TeV", mFont, mTextSize, 1);
-	drawLatex(0.20, 0.94, "CMS", 62, 0.085, 1);
+	drawLatex(0.20, 0.94, "CMS",           62,    0.085,     1);
+	
 	if(!isPaper) drawLatex(0.31, 0.94, "Preliminary", 52, mTextSize, 1);
 
 	TGraphErrors *grZdcRatio[nDirs];
@@ -115,7 +123,8 @@ void plotZDC(Bool_t isPaper=kTRUE, Bool_t drawNeuRange = 1)
 	gStyle->SetStatH(0.17);
 	gStyle->SetStatW(0.21);
 
-	for(Int_t idir=0; idir<nDirs; idir++){
+	for(Int_t idir=0; idir<nDirs; idir++)
+	{
 		c1->cd(2+idir);
 		gPad->SetLogy(1);
 		setHisto(hZDC[idir], 20, 0.8, 1, 1, 1);
@@ -131,19 +140,27 @@ void plotZDC(Bool_t isPaper=kTRUE, Bool_t drawNeuRange = 1)
 		hZDC[idir]->GetYaxis()->SetTitleOffset(1.0);
 		hZDC[idir]->GetYaxis()->SetTitleFont(mFont);
 		hZDC[idir]->GetYaxis()->SetRangeUser(9.999, 1e5);
+		
 		multiGaus[idir]->SetParameters(pars[idir]);
 		multiGaus[idir]->SetRange(mZdcFitLow[idir], mZdcFitHi[idir]);
+		
 		hZDC[idir]->Fit(multiGaus[idir], "R");
 		hZDC[idir]->Draw("p");
-		if(drawNeuRange){
-			for(Int_t ineu=0; ineu<nNeus-1; ineu++){
+		
+		if(drawNeuRange)
+		{
+			for(Int_t ineu=0; ineu<nNeus-1; ineu++)
+			{
 				drawArrow(mNeuZDCLow[idir][ineu], arrY, mNeuZDCHi[idir][ineu], arrY, arrSize, "<|>", arrColor, arrWidth, 1);
-				drawLine(mNeuZDCHi[idir][ineu], 10, mNeuZDCHi[idir][ineu], 2e4, arrColor, arrWidth, 5);
+				drawLine( mNeuZDCHi[idir][ineu],  10,   mNeuZDCHi[idir][ineu], 2e4,  arrColor, arrWidth, 5);
 			}
-			if(idir==0){
-				drawArrow(mNeuZDCLow[idir][nNeus-1], arrY, mNeuZDCLow[idir][nNeus-1]+8e3, arrY, arrSize, "|>", arrColor, arrWidth, 1);
+			
+			if(idir==0)
+			{
+				drawArrow(mNeuZDCLow[idir][nNeus-1], arrY, mNeuZDCLow[idir][nNeus-1]+8e3,       arrY, arrSize, "|>", arrColor, arrWidth, 1);
 			}
-			else{
+			else
+			{
 				drawArrow(mNeuZDCLow[idir][nNeus-1], arrY, mNeuZDCLow[idir][nNeus-1]+8e3*5/3.5, arrY, arrSize, "|>", arrColor, arrWidth, 1);
 			}
 
@@ -155,12 +172,16 @@ void plotZDC(Bool_t isPaper=kTRUE, Bool_t drawNeuRange = 1)
 		hZDC[idir]->GetXaxis()->SetTitle(Form("ZDC_{%s} (a.u.)", mDir[idir].Data()));
 
 		drawLatex(0.60, 0.94, "PbPb 5.02 TeV", mFont, mTextSize, 1);
-		drawLatex(0.12, 0.94, "CMS", 62, 0.085, 1);
+		drawLatex(0.12, 0.94, "CMS",           62,    0.085,     1);
+
 		if(!isPaper) drawLatex(0.24, 0.94, "Preliminary", 52, mTextSize, 1);
 		hZDC[idir]->GetYaxis()->SetTitle("Entries");
 		multiGaus[idir]->DrawClone("same");
+		
 		if(idir==0) leg->AddEntry(multiGaus[idir], "Total fit", "l");
-		for (Int_t i = 0; i < nGaus; i++) {
+		
+		for (Int_t i = 0; i < nGaus; i++) 
+		{
 			if(i < nGaus-1) singleGaus[idir][i]->SetParameters(multiGaus[idir]->GetParameter(3*i), multiGaus[idir]->GetParameter(3*i + 1), multiGaus[idir]->GetParameter(3*i + 2));
 			else            singleGaus[idir][i]->SetParameters(multiGaus[idir]->GetParameter(3*i), multiGaus[idir]->GetParameter(3*i + 1), multiGaus[idir]->GetParameter(3*i + 2)*multiGaus[idir]->GetParameter(3*i - 1));
 
@@ -170,14 +191,17 @@ void plotZDC(Bool_t isPaper=kTRUE, Bool_t drawNeuRange = 1)
 		}
 
 		Int_t binLow = hZDC[idir]->GetXaxis()->FindBin(mZdcFitLow[idir] + tinyOffset);
-		Int_t binHi  = hZDC[idir]->GetXaxis()->FindBin(mZdcFitHi[idir] - tinyOffset);
+		Int_t binHi  = hZDC[idir]->GetXaxis()->FindBin(mZdcFitHi[idir]  - tinyOffset);
+
 		grZdcRatio[idir] = new TGraphErrors(binHi - binLow + 1);
 		grZdcPull[idir]  = new TGraph(binHi - binLow + 1);
 		hZDCPull[idir]   = new TH1D(Form("hZDCPull%d",idir),Form("; ZDC %s Pull; Entries", mDir[idir].Data()), 50, -10, 10);
-		for(Int_t binIdx=binLow; binIdx<=binHi; binIdx++){
-			Double_t x = hZDC[idir]->GetBinCenter(binIdx);
-			Double_t y = hZDC[idir]->GetBinContent(binIdx);
-			Double_t yErr = hZDC[idir]->GetBinError(binIdx);
+		
+		for(Int_t binIdx=binLow; binIdx<=binHi; binIdx++)
+		{
+			Double_t x      = hZDC[idir]->GetBinCenter(binIdx);
+			Double_t y      = hZDC[idir]->GetBinContent(binIdx);
+			Double_t yErr   = hZDC[idir]->GetBinError(binIdx);
 			Double_t zdcFit = multiGaus[idir]->Eval(x);
 
 			grZdcRatio[idir]->SetPoint(binIdx-binLow, x, y/zdcFit);
@@ -186,18 +210,32 @@ void plotZDC(Bool_t isPaper=kTRUE, Bool_t drawNeuRange = 1)
 			grZdcPull[idir]->SetPoint(binIdx-binLow, x, (y-zdcFit)/yErr);
 			hZDCPull[idir]->Fill((y-zdcFit)/yErr);
 		}
-	}
+
+		
+		//---------------------------------------------------
+		//calcualte the purity of 0n and Xn
+		const double N_Xn_in_0n = multiGaus[idir]->Integral(0,mZdcFitLow[idir])/hZDC[idir]->GetBinWidth(1);
+		const double purity_0n  = (hZDC[idir]->Integral(1,binLow)-N_Xn_in_0n)/(hZDC[idir]->Integral(1,binLow));
+
+		cout<<"-------------------------------------------------"<<endl;
+		cout<<"purity_0n: "<<purity_0n<<endl;
+		cout<<"-------------------------------------------------"<<endl;
+		//---------------------------------------------------
+
+
+	}//idir
 
 	c1->cd(4);
 	leg->Draw("same");
-	if(isPaper) c1->SaveAs(Form("%s/ZDC_Energy.pdf", dir.Data()));
+	if(isPaper) c1->SaveAs(Form("%s/ZDC_Energy.pdf",             dir.Data()));
 	else        c1->SaveAs(Form("%s/ZDC_Energy_Preliminary.pdf", dir.Data()));
 
 	TH2D *ddRatio = (TH2D *)histo("ddRatio", 0, 40e3, -10, 10, "", "Data/Fit");
 	ddRatio->GetXaxis()->SetTitleSize(0.06);
 	ddRatio->GetYaxis()->SetTitleSize(0.06);
 
-	for(Int_t idir=0; idir<nDirs; idir++){
+	for(Int_t idir=0; idir<nDirs; idir++)
+	{
 		c1->cd(idir*2+1);
 		gPad->SetLogy(0);
 		ddRatio->GetXaxis()->SetTitle(Form("ZDC %s", mDir[idir].Data()));
