@@ -27,7 +27,7 @@ Double_t DoubleCrystalBall(Double_t x, Double_t N, Double_t mu, Double_t sigma,
 	}
 }
 
-Double_t DoubleCrystalBall_Asym(Double_t x, Double_t N, Double_t mu, Double_t sigmaL, Double_t sigmaR,
+Double_t AsymDoubleCrystalBall(Double_t x, Double_t N, Double_t mu, Double_t sigmaL, Double_t sigmaR,
 						Double_t cbNL, Double_t cbAlphaL, Double_t cbNR, Double_t cbAlphaR)
 {
 
@@ -134,10 +134,6 @@ struct JpsiPdf : public PdfFactory
 	//Priviate but not so priviate members-----------------------------------------------
 	const double massLow4Fit, massHig4Fit;
 	RooRealVar  & mMass;
-	RooAddPdf 		*jpsiRooCrystalBallPdf;
-	RooGenericPdf 	*jpsiDoubleCrystalBallPdf;
-	RooGenericPdf	*jpsiDoubleCrystalBall_AsymPdf;
-
 	//-----------------------------------------------------------------------------------
 
 	//Constructor------------------------------------------------------------------------
@@ -152,29 +148,33 @@ struct JpsiPdf : public PdfFactory
 	//Free Functions---------------------------------------------------------------------
 	void Init(RooRealVar& cbAlpha, RooRealVar& cbN, RooRealVar& jpsiSigma, RooRealVar& jpsiMu)
 	{
-		Pdf = new RooGenericPdf("jpsiPdf", "jpsiPdf",
+		Pdf = new RooGenericPdf("jpsiCrystalBallPdf", "jpsiCrystalBallPdf",
 					"ROOT::Math::crystalball_function(mMass,cbAlpha,cbN,jpsiSigma,jpsiMu)", 
 					RooArgSet(mMass, cbAlpha, cbN, jpsiSigma, jpsiMu));
 	}
 
-	void InitDoubleCrystalBall(RooRealVar& jpsiN, RooRealVar& jpsiMu, RooRealVar& jpsiSigma, RooRealVar& sigmaRatio, RooRealVar& cbNL, RooRealVar& cbAlphaL, RooRealVar& cbNR, RooRealVar& cbAlphaR)
+	void InitCrystalBallGauss(RooRealVar& cbAlpha, RooRealVar& cbN, RooRealVar& jpsiSigma, RooRealVar& jpsiMu, RooRealVar& gausN)
 	{
-		jpsiDoubleCrystalBallPdf = new RooGenericPdf("jpsiDoubleCrystalBallPdf", "jpsiDoubleCrystalBallPdf",
+		Pdf = new RooGenericPdf("jpsiCrystalBallGaussPdf", "jpsiCrystalBallGaussPdf",
+					"ROOT::Math::crystalball_function(mMass,cbAlpha,cbN,jpsiSigma,jpsiMu) + gausN*TMath::Gaus(mMass, jpsiMu, jpsiSigma)", 
+					RooArgSet(mMass, cbAlpha, cbN, jpsiSigma, jpsiMu, gausN));
+	}
+
+	void InitDoubleCrystalBall(RooRealVar& jpsiN, RooRealVar& jpsiMu, RooRealVar& jpsiSigma, RooRealVar& cbNL, RooRealVar& cbAlphaL, RooRealVar& cbNR, RooRealVar& cbAlphaR)
+	{
+		Pdf = new RooGenericPdf("jpsiDoubleCrystalBallPdf", "jpsiDoubleCrystalBallPdf",
 					"DoubleCrystalBall(mMass, jpsiN, jpsiMu, jpsiSigma, cbNL, cbAlphaL, cbNR, cbAlphaR)", 
 					RooArgSet(mMass, jpsiN, jpsiMu, jpsiSigma, cbNL, cbAlphaL, cbNR, cbAlphaR));
 	}
 
-	void InitDoubleCrystalBall_Asym(RooRealVar& jpsiN, RooRealVar& jpsiMu, RooRealVar& jpsiSigmaL, RooRealVar& jpsiSigmaR, RooRealVar& sigmaRatio, RooRealVar& cbNL, RooRealVar& cbAlphaL, RooRealVar& cbNR, RooRealVar& cbAlphaR)
+	void InitAsymDoubleCrystalBall(RooRealVar& jpsiN, RooRealVar& jpsiMu, RooRealVar& jpsiSigmaL, RooRealVar& jpsiSigmaR, RooRealVar& cbNL, RooRealVar& cbAlphaL, RooRealVar& cbNR, RooRealVar& cbAlphaR)
 	{
-		jpsiDoubleCrystalBall_AsymPdf = new RooGenericPdf("jpsiDoubleCrystalBall_AsymPdf", "jpsiDoubleCrystalBall_AsymPdf",
-					"DoubleCrystalBall_Asym(mMass, jpsiN, jpsiMu, jpsiSigmaL, jpsiSigmaR, cbNL, cbAlphaL, cbNR, cbAlphaR)", 
+		Pdf = new RooGenericPdf("jpsiAsymDoubleCrystalBallPdf", "jpsiAsymDoubleCrystalBallPdf",
+					"AsymDoubleCrystalBall(mMass, jpsiN, jpsiMu, jpsiSigmaL, jpsiSigmaR, cbNL, cbAlphaL, cbNR, cbAlphaR)", 
 					RooArgSet(mMass, jpsiN, jpsiMu, jpsiSigmaL, jpsiSigmaR, cbNL, cbAlphaL, cbNR, cbAlphaR));
 	}
 
 	// RooAddPdf* 		GetRooCrystalBallPdf() 			{if(!jpsiRooCrystalBallPdf)			throw std::runtime_error("JpsiPdf ----> No jpsiRooCrystalBallPdf!!!");	return jpsiRooCrystalBallPdf;}
-	RooGenericPdf* 	GetDoubleCrystalBallPdf()		{if(!jpsiDoubleCrystalBallPdf)		throw std::runtime_error("JpsiPdf ----> No DoubleCrystalBallPdf!!!");	return jpsiDoubleCrystalBallPdf;}
-	RooGenericPdf* 	GetDoubleCrystalBall_AsymPdf()	{if(!jpsiDoubleCrystalBall_AsymPdf)	throw std::runtime_error("JpsiPdf ----> No DoubleCrystalBall_Asym!!!");	return jpsiDoubleCrystalBall_AsymPdf;}
-
 
 	double GetInitN(const double BinLow, const double BinHigh, const double nQED4Init)
 	{
@@ -195,9 +195,6 @@ struct PsiPdf : public PdfFactory
 	const double massLow4Fit, massHig4Fit;
 	RooRealVar  & mMass;
 	RooConstVar massRatio = RooConstVar(  "massRatio",   "massRatio",  mPsi_PDG/mJpsi_PDG);
-	RooAddPdf 		*psiRooCrystalBallPdf;
-	RooGenericPdf 	*psiDoubleCrystalBallPdf;
-	RooGenericPdf 	*psiDoubleCrystalBall_AsymPdf;
 	//-----------------------------------------------------------------------------------
 
 	//Constructor------------------------------------------------------------------------
@@ -212,28 +209,33 @@ struct PsiPdf : public PdfFactory
 	//Free Functions---------------------------------------------------------------------
 	void Init(RooRealVar& cbAlpha, RooRealVar& cbN, RooRealVar& jpsiSigma, RooRealVar& jpsiMu)
 	{
-		Pdf = new RooGenericPdf("psiPdf",  "psiPdf",
+		Pdf = new RooGenericPdf("psiCrystalBallPdf",  "psiCrystalBallPdf",
 					"ROOT::Math::crystalball_function(mMass,cbAlpha,cbN,jpsiSigma*massRatio,jpsiMu*massRatio)", 
 					RooArgSet(mMass, cbAlpha, cbN, jpsiSigma, jpsiMu, massRatio)); // psiMu = jpsiMu * massRatio; psiSigma = jpsiSigma * massRatio
 	}
 
-	void InitDoubleCrystalBall(RooRealVar& psiN, RooRealVar& jpsiMu, RooRealVar& jpsiSigma, RooRealVar& sigmaRatio, RooRealVar& cbNL, RooRealVar& cbAlphaL, RooRealVar& cbNR, RooRealVar& cbAlphaR)
+	void InitCrystalBallGauss(RooRealVar& cbAlpha, RooRealVar& cbN, RooRealVar& jpsiSigma, RooRealVar& jpsiMu, RooRealVar& gausN)
 	{
-		psiDoubleCrystalBallPdf = new RooGenericPdf("psiDoubleCrystalBallPdf", "psiDoubleCrystalBallPdf",
+		Pdf = new RooGenericPdf("psiCrystalBallGaussPdf",  "psiCrystalBallGaussPdf",
+					"ROOT::Math::crystalball_function(mMass,cbAlpha,cbN,jpsiSigma*massRatio,jpsiMu*massRatio) + gausN*TMath::Gaus(mMass, jpsiMu*massRatio, jpsiSigma*massRatio)", 
+					RooArgSet(mMass, cbAlpha, cbN, jpsiSigma, jpsiMu, massRatio, gausN)); // psiMu = jpsiMu * massRatio; psiSigma = jpsiSigma * massRatio
+	}
+
+	void InitDoubleCrystalBall(RooRealVar& psiN, RooRealVar& jpsiMu, RooRealVar& jpsiSigma, RooRealVar& cbNL, RooRealVar& cbAlphaL, RooRealVar& cbNR, RooRealVar& cbAlphaR)
+	{
+		Pdf = new RooGenericPdf("psiDoubleCrystalBallPdf", "psiDoubleCrystalBallPdf",
 					"DoubleCrystalBall(mMass, psiN, jpsiMu*massRatio, jpsiSigma*massRatio, cbNL, cbAlphaL, cbNR, cbAlphaR)", 
 					RooArgSet(mMass, psiN, jpsiMu, jpsiSigma, cbNL, cbAlphaL, cbNR, cbAlphaR, massRatio));
 	}
 
-	void InitDoubleCrystalBall_Asym(RooRealVar& psiN, RooRealVar& jpsiMu, RooRealVar& jpsiSigmaL, RooRealVar& jpsiSigmaR, RooRealVar& sigmaRatio, RooRealVar& cbNL, RooRealVar& cbAlphaL, RooRealVar& cbNR, RooRealVar& cbAlphaR)
+	void InitAsymDoubleCrystalBall(RooRealVar& psiN, RooRealVar& jpsiMu, RooRealVar& jpsiSigmaL, RooRealVar& jpsiSigmaR, RooRealVar& cbNL, RooRealVar& cbAlphaL, RooRealVar& cbNR, RooRealVar& cbAlphaR)
 	{
-		//psiDoubleCrystalBall_AsymPdf = new RooGenericPdf("psiDoubleCrystalBall_AsymPdf", "psiDoubleCrystalBall_AsymPdf",
-		//			"DoubleCrystalBall_Asym(mMass, psiN, jpsiMu*massRatio, jpsiSigmaL*massRatio, jpsiSigmaR*massRatio, cbNL, cbAlphaL, cbNR, cbAlphaR)", 
+		//Pdf = new RooGenericPdf("psiAsymDoubleCrystalBallPdf", "psiAsymDoubleCrystalBallPdf",
+		//			"AsymDoubleCrystalBall(mMass, psiN, jpsiMu*massRatio, jpsiSigmaL*massRatio, jpsiSigmaR*massRatio, cbNL, cbAlphaL, cbNR, cbAlphaR)", 
 		//			RooArgSet(mMass, psiN, jpsiMu, jpsiSigmaL, jpsiSigmaR, cbNL, cbAlphaL, cbNR, cbAlphaR, massRatio));
 	}
 
 	// RooAddPdf* 		GetPdfRooCrystalBall()			{if(!psiRooCrystalBallPdf)			throw std::runtime_error("PsiPdf ----> No RooCrystalBallPdf!!!");			return psiRooCrystalBallPdf;}
-	RooGenericPdf* 	GetDoubleCrystalBallPdf()		{if(!psiDoubleCrystalBallPdf)		throw std::runtime_error("PsiPdf ----> No DoubleCrystalBallPdf!!!");		return psiDoubleCrystalBallPdf;}
-	RooGenericPdf* 	GetDoubleCrystalBall_AsymPdf()	{if(!psiDoubleCrystalBall_AsymPdf)	throw std::runtime_error("PsiPdf ----> No psiDoubleCrystalBall_AsymPdf!!!");return psiDoubleCrystalBall_AsymPdf;}
 	//-----------------------------------------------------------------------------------
 };
 

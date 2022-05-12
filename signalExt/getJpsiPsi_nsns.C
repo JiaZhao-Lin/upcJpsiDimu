@@ -55,7 +55,7 @@ int    qedColor = kGreen-3, qedStyle = 1;
 
 
 const int NnCases = 6;
-const std::vector<int> RunCase = {1,2,3,4,5};
+const std::vector<int> RunCase = {0,1,2,3,4,5};
 const TString nCasesName[NnCases] = {"AnAn", "OnOn", "0nXn", "Xn0n", "OnXnSum", "XnXn"};
 TH1D* hCohMass_in_ny[NnCases][nDiffRapBins+1]; //last content is the sum of all y-bins, within coherent pt threshold
 TH1D* hMass_in_ny[NnCases][nDiffRapBins+1];    //last content is the sum of all y-bins, for all pt 
@@ -306,6 +306,8 @@ void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4
 			RooRealVar  jpsiMu(     "jpsiMu",      "jpsiMu",     3.096, 2.9,  3.3  );
 			RooRealVar  jpsiSigma(  "jpsiSigma",   "jpsiSigma",  0.045, 0.01, 0.2 );
 
+			RooRealVar  gausN(      "gausN",       "gausN",      3.5,   0.00, 20   );
+
 			// RooRealVar  jpsiN(		"jpsiN",		"jpsiN",		9.,   0.1,  1.e2  );
 			// RooRealVar  psiN(		"psiN",			"psiN",			9.,   0.1,  1.e2  );
 			// RooRealVar  jpsiMu(     "jpsiMu",		"jpsiMu",      3.096, 2.9,  3.3 );
@@ -323,20 +325,18 @@ void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4
 			RooGenericPdf *qedPdf 	= cQEDPdf.GetPdf();
 
 			JpsiPdf cJpsiPdf(	hCohMass, mMass, massLow4Fit, massHig4Fit	);
-			cJpsiPdf.Init(cbAlpha, cbN, jpsiSigma, jpsiMu);
+			// cJpsiPdf.Init(cbAlpha, cbN, jpsiSigma, jpsiMu);
+			cJpsiPdf.InitCrystalBallGauss(cbAlpha, cbN, jpsiSigma, jpsiMu, gausN);
+			// cJpsiPdf.InitDoubleCrystalBall(jpsiN, jpsiMu, jpsiSigma, cbNL, cbAlphaL, cbNR, cbAlphaR);
+			// cJpsiPdf.InitAsymDoubleCrystalBall(jpsiN, jpsiMu, jpsiSigmaL, jpsiSigmaR, cbNL, cbAlphaL, cbNR, cbAlphaR);
 			RooGenericPdf *jpsiPdf 	= cJpsiPdf.GetPdf();
-			// cJpsiPdf.InitDoubleCrystalBall(jpsiN, jpsiMu, jpsiSigma, sigmaRatio, cbNL, cbAlphaL, cbNR, cbAlphaR);
-			// RooGenericPdf *jpsiPdf 	= cJpsiPdf.GetDoubleCrystalBallPdf();
-			// cJpsiPdf.InitDoubleCrystalBall_Asym(jpsiN, jpsiMu, jpsiSigmaL, jpsiSigmaR, sigmaRatio, cbNL, cbAlphaL, cbNR, cbAlphaR);
-			// RooGenericPdf *jpsiPdf 	= cJpsiPdf.GetDoubleCrystalBall_AsymPdf();
 
 			PsiPdf 	cPsiPdf(	hCohMass, mMass, massLow4Fit, massHig4Fit	);
-			cPsiPdf.Init(cbAlpha, cbN, jpsiSigma, jpsiMu);
+			// cPsiPdf.Init(cbAlpha, cbN, jpsiSigma, jpsiMu);
+			cPsiPdf.InitCrystalBallGauss(cbAlpha, cbN, jpsiSigma, jpsiMu, gausN);
+			// cPsiPdf.InitDoubleCrystalBall(psiN, jpsiMu, jpsiSigma, cbNL, cbAlphaL, cbNR, cbAlphaR);
+			// cPsiPdf.InitAsymDoubleCrystalBall(psiN, jpsiMu, jpsiSigmaL, jpsiSigmaR, cbNL, cbAlphaL, cbNR, cbAlphaR);
 			RooGenericPdf *psiPdf 	= cPsiPdf.GetPdf();
-			// cPsiPdf.InitDoubleCrystalBall(psiN, jpsiMu, jpsiSigma, sigmaRatio, cbNL, cbAlphaL, cbNR, cbAlphaR);
-			// RooGenericPdf *psiPdf 	= cPsiPdf.GetDoubleCrystalBallPdf();
-			// cPsiPdf.InitDoubleCrystalBall_Asym(psiN, jpsiMu, jpsiSigmaL, jpsiSigmaR, sigmaRatio, cbNL, cbAlphaL, cbNR, cbAlphaR);
-			// RooGenericPdf *psiPdf 	= cPsiPdf.GetDoubleCrystalBall_AsymPdf();
 			
 			//// directly use QED template from simulation
 			//int jpsiMBinLow = hQEDMassHistTemp->GetXaxis()->FindBin(massLow4Fit + mTinyNum);
@@ -595,6 +595,7 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			RooRealVar  jpsiMu(     "jpsiMu",      "jpsiMu",     3.096, 2.9,  3.3  );
 			RooRealVar  jpsiSigma(  "jpsiSigma",   "jpsiSigma",  0.045, 0.01, 0.2 );
 
+			RooRealVar  gausN(      "gausN",       "gausN",      3.5,   0.00, 20   );
 
 			// RooRealVar  jpsiN(		"jpsiN",		"jpsiN",	   9.,     0.1,  1.e2);
 			// RooRealVar  psiN(		"psiN",			"psiN",		   9.,     0.1,  1.e2);
@@ -614,18 +615,18 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			RooGenericPdf *qedPdf 	= cQEDPdf.GetPdf();
 
 			JpsiPdf cJpsiPdf(	hMass, mMass, massLow4Fit, massHig4Fit	);
-			cJpsiPdf.Init(cbAlpha, cbN, jpsiSigma, jpsiMu);
+			// cJpsiPdf.Init(cbAlpha, cbN, jpsiSigma, jpsiMu);
+			cJpsiPdf.InitCrystalBallGauss(cbAlpha, cbN, jpsiSigma, jpsiMu, gausN);
+			// cJpsiPdf.InitDoubleCrystalBall(jpsiN, jpsiMu, jpsiSigma, cbNL, cbAlphaL, cbNR, cbAlphaR);
+			// cJpsiPdf.InitAsymDoubleCrystalBall(jpsiN, jpsiMu, jpsiSigmaL, jpsiSigmaR, cbNL, cbAlphaL, cbNR, cbAlphaR);
 			RooGenericPdf *jpsiPdf 	= cJpsiPdf.GetPdf();
-			// cJpsiPdf.InitDoubleCrystalBall(jpsiN, jpsiMu, jpsiSigma, sigmaRatio, cbNL, cbAlphaL, cbNR, cbAlphaR);
-			// RooGenericPdf *jpsiPdf 	= cJpsiPdf.GetDoubleCrystalBallPdf();
-			// cJpsiPdf.InitDoubleCrystalBall_Asym(jpsiN, jpsiMu, jpsiSigmaL, jpsiSigmaR, sigmaRatio, cbNL, cbAlphaL, cbNR, cbAlphaR);
-			// RooGenericPdf *jpsiPdf 	= cJpsiPdf.GetDoubleCrystalBall_AsymPdf();
 
 			PsiPdf 	cPsiPdf(	hMass, mMass, massLow4Fit, massHig4Fit	);
-			cPsiPdf.Init(cbAlpha, cbN, jpsiSigma, jpsiMu);
+			// cPsiPdf.Init(cbAlpha, cbN, jpsiSigma, jpsiMu);
+			cPsiPdf.InitCrystalBallGauss(cbAlpha, cbN, jpsiSigma, jpsiMu, gausN);
+			// cPsiPdf.InitDoubleCrystalBall(psiN, jpsiMu, jpsiSigma, cbNL, cbAlphaL, cbNR, cbAlphaR);
+			// cPsiPdf.InitAsymDoubleCrystalBall(psiN, jpsiMu, jpsiSigmaL, jpsiSigmaR, cbNL, cbAlphaL, cbNR, cbAlphaR);
 			RooGenericPdf *psiPdf 	= cPsiPdf.GetPdf();
-			// cPsiPdf.InitCrystalBall(cbAlpha, cbN, jpsiSigma, sigmaRatio, jpsiMu, gausN);
-			// cPsiPdf.InitDoubleCrystalBall(psiN, jpsiMu, jpsiSigma, sigmaRatio, cbNL, cbAlphaL, cbNR, cbAlphaR);
 			//------------------------------------------------------------------------------------------------------------
 
 			//------------------------------------------------------------------------------------------------------------

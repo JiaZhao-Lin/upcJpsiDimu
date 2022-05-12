@@ -221,7 +221,7 @@ void plotShadowingRatio( )
 
 	//TH2D* htem2d = new TH2D("htem2d", "", 10,3.0e-5,5.0e-2, 10, 0, 1);
 	TH2D* htem2d = new TH2D("htem2d", "", 10,4.0e-5,1.1e-2, 10, 0.2, 1.1);
-	htem2d->SetYTitle("R^{Pb}_{g}(x, #mu^{2}=0.24 GeV^{2})");
+	htem2d->SetYTitle("R^{Pb}_{g}(x, #mu^{2}=2.4 GeV^{2})");
 	htem2d->SetXTitle("x");
 
 	htem2d->GetYaxis()->SetTitleSize(0.06);

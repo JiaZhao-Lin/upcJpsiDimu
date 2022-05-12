@@ -1,8 +1,0 @@
-scp -r anaData
-scp -r common
-scp -r crabJobConfig
-scp -r extractSignals
-scp -r neuDecouple
-scp -r ptSmear
-scp -r signalExt
-scp -r simulation
