@@ -123,6 +123,9 @@ void plotZDC(Bool_t isPaper=kTRUE, Bool_t drawNeuRange = 1)
 	gStyle->SetStatH(0.17);
 	gStyle->SetStatW(0.21);
 
+	
+	const double frac_0n_to_Xn[nDirs] = {0.01e-2, 0.02e-2}; //fraction of 0n distributed out of 0n cut window, measured in ZDC noise from empty bunch data
+
 	for(Int_t idir=0; idir<nDirs; idir++)
 	{
 		c1->cd(2+idir);
@@ -217,9 +220,23 @@ void plotZDC(Bool_t isPaper=kTRUE, Bool_t drawNeuRange = 1)
 		const double N_Xn_in_0n = multiGaus[idir]->Integral(0,mZdcFitLow[idir])/hZDC[idir]->GetBinWidth(1);
 		const double purity_0n  = (hZDC[idir]->Integral(1,binLow)-N_Xn_in_0n)/(hZDC[idir]->Integral(1,binLow));
 
+		const double N_0n_in_Xn = hZDC[idir]->Integral(binLow, binHi)*frac_0n_to_Xn[idir];
+		const double purity_Xn  = (hZDC[idir]->Integral(binHi, hZDC[idir]->GetNbinsX()) - N_0n_in_Xn) / (hZDC[idir]->Integral(binHi, hZDC[idir]->GetNbinsX()));
+
 		cout<<"-------------------------------------------------"<<endl;
 		cout<<"purity_0n: "<<purity_0n<<endl;
+		cout<<"purity_Xn: "<<purity_Xn<<endl;
 		cout<<"-------------------------------------------------"<<endl;
+
+		//calculate the cut efficiency of 0n and Xn
+		const double eff_0n_Cut = (1. - frac_0n_to_Xn[idir]);
+		const double eff_Xn_Cut = ( hZDC[idir]->Integral(binHi, hZDC[idir]->GetNbinsX()) - N_0n_in_Xn ) / ( hZDC[idir]->Integral(binHi, hZDC[idir]->GetNbinsX()) - N_0n_in_Xn + N_Xn_in_0n );
+
+		cout<<"-------------------------------------------------"<<endl;
+		cout<<"eff_0n_Cut: "<<eff_0n_Cut<<endl;
+		cout<<"eff_Xn_Cut: "<<eff_Xn_Cut<<endl;
+		cout<<"-------------------------------------------------"<<endl;
+
 		//---------------------------------------------------
 
 
