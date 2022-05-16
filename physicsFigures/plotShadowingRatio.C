@@ -1,25 +1,18 @@
 #include "./ImpulseApproximation/runUPC_AAModel.C"
 #include "fit2D.C"
+#include "../common/LoadSignal.C"
 
 const double JpsiMass   = 3.096916;
 const double Sqrt_s     = 5020;
 const double Gamma_beam = 2672.9;
 const double Mass_N     = (0.93827+0.93957) / 2;
 
-std::vector<double> Raps,      Raps_Err;
-std::vector<double> Sigmas,    Sigmas_Err;
-std::vector<double> Sigmas_IA, Sigmas_IA_Err;
-std::vector<double> R,         R_Err;
-
-std::vector<double> 	Xs = {},  Xs_Err = {};
-std::vector<double> 	Ws = {},  Ws_Err = {};
-
-void Cal_R_Error()
+void Cal_R_Error(std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap)
 {
-	for (int i = 0; i < Raps.size(); ++i)
+	for (int i = 0; i < ShadowRatio_ParamsMap["Raps"].size(); ++i)
 	{
-		double tem = R[i]*R[i] * sqrt(pow(Sigmas_Err[i]/Sigmas[i],2) + pow(Sigmas_IA_Err[i]/Sigmas_IA[i],2) );
-		R_Err.push_back( tem/R[i]/2);
+		double tem = ShadowRatio_ParamsMap["R"][i]*ShadowRatio_ParamsMap["R"][i] * sqrt(pow(ShadowRatio_ParamsMap["Sigmas_Err"][i]/ShadowRatio_ParamsMap["Sigmas"][i],2) + pow(ShadowRatio_ParamsMap["Sigmas_IA_Err"][i]/ShadowRatio_ParamsMap["Sigmas_IA"][i],2) );
+		ShadowRatio_ParamsMap["R_Err"].push_back( tem/ShadowRatio_ParamsMap["R"][i]/2);
 	}
 }
 
@@ -33,7 +26,7 @@ double y2W(const double y)
 	return sqrt( (2 * Gamma_beam * Mass_N * JpsiMass) * exp(y) );
 }
 
-void plotSigmaVsW( const int flag4Axis = 0 ) //0: logY only, 1: logX and LogY
+void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap, const int flag4Axis = 0 ) //0: logY only, 1: logX and LogY
 {
 	for (int i = 0; i < ALICE_Run2_FwdRap_y.size(); ++i)
 	{
@@ -78,7 +71,7 @@ void plotSigmaVsW( const int flag4Axis = 0 ) //0: logY only, 1: logX and LogY
 	SigmaVsW->SetTickLength(0.04);
 	SigmaVsW->Draw("");
 
-	TGraphErrors* ge_CMS        		= new TGraphErrors(Ws.size(),	&Ws[0],	&Sigmas[0],	0,	&Sigmas_Err[0]	);
+	TGraphErrors* ge_CMS        		= new TGraphErrors(ShadowRatio_ParamsMap["Ws"].size(),	&ShadowRatio_ParamsMap["Ws"][0],	&ShadowRatio_ParamsMap["Sigmas"][0],	0,	&ShadowRatio_ParamsMap["Sigmas_Err"][0]	);
 	
 	TGraphAsymmErrors *gae_Xsec_ALICE_Run1 = new TGraphAsymmErrors(ALICE_W_Run1.size(), &ALICE_W_Run1[0],&ALICE_Xsec_Run1[0],0,0, &ALICE_XsecErr2_Run1[0], &ALICE_XsecErr1_Run1[0]);
 	
@@ -184,31 +177,8 @@ void plotSigmaVsW( const int flag4Axis = 0 ) //0: logY only, 1: logX and LogY
 	delete c;
 }
 
-void plotShadowingRatio( )
-{
-	{auto Temp = fit2D(); Raps = Temp[0]; Raps_Err = Temp[1]; Sigmas = Temp[2]; Sigmas_Err = Temp[3];}
-	for (int i = 0; i < Raps.size(); ++i)
-	{
-		Xs 		.push_back( y2x(Raps[i]) 	);
-		Xs_Err	.push_back( 0 );
-		Ws 		.push_back( y2W(Raps[i]) 	);
-		Ws_Err 	.push_back( 0 );
-
-		cout<<Form("y: %f,	x: %f,	W: %f", Raps[i], Xs[i], Ws[i])<<endl;
-		cout<<"x from W: "<<pow(JpsiMass,2)/pow(Ws[i],2)<<endl;
-	}
-	
-	{auto Temp = runUPC_AAModel(Ws); Sigmas_IA = Temp[0]; Sigmas_IA_Err = Temp[1];}
-
-	for (int i = 0; i < Raps.size(); ++i)
-	{
-		R.push_back( sqrt( Sigmas[i]/Sigmas_IA[i] ) );
-	}
-	
-	Cal_R_Error();
-	
-	plotSigmaVsW();
-
+void plotRvsX( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap )
+{	
 	auto c = new TCanvas();
 
 	gPad->SetTopMargin(0.05);
@@ -234,7 +204,8 @@ void plotShadowingRatio( )
 	htem2d->SetTickLength(0.04);
 	htem2d->Draw();
 
-	TGraphErrors* ge_CMS        	= new TGraphErrors(Xs.size(),           &Xs[0],           &R[0],            &Xs_Err[0], &R_Err[0]       );
+	TGraphErrors* ge_CMS        	= new TGraphErrors(ShadowRatio_ParamsMap["Xs"].size(),    &ShadowRatio_ParamsMap["Xs"][0], 
+					&ShadowRatio_ParamsMap["R"][0],	&ShadowRatio_ParamsMap["Xs_Err"][0],	&ShadowRatio_ParamsMap["R_Err"][0]);
 	TGraphErrors* ge_ALICE_Run1 	= new TGraphErrors(ALICE_x.size(),      &ALICE_x[0],      &ALICE_R[0],      0,          &ALICE_R_Err[0] );
 	TGraphErrors* ge_ALICE_Run2 	= new TGraphErrors(ALICE_Run2_x.size(), &ALICE_Run2_x[0], &ALICE_Run2_R[0], 0,          &ALICE_Run2_R_Err[0] );
 	TGraphErrors* ge_ALICE_Run2_Psi = new TGraphErrors(ALICE_Run2_Psi_x.size(), &ALICE_Run2_Psi_x[0], &ALICE_Run2_Psi_R[0], 0,          &ALICE_Run2_R_Err[0] );
@@ -290,4 +261,50 @@ void plotShadowingRatio( )
 	c->SaveAs("outplots/ShadowingRatiovsX.png");
 	c->SaveAs("outplots/ShadowingRatiovsX.pdf");
 	delete c;
+
+	return ShadowRatio_ParamsMap;
+}
+
+std::map<TString, std::vector<double>> getParamsMap(const TString infile = "../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins.root")
+{
+	std::map<TString, std::vector<double>> ShadowRatio_ParamsMap = {
+		{"Raps",		{}},	{"Raps_Err",		{}},
+		{"Sigmas",		{}},	{"Sigmas_Err",		{}},
+		{"Sigmas_IA",	{}},	{"Sigmas_IA_Err",	{}},
+		{"R",			{}},	{"R_Err",			{}},
+		{"Xs",			{}},	{"Xs_Err",			{}},
+		{"Ws",			{}},	{"Ws_Err",			{}},
+	};
+
+	LoadJpsiXsec loadJpsiXsec(infile);
+
+	{auto Temp = fit2D(loadJpsiXsec.GetMap()); ShadowRatio_ParamsMap["Raps"] = Temp[0]; ShadowRatio_ParamsMap["Raps_Err"] = Temp[1]; ShadowRatio_ParamsMap["Sigmas"] = Temp[2]; ShadowRatio_ParamsMap["Sigmas_Err"] = Temp[3];}
+	for (int i = 0; i < ShadowRatio_ParamsMap["Raps"].size(); ++i)
+	{
+		ShadowRatio_ParamsMap["Xs"] 		.push_back( y2x(ShadowRatio_ParamsMap["Raps"][i]) 	);
+		ShadowRatio_ParamsMap["Xs_Err"]		.push_back( 0 );
+		ShadowRatio_ParamsMap["Ws"] 		.push_back( y2W(ShadowRatio_ParamsMap["Raps"][i]) 	);
+		ShadowRatio_ParamsMap["Ws_Err"] 	.push_back( 0 );
+
+		cout<<Form("y: %f,	x: %f,	W: %f", ShadowRatio_ParamsMap["Raps"][i], ShadowRatio_ParamsMap["Xs"][i], ShadowRatio_ParamsMap["Ws"][i])<<endl;
+		cout<<"x from W: "<<pow(JpsiMass,2)/pow(ShadowRatio_ParamsMap["Ws"][i],2)<<endl;
+	}
+	
+	{auto Temp = runUPC_AAModel(ShadowRatio_ParamsMap["Ws"]); ShadowRatio_ParamsMap["Sigmas_IA"] = Temp[0]; ShadowRatio_ParamsMap["Sigmas_IA_Err"] = Temp[1];}
+
+	for (int i = 0; i < ShadowRatio_ParamsMap["Raps"].size(); ++i)
+	{
+		ShadowRatio_ParamsMap["R"].push_back( sqrt( ShadowRatio_ParamsMap["Sigmas"][i]/ShadowRatio_ParamsMap["Sigmas_IA"][i] ) );
+	}
+	
+	Cal_R_Error(ShadowRatio_ParamsMap);
+
+	return ShadowRatio_ParamsMap;
+}
+
+void plotShadowingRatio()
+{
+	auto ShadowRatio_ParamsMap = getParamsMap();
+	plotSigmaVsW(ShadowRatio_ParamsMap);
+	plotRvsX(ShadowRatio_ParamsMap);
 }

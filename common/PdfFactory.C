@@ -67,8 +67,8 @@ struct QEDPdf : public PdfFactory
 	const double massLow4Fit, massHig4Fit;
 	const int FitN;
 	RooRealVar  & mMass;
-	RooConstVar mP0, mP1, mP2, mP3;
-	// RooRealVar  mP0, mP1, mP2, mP3;
+	RooConstVar mP0, mP1, mP2, mP3, mP4;
+	RooRealVar  mP0_Free, mP1_Free, mP2_Free, mP3_Free;
 	//-----------------------------------------------------------------------------------
 
 	//Constructor------------------------------------------------------------------------
@@ -107,6 +107,43 @@ struct QEDPdf : public PdfFactory
 		Pdf = new RooGenericPdf("qedPdf", "qedPdf", "mP0 + mP1*mMass + mP2*mMass*mMass + mP3*mMass*mMass*mMass", 
 									RooArgSet(mP0, mP1, mP2, mP3, mMass));
 	}
+	void InitQuartic()
+	{
+
+		fQED = new TF1("fQED", fReject4QED_Quartic, massLow4Fit, massHig4Fit, 5);
+
+		for (int i = 0; i < FitN; ++i)
+		{
+			Hist ->Fit(fQED, "R", "",  massLow4Fit, massHig4Fit); //use side band to initialized QED parameters
+		}
+
+		mP0	=	RooConstVar(  "mP0", "mP0",  fQED->GetParameter(0));
+		mP1	=	RooConstVar(  "mP1", "mP1",  fQED->GetParameter(1));
+		mP2	=	RooConstVar(  "mP2", "mP2",  fQED->GetParameter(2));
+		mP3	=	RooConstVar(  "mP3", "mP3",  fQED->GetParameter(3));
+		mP4	=	RooConstVar(  "mP4", "mP4",  fQED->GetParameter(4));
+
+		Pdf = new RooGenericPdf("qedPdf", "qedPdf", "mP0 + mP1*mMass + mP2*mMass*mMass + mP3*mMass*mMass*mMass + mP4*mMass*mMass*mMass*mMass", 
+									RooArgSet(mP0, mP1, mP2, mP3, mP4, mMass));
+	}
+	void InitFreeCubic()
+	{
+
+		fQED = new TF1("fQED", fReject4QED, massLow4Fit, massHig4Fit, 4);
+
+		for (int i = 0; i < FitN; ++i)
+		{
+			Hist ->Fit(fQED, "R", "",  massLow4Fit, massHig4Fit); //use side band to initialized QED parameters
+		}
+
+		mP0_Free	=	RooRealVar(  "mP0_Free", "mP0_Free",  fQED->GetParameter(0), -1.e6,  1.e6);
+		mP1_Free	=	RooRealVar(  "mP1_Free", "mP1_Free",  fQED->GetParameter(1), 0.,     1.e4);
+		mP2_Free	=	RooRealVar(  "mP2_Free", "mP2_Free",  fQED->GetParameter(2), -1.e4,    0.);
+		mP3_Free	=	RooRealVar(  "mP3_Free", "mP3_Free",  fQED->GetParameter(3), 0.,    1.e3);
+
+		Pdf = new RooGenericPdf("qedPdf", "qedPdf", "mP0_Free + mP1_Free*mMass + mP2_Free*mMass*mMass + mP3_Free*mMass*mMass*mMass", 
+									RooArgSet(mP0_Free, mP1_Free, mP2_Free, mP3_Free, mMass));
+	}
 	double GetInitN(const double BinLow, const double BinHigh)
 	{
 		const int tem_QEDBinLow = HistWorker::FindBin(Hist, BinLow, 0);
@@ -127,6 +164,16 @@ struct QEDPdf : public PdfFactory
 
 		return par[0] + par[1]*x[0] + par[2]*pow(x[0],2) + par[3]*pow(x[0],3);
 	}
+	static double fReject4QED_Quartic(double *x, double *par)
+	{
+		if((x[0]>2.80&& x[0]<3.35) || (x[0]>3.50 && x[0]<3.85))
+		{
+			TF1::RejectPoint();
+			return 0;
+		}
+
+		return par[0] + par[1]*x[0] + par[2]*pow(x[0],2) + par[3]*pow(x[0],3) + + par[4]*pow(x[0],4);
+	}
 };
 
 struct JpsiPdf : public PdfFactory
@@ -146,14 +193,14 @@ struct JpsiPdf : public PdfFactory
 	//-----------------------------------------------------------------------------------
 
 	//Free Functions---------------------------------------------------------------------
-	void Init(RooRealVar& cbAlpha, RooRealVar& cbN, RooRealVar& jpsiSigma, RooRealVar& jpsiMu)
+	void Init(RooRealVar& cbAlpha, RooConstVar& cbN, RooRealVar& jpsiSigma, RooRealVar& jpsiMu)
 	{
 		Pdf = new RooGenericPdf("jpsiCrystalBallPdf", "jpsiCrystalBallPdf",
 					"ROOT::Math::crystalball_function(mMass,cbAlpha,cbN,jpsiSigma,jpsiMu)", 
 					RooArgSet(mMass, cbAlpha, cbN, jpsiSigma, jpsiMu));
 	}
 
-	void InitCrystalBallGauss(RooRealVar& cbAlpha, RooRealVar& cbN, RooRealVar& jpsiSigma, RooRealVar& jpsiMu, RooRealVar& gausN)
+	void InitCrystalBallGauss(RooRealVar& cbAlpha, RooConstVar& cbN, RooRealVar& jpsiSigma, RooRealVar& jpsiMu, RooRealVar& gausN)
 	{
 		Pdf = new RooGenericPdf("jpsiCrystalBallGaussPdf", "jpsiCrystalBallGaussPdf",
 					"ROOT::Math::crystalball_function(mMass,cbAlpha,cbN,jpsiSigma,jpsiMu) + gausN*TMath::Gaus(mMass, jpsiMu, jpsiSigma)", 
@@ -207,14 +254,14 @@ struct PsiPdf : public PdfFactory
 	//-----------------------------------------------------------------------------------
 
 	//Free Functions---------------------------------------------------------------------
-	void Init(RooRealVar& cbAlpha, RooRealVar& cbN, RooRealVar& jpsiSigma, RooRealVar& jpsiMu)
+	void Init(RooRealVar& cbAlpha, RooConstVar& cbN, RooRealVar& jpsiSigma, RooRealVar& jpsiMu)
 	{
 		Pdf = new RooGenericPdf("psiCrystalBallPdf",  "psiCrystalBallPdf",
 					"ROOT::Math::crystalball_function(mMass,cbAlpha,cbN,jpsiSigma*massRatio,jpsiMu*massRatio)", 
 					RooArgSet(mMass, cbAlpha, cbN, jpsiSigma, jpsiMu, massRatio)); // psiMu = jpsiMu * massRatio; psiSigma = jpsiSigma * massRatio
 	}
 
-	void InitCrystalBallGauss(RooRealVar& cbAlpha, RooRealVar& cbN, RooRealVar& jpsiSigma, RooRealVar& jpsiMu, RooRealVar& gausN)
+	void InitCrystalBallGauss(RooRealVar& cbAlpha, RooConstVar& cbN, RooRealVar& jpsiSigma, RooRealVar& jpsiMu, RooRealVar& gausN)
 	{
 		Pdf = new RooGenericPdf("psiCrystalBallGaussPdf",  "psiCrystalBallGaussPdf",
 					"ROOT::Math::crystalball_function(mMass,cbAlpha,cbN,jpsiSigma*massRatio,jpsiMu*massRatio) + gausN*TMath::Gaus(mMass, jpsiMu*massRatio, jpsiSigma*massRatio)", 

@@ -200,9 +200,9 @@ std::vector<std::vector<double>> runUPC_AAModel(const std::vector<double> Ws, TS
     latex1->Draw("same");
   }
 
-  c1->SaveAs("./ImpulseApproximation/runUPC_AAModel_0.png");
-  c2->SaveAs("./ImpulseApproximation/runUPC_AAModel_1.png");
-  c3->SaveAs("./ImpulseApproximation/runUPC_AAModel_2.png");
+  // c1->SaveAs("./ImpulseApproximation/runUPC_AAModel_0.png");
+  // c2->SaveAs("./ImpulseApproximation/runUPC_AAModel_1.png");
+  // c3->SaveAs("./ImpulseApproximation/runUPC_AAModel_2.png");
   delete c1;
   delete c2;
   delete c3;

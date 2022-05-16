@@ -43,15 +43,17 @@ std::vector<double> ALICE_Run2_FwdRap_W  = {},	ALICE_Run2_FwdRap_Sigma	=	{},	ALI
 
 //------------------------------------------------------------------------------------------------------------
 //-------------------------------------------2022 CMS 3 Rap Bin-----------------------------------------------
-const std::vector<double>  Rap 				= { -2.25,  -2.0, -1.75};
-const std::vector<double>  Rap_Err  		= { 0.15,   0.10, 0.15 };
+// const std::vector<double>  Rap 				= { -2.25,  -2.0, -1.75};
+// const std::vector<double>  Rap_Err  		= { 0.15,   0.10, 0.15 };
 //----------------------------------------Rap:  -2.25,		2.25 		  -2.0,		2.0 		  -1.75,	1.75
-const std::vector<TVector2>  flux_0n0n    = { { 126.025,	6.806 },	{ 118.272,	10.012	},	{ 110.526,	14.027	}	}; //N(y)
-const std::vector<TVector2>  flux_0nXnSum = { { 18.294,		7.151 },	{ 18.279,	8.980	},	{ 18.257,	10.721	}	}; //N(y)
-const std::vector<TVector2>  flux_XnXn    = { { 6.521,		3.716 },	{ 6.521,	4.367	},	{ 6.519,	4.911	}	}; //N(y)
-// const std::vector<TVector2>  flux_0n0n    = { { 725.484, 0.526 }, { 437.863, 1.405 }   }; //n(E)
-// const std::vector<TVector2>  flux_0nXnSum = { { 106.609, 0.538 }, { 71.349, 1.109 } }; //n(E)
-// const std::vector<TVector2>  flux_XnXn    = { { 38.009, 0.276 },  { 25.471, 0.514 } }; //n(E)
+// const std::vector<TVector2>  flux_0n0n    = { { 126.025,	6.806 },	{ 118.272,	10.012	},	{ 110.526,	14.027	}	}; //N(y)
+// const std::vector<TVector2>  flux_0nXnSum = { { 18.294,		7.151 },	{ 18.279,	8.980	},	{ 18.257,	10.721	}	}; //N(y)
+// const std::vector<TVector2>  flux_XnXn    = { { 6.521,		3.716 },	{ 6.521,	4.367	},	{ 6.519,	4.911	}	}; //N(y)
+//----------------------------------------Rap:  1.75,	-1.75 		  2.0,		-2.0 		  2.25,		-2.25
+const std::vector<TVector2>  flux_0n0n    = { { 14.027,	110.526 },	{ 10.012,	118.272	},	{ 6.806,	126.025	}	}; //N(y)
+const std::vector<TVector2>  flux_0nXnSum = { { 10.721,	18.257 },	{ 8.980,	18.279	},	{ 7.151,	18.294	}	}; //N(y)
+const std::vector<TVector2>  flux_XnXn    = { { 4.911,	6.519 },	{ 4.367,	6.521	},	{ 3.716,	6.521	}	}; //N(y)
+
 
 //----------------CrystalBall:			  Rap: |-2.25|,	|-2.0|,	|-1.75| --------------------------------------
 // const std::vector<double>  Xsec_0n0n      = { 2.512,	2.928,	3.008 },     XsecErr_0n0n      = { 0.035,	0.032,	0.057 };
@@ -72,9 +74,9 @@ const std::vector<TVector2>  flux_XnXn    = { { 6.521,		3.716 },	{ 6.521,	4.367	
 ////------------------------------------------------------------------------------------------------------------
 
 //----------------CrystalBall PU Shuai:	  Rap: |-2.25|,	|-2.0|,	|-1.75| --------------------------------------
- const std::vector<double>  Xsec_0n0n      = { 2.823,	3.307,	3.371 },     XsecErr_0n0n      = { 0.039,	0.042,	0.064 };
- const std::vector<double>  Xsec_0nXnSum   = { 0.702,	0.819,	1.006 },     XsecErr_0nXnSum   = { 0.019,	0.028,	0.037 };
- const std::vector<double>  Xsec_XnXn      = { 0.201,	0.243,	0.246 },     XsecErr_XnXn      = { 0.009,	0.014,	0.017 };
+ // const std::vector<double>  Xsec_0n0n      = { 2.823,	3.307,	3.371 },     XsecErr_0n0n      = { 0.039,	0.042,	0.064 };
+ // const std::vector<double>  Xsec_0nXnSum   = { 0.702,	0.819,	1.006 },     XsecErr_0nXnSum   = { 0.019,	0.028,	0.037 };
+ // const std::vector<double>  Xsec_XnXn      = { 0.201,	0.243,	0.246 },     XsecErr_XnXn      = { 0.009,	0.014,	0.017 };
 //------------------------------------------------------------------------------------------------------------
 
 //----------------CrystalBall + Gaussian: Rap: |-2.25|,	|-2.0|,	|-1.75| --------------------------------------

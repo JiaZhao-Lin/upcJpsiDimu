@@ -73,13 +73,17 @@ double NerrJpsi_inMFit[NnCases][nDiffRapBins+1]; //# Jpsi within pt<0.20 GeV/c f
 double Eff_CohJpsi[NnCases][nDiffRapBins+1];     //efficiency of coherent jpsi
 // const double temAcc[nDiffRapBins+1] = {0.170, 0.348, 0.348, 0.170, 0.250};//need to be updated by corrected one later
 double Acc_CohJpsi[nDiffRapBins+1];     //acceptance of coherent jpsi
+
+std::vector< std::vector<double> > xsecValue( NnCases , std::vector<double> (nDiffRapBins+1,	0));
+std::vector< std::vector<double> > xsecError( NnCases , std::vector<double> (nDiffRapBins+1,	0));
+
 //------------------------------------------------------------------------------------------------------------
 void prepareData();
 void loadEff();
 void loadAcc();
 void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4.2);
 void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double massHig4Fit=4.2,  const double ptLow4Fit=0,     const double ptHig4Fit=3.5);
-void saveFiles();
+void saveFile(const TString headerTitle = "Default");
 //------------------------------------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------------------------------------
@@ -96,6 +100,8 @@ void getJpsiPsi_nsns()
 	PileUp_Corr(NJpsi_inMFit, NerrJpsi_inMFit, nDiffRapBins+1);
 	
 	fitFullMassAndPt_4Decouple(2.6,4.2, -0.01,3.0);
+
+	saveFile("CB_Poly3_PUShuai");
 }
 //------------------------------------------------------------------------------------------------------------
 
@@ -322,18 +328,20 @@ void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4
 
 			QEDPdf 	cQEDPdf(	hCohMass, mMass, massLow4Fit, massHig4Fit, 3);
 			cQEDPdf.Init();
+			// cQEDPdf.InitQuartic();
+			// cQEDPdf.InitFreeCubic();
 			RooGenericPdf *qedPdf 	= cQEDPdf.GetPdf();
 
 			JpsiPdf cJpsiPdf(	hCohMass, mMass, massLow4Fit, massHig4Fit	);
-			// cJpsiPdf.Init(cbAlpha, cbN, jpsiSigma, jpsiMu);
-			cJpsiPdf.InitCrystalBallGauss(cbAlpha, cbN, jpsiSigma, jpsiMu, gausN);
+			cJpsiPdf.Init(cbAlpha, cbN, jpsiSigma, jpsiMu);
+			// cJpsiPdf.InitCrystalBallGauss(cbAlpha, cbN, jpsiSigma, jpsiMu, gausN);
 			// cJpsiPdf.InitDoubleCrystalBall(jpsiN, jpsiMu, jpsiSigma, cbNL, cbAlphaL, cbNR, cbAlphaR);
 			// cJpsiPdf.InitAsymDoubleCrystalBall(jpsiN, jpsiMu, jpsiSigmaL, jpsiSigmaR, cbNL, cbAlphaL, cbNR, cbAlphaR);
 			RooGenericPdf *jpsiPdf 	= cJpsiPdf.GetPdf();
 
 			PsiPdf 	cPsiPdf(	hCohMass, mMass, massLow4Fit, massHig4Fit	);
-			// cPsiPdf.Init(cbAlpha, cbN, jpsiSigma, jpsiMu);
-			cPsiPdf.InitCrystalBallGauss(cbAlpha, cbN, jpsiSigma, jpsiMu, gausN);
+			cPsiPdf.Init(cbAlpha, cbN, jpsiSigma, jpsiMu);
+			// cPsiPdf.InitCrystalBallGauss(cbAlpha, cbN, jpsiSigma, jpsiMu, gausN);
 			// cPsiPdf.InitDoubleCrystalBall(psiN, jpsiMu, jpsiSigma, cbNL, cbAlphaL, cbNR, cbAlphaR);
 			// cPsiPdf.InitAsymDoubleCrystalBall(psiN, jpsiMu, jpsiSigmaL, jpsiSigmaR, cbNL, cbAlphaL, cbNR, cbAlphaR);
 			RooGenericPdf *psiPdf 	= cPsiPdf.GetPdf();
@@ -384,7 +392,7 @@ void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4
 			const double nPsiValue   = nPsi.getVal();
 			const double nPsiError   = nPsi.getError();
 			const double RN          = nPsiValue/nJpsiValue;
-			const double RNErr       = RN*sqrt( pow(nJpsiError/nJpsiValue, 2) + pow(nPsiError/nPsiValue, 2) - (2.*mtrx_cov[4][5])/(nPsiValue*nJpsiValue) );
+			const double RNErr       = RN*sqrt( pow(nJpsiError/nJpsiValue, 2) + pow(nPsiError/nPsiValue, 2) - (2.*mtrx_cov[5][6])/(nPsiValue*nJpsiValue) );
 
 			cout<<"RN: "<<RN<<" +/- "<<RNErr<<endl;
 
@@ -612,18 +620,20 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 
 			QEDPdf 	cQEDPdf(	hMass, mMass, massLow4Fit, massHig4Fit, 3);
 			cQEDPdf.Init();
+			// cQEDPdf.InitQuartic();
+			// cQEDPdf.InitFreeCubic();
 			RooGenericPdf *qedPdf 	= cQEDPdf.GetPdf();
 
 			JpsiPdf cJpsiPdf(	hMass, mMass, massLow4Fit, massHig4Fit	);
-			// cJpsiPdf.Init(cbAlpha, cbN, jpsiSigma, jpsiMu);
-			cJpsiPdf.InitCrystalBallGauss(cbAlpha, cbN, jpsiSigma, jpsiMu, gausN);
+			cJpsiPdf.Init(cbAlpha, cbN, jpsiSigma, jpsiMu);
+			// cJpsiPdf.InitCrystalBallGauss(cbAlpha, cbN, jpsiSigma, jpsiMu, gausN);
 			// cJpsiPdf.InitDoubleCrystalBall(jpsiN, jpsiMu, jpsiSigma, cbNL, cbAlphaL, cbNR, cbAlphaR);
 			// cJpsiPdf.InitAsymDoubleCrystalBall(jpsiN, jpsiMu, jpsiSigmaL, jpsiSigmaR, cbNL, cbAlphaL, cbNR, cbAlphaR);
 			RooGenericPdf *jpsiPdf 	= cJpsiPdf.GetPdf();
 
 			PsiPdf 	cPsiPdf(	hMass, mMass, massLow4Fit, massHig4Fit	);
-			// cPsiPdf.Init(cbAlpha, cbN, jpsiSigma, jpsiMu);
-			cPsiPdf.InitCrystalBallGauss(cbAlpha, cbN, jpsiSigma, jpsiMu, gausN);
+			cPsiPdf.Init(cbAlpha, cbN, jpsiSigma, jpsiMu);
+			// cPsiPdf.InitCrystalBallGauss(cbAlpha, cbN, jpsiSigma, jpsiMu, gausN);
 			// cPsiPdf.InitDoubleCrystalBall(psiN, jpsiMu, jpsiSigma, cbNL, cbAlphaL, cbNR, cbAlphaR);
 			// cPsiPdf.InitAsymDoubleCrystalBall(psiN, jpsiMu, jpsiSigmaL, jpsiSigmaR, cbNL, cbAlphaL, cbNR, cbAlphaR);
 			RooGenericPdf *psiPdf 	= cPsiPdf.GetPdf();
@@ -901,8 +911,8 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			const double Lum =  mCMSLum*(unit_ub2mb); //in ub, need to use mb to compare to Alice
 			
 			//calculate the cross section: xsec = (NJpsiFromMfit/(1+fD+fI))*(1/eff)*(1/BR)*(1/Lum)*(1/dy)
-			const double xsecValue = NJpsi_Coh_cal    * (1./Eff_CohJpsi[i_ncase][iy]) * (1./br_Jpsi2uu) * (1./Lum) * (1./dY) * (1./Acc_CohJpsi[iy]);
-			const double xsecError = NerrJpsi_Coh_cal * (1./Eff_CohJpsi[i_ncase][iy]) * (1./br_Jpsi2uu) * (1./Lum) * (1./dY) * (1./Acc_CohJpsi[iy]);
+			xsecValue[i_ncase][iy] = NJpsi_Coh_cal    * (1./Eff_CohJpsi[i_ncase][iy]) * (1./br_Jpsi2uu) * (1./Lum) * (1./dY) * (1./Acc_CohJpsi[iy]);
+			xsecError[i_ncase][iy] = NerrJpsi_Coh_cal * (1./Eff_CohJpsi[i_ncase][iy]) * (1./br_Jpsi2uu) * (1./Lum) * (1./dY) * (1./Acc_CohJpsi[iy]);
 
 			int nFramePtBins = (ptHig4Fit - ptLow4Fit)/hPt->GetBinWidth(1);
 			cout<<nFramePtBins<<endl;
@@ -947,7 +957,7 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			drawLatex(0.25, 0.65+textDy2, Form("N^{Coh}_{J/#psi} = %d #pm %d",  (int)N_CohJpsi_inPtCut, (int)Nerr_CohJpsi_inPtCut), mTextFont, 0.035, mTextColor);
 			drawLatex(0.25, 0.60+textDy2, Form("f_{I} = (N^{All}_{InCoh}/N^{Coh}_{J/#psi}) = %.3f #pm %.3f", fI_Value, fI_Error),     mTextFont, 0.035, mTextColor);
 			drawLatex(0.25, 0.52+textDy2, Form("N^{in Mfit}_{J/#psi}/(1+f_{I}+f_{D}) = %d #pm %d",  (int)NJpsi_Coh_cal, (int)NerrJpsi_Coh_cal), mTextFont, 0.035, mTextColor);
-			drawLatex(0.35, 0.45+textDy2, Form("#frac{#sigma^{Coh}_{J/#psi}}{dy} = %.3f #pm %.3f (mb)", xsecValue, xsecError ),                                     mTextFont, 0.035, mTextColor);
+			drawLatex(0.35, 0.45+textDy2, Form("#frac{#sigma^{Coh}_{J/#psi}}{dy} = %.3f #pm %.3f (mb)", xsecValue[i_ncase][iy], xsecError[i_ncase][iy] ),                                     mTextFont, 0.035, mTextColor);
 
 			TLegend  *leg =  new TLegend(0.62, 0.45, 0.88, 0.80);
 			leg->SetFillStyle(0);
@@ -1032,4 +1042,27 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 	delete c2;
 	
 	cout << "End of program !" << endl;
+}
+
+void saveFile(const TString headerTitle = "Default")
+{
+	TFile file_JpsiXsec = TFile(Form("JpsiXsecValues/JpsiXsec_%s_%dRapBins.root", headerTitle.Data(), nDiffRapBins), "recreate");
+	cout<<"Saving JpsiXsec into: "<<file_JpsiXsec.GetName()<<endl;
+
+	for(int iCase=0; iCase<RunCase.size(); iCase++)
+	{
+		TH1D hJpsiXsec( Form("h%s",nCasesName[iCase].Data()), Form("h%s",nCasesName[iCase].Data()), nDiffRapBins+1, mDiffRapBds);
+		
+		for (int iy = 0; iy < nDiffRapBins; ++iy)
+		{
+			if(iy==nDiffRapBins) continue; //temperory to skip all y added fitting 
+			if(SymmetricRapBin && iy < nDiffRapBins/2 )          continue; //tem skip
+
+			double yMean = (mDiffRapLow[iy]+mDiffRapHi[iy])/2.;
+			hJpsiXsec.SetBinContent(hJpsiXsec.FindBin(yMean), xsecValue[iCase][iy]);
+			hJpsiXsec.SetBinError(  hJpsiXsec.FindBin(yMean), xsecError[iCase][iy]);
+		}
+		hJpsiXsec.Write();
+	}
+	file_JpsiXsec.Close();
 }

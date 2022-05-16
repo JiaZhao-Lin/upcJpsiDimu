@@ -12,11 +12,17 @@ Double_t func(Double_t *val, Double_t *par)
 }
 
 
-std::vector<std::vector<double>> fit2D()
+std::vector<std::vector<double>> fit2D(std::map<TString, std::vector<double>> Map_Xsec)
 {
    std::vector<std::vector<double>> Xs, Ys, Zs, Zs_Err;
    std::vector<double> Raps,   Raps_Err;
    std::vector<double> Sigmas, Sigmas_Err;
+
+   //getting xsection from the map
+   std::vector<double> Rap = Map_Xsec["Rap"], RapErr = Map_Xsec["RapErr"];
+   std::vector<double> Xsec_0n0n = Map_Xsec["Xsec_0n0n"], XsecErr_0n0n = Map_Xsec["XsecErr_0n0n"];
+   std::vector<double> Xsec_0nXnSum = Map_Xsec["Xsec_0nXnSum"], XsecErr_0nXnSum = Map_Xsec["XsecErr_0nXnSum"];
+   std::vector<double> Xsec_XnXn = Map_Xsec["Xsec_XnXn"], XsecErr_XnXn = Map_Xsec["XsecErr_XnXn"];
 
    for (int i = 0; i < flux_0n0n.size(); ++i)
    {
@@ -51,10 +57,10 @@ std::vector<std::vector<double>> fit2D()
       drawLatex(0.05, 0.95, Form("(#sigma(y = %.2f), #sigma(y = %.2f)) = (%.4f #pm %.4f, %.4f #pm %.4f)", Rap[i], -Rap[i],
                               f->GetParameter(0), f->GetParError(0), f->GetParameter(1), f->GetParError(1)),      42,       0.05,      1);
       
-      c->SaveAs(Form("outplots/fit2D_%d.png",i));
+      // c->SaveAs(Form("outplots/fit2D_%d.png",i));
       cout<<endl;
       Raps        .push_back(Rap[i]);              Raps        .push_back( - Rap[i] );
-      Raps_Err    .push_back(Rap_Err[i]);         Raps_Err    .push_back( Rap_Err[i] );
+      Raps_Err    .push_back(RapErr[i]);           Raps_Err    .push_back( RapErr[i] );
       Sigmas      .push_back(f->GetParameter(0));  Sigmas      .push_back(f->GetParameter(1));
       Sigmas_Err  .push_back(f->GetParError(0));   Sigmas_Err  .push_back(f->GetParError(1));
 

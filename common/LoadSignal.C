@@ -124,3 +124,54 @@ struct LoadAcceptance : public LoadSignal
 	//Free Functions---------------------------------------------------------------------
 	TH1D* GetAcceptance()	{if(!H_AccVsY_CohJpsi)	std::runtime_error("LoadAcceptance: Empty!!!"); return H_AccVsY_CohJpsi;}
 };
+
+
+struct LoadJpsiXsec : public LoadSignal
+{
+	//Priviate but not so priviate members-----------------------------------------------
+	TH1D* V_JpsiXsec[6];
+	std::map<TString, std::vector<double>> Map_Xsec;
+	//-----------------------------------------------------------------------------------
+
+	//Constructor------------------------------------------------------------------------
+	LoadJpsiXsec(TString infileDir) : LoadSignal{infileDir}	{	Read();	}
+	virtual ~LoadJpsiXsec() = default;
+	//-----------------------------------------------------------------------------------
+
+	//Virtual Functions------------------------------------------------------------------
+	virtual Bool_t Read() override
+	{	
+		cout<<"------>START Reading JpsiXsec: "<<infile->GetName()<<endl;
+
+		V_JpsiXsec[0] = (TH1D*) infile->Get("hAnAn") ;
+		V_JpsiXsec[1] = (TH1D*) infile->Get("hOnOn") ;
+		V_JpsiXsec[2] = (TH1D*) infile->Get("hOnXn") ;
+		V_JpsiXsec[3] = (TH1D*) infile->Get("hXnOn") ;
+		V_JpsiXsec[4] = (TH1D*) infile->Get("hOnXnSum") ;
+		V_JpsiXsec[5] = (TH1D*) infile->Get("hXnXn") ;
+
+		std::vector<double> Xsec_0n0n, Xsec_0nXnSum, Xsec_XnXn, Rap;
+		std::vector<double> XsecErr_0n0n, XsecErr_0nXnSum, XsecErr_XnXn, RapErr;
+		for (int iy = nDiffRapBins/2 + 2 ; iy < nDiffRapBins + 2 ; ++iy)
+		{
+			Rap.push_back(	V_JpsiXsec[5]->GetBinCenter(iy)	); 				RapErr.push_back(		V_JpsiXsec[5]->GetBinWidth(iy)/2	);
+			Xsec_0n0n.push_back(	V_JpsiXsec[1]->GetBinContent(iy)	);	XsecErr_0n0n.push_back(		V_JpsiXsec[1]->GetBinError(iy)	);
+			Xsec_0nXnSum.push_back(	V_JpsiXsec[4]->GetBinContent(iy)	);	XsecErr_0nXnSum.push_back(	V_JpsiXsec[4]->GetBinError(iy)	);
+			Xsec_XnXn.push_back(	V_JpsiXsec[5]->GetBinContent(iy)	);	XsecErr_XnXn.push_back(		V_JpsiXsec[5]->GetBinError(iy)	);
+		}
+		Map_Xsec["Rap"] = Rap; 						Map_Xsec["RapErr"] = RapErr;
+		Map_Xsec["Xsec_0n0n"] = Xsec_0n0n; 			Map_Xsec["XsecErr_0n0n"] = XsecErr_0n0n;
+		Map_Xsec["Xsec_0nXnSum"] = Xsec_0nXnSum; 	Map_Xsec["XsecErr_0nXnSum"] = XsecErr_0nXnSum;
+		Map_Xsec["Xsec_XnXn"] = Xsec_XnXn; 			Map_Xsec["XsecErr_XnXn"] = XsecErr_XnXn;
+
+		cout<<"------>DONE  Reading JpsiXsec: "<<infile->GetName()<<endl;
+		return kTRUE;
+	}
+	//-----------------------------------------------------------------------------------
+
+	//Free Functions---------------------------------------------------------------------
+	TH1D* GetJpsiXsec(const int i)	{if(!V_JpsiXsec[i])	std::runtime_error("LoadJpsiXsec: Empty!!!"); return V_JpsiXsec[i];}
+	std::map<TString, std::vector<double>> GetMap()	const {if(!Map_Xsec.size())	std::runtime_error("LoadJpsiXsec: Empty!!!"); 	return Map_Xsec;}
+	std::vector<double> GetMapElement(const TString n)	{if(!Map_Xsec.size())	std::runtime_error("LoadJpsiXsec: Empty!!!");	return Map_Xsec[n];}
+	double GetMapElementVal(const TString n, const int i)	{if(!Map_Xsec.size())	std::runtime_error("LoadJpsiXsec: Empty!!!");	return Map_Xsec[n][i];}
+};
