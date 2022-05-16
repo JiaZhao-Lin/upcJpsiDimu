@@ -193,18 +193,18 @@ struct JpsiPdf : public PdfFactory
 	//-----------------------------------------------------------------------------------
 
 	//Free Functions---------------------------------------------------------------------
-	void Init(RooRealVar& cbAlpha, RooConstVar& cbN, RooRealVar& jpsiSigma, RooRealVar& jpsiMu)
+	void Init(RooRealVar& cbAlpha, RooRealVar& cbN, RooRealVar& jpsiSigma, RooRealVar& jpsiMu)
 	{
 		Pdf = new RooGenericPdf("jpsiCrystalBallPdf", "jpsiCrystalBallPdf",
 					"ROOT::Math::crystalball_function(mMass,cbAlpha,cbN,jpsiSigma,jpsiMu)", 
 					RooArgSet(mMass, cbAlpha, cbN, jpsiSigma, jpsiMu));
 	}
 
-	void InitCrystalBallGauss(RooRealVar& cbAlpha, RooConstVar& cbN, RooRealVar& jpsiSigma, RooRealVar& jpsiMu, RooRealVar& gausN)
+	void InitCrystalBallGauss(RooRealVar& cbAlpha, RooRealVar& cbN, RooRealVar& jpsiSigma, RooRealVar& jpsiMu, RooRealVar& gausN, RooRealVar& gausSigma)
 	{
 		Pdf = new RooGenericPdf("jpsiCrystalBallGaussPdf", "jpsiCrystalBallGaussPdf",
-					"ROOT::Math::crystalball_function(mMass,cbAlpha,cbN,jpsiSigma,jpsiMu) + gausN*TMath::Gaus(mMass, jpsiMu, jpsiSigma)", 
-					RooArgSet(mMass, cbAlpha, cbN, jpsiSigma, jpsiMu, gausN));
+					"ROOT::Math::crystalball_function(mMass,cbAlpha,cbN,jpsiSigma,jpsiMu) + gausN*TMath::Gaus(mMass, jpsiMu, gausSigma)", 
+					RooArgSet(mMass, cbAlpha, cbN, jpsiSigma, jpsiMu, gausN, gausSigma));
 	}
 
 	void InitDoubleCrystalBall(RooRealVar& jpsiN, RooRealVar& jpsiMu, RooRealVar& jpsiSigma, RooRealVar& cbNL, RooRealVar& cbAlphaL, RooRealVar& cbNR, RooRealVar& cbAlphaR)
@@ -254,18 +254,18 @@ struct PsiPdf : public PdfFactory
 	//-----------------------------------------------------------------------------------
 
 	//Free Functions---------------------------------------------------------------------
-	void Init(RooRealVar& cbAlpha, RooConstVar& cbN, RooRealVar& jpsiSigma, RooRealVar& jpsiMu)
+	void Init(RooRealVar& cbAlpha, RooRealVar& cbN, RooRealVar& jpsiSigma, RooRealVar& jpsiMu)
 	{
 		Pdf = new RooGenericPdf("psiCrystalBallPdf",  "psiCrystalBallPdf",
 					"ROOT::Math::crystalball_function(mMass,cbAlpha,cbN,jpsiSigma*massRatio,jpsiMu*massRatio)", 
 					RooArgSet(mMass, cbAlpha, cbN, jpsiSigma, jpsiMu, massRatio)); // psiMu = jpsiMu * massRatio; psiSigma = jpsiSigma * massRatio
 	}
 
-	void InitCrystalBallGauss(RooRealVar& cbAlpha, RooConstVar& cbN, RooRealVar& jpsiSigma, RooRealVar& jpsiMu, RooRealVar& gausN)
+	void InitCrystalBallGauss(RooRealVar& cbAlpha, RooRealVar& cbN, RooRealVar& jpsiSigma, RooRealVar& jpsiMu, RooRealVar& gausN, RooRealVar& gausSigma)
 	{
 		Pdf = new RooGenericPdf("psiCrystalBallGaussPdf",  "psiCrystalBallGaussPdf",
-					"ROOT::Math::crystalball_function(mMass,cbAlpha,cbN,jpsiSigma*massRatio,jpsiMu*massRatio) + gausN*TMath::Gaus(mMass, jpsiMu*massRatio, jpsiSigma*massRatio)", 
-					RooArgSet(mMass, cbAlpha, cbN, jpsiSigma, jpsiMu, massRatio, gausN)); // psiMu = jpsiMu * massRatio; psiSigma = jpsiSigma * massRatio
+					"ROOT::Math::crystalball_function(mMass,cbAlpha,cbN,jpsiSigma*massRatio,jpsiMu*massRatio) + gausN*TMath::Gaus(mMass, jpsiMu*massRatio, gausSigma*massRatio)", 
+					RooArgSet(mMass, cbAlpha, cbN, jpsiSigma, jpsiMu, massRatio, gausN, gausSigma)); // psiMu = jpsiMu * massRatio; psiSigma = jpsiSigma * massRatio
 	}
 
 	void InitDoubleCrystalBall(RooRealVar& psiN, RooRealVar& jpsiMu, RooRealVar& jpsiSigma, RooRealVar& cbNL, RooRealVar& cbAlphaL, RooRealVar& cbNR, RooRealVar& cbAlphaR)
