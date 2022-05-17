@@ -55,7 +55,7 @@ int    qedColor = kGreen-3, qedStyle = 1;
 
 
 const int NnCases = 6;
-const std::vector<int> RunCase = {0};//{0,1,2,3,4,5};
+const std::vector<int> RunCase = {0,1,2,3,4,5};//{0,1,2,3,4,5};
 
 const TString nCasesName[NnCases] = {"AnAn", "OnOn", "0nXn", "Xn0n", "OnXnSum", "XnXn"};
 TH1D* hCohMass_in_ny[NnCases][nDiffRapBins+1]; //last content is the sum of all y-bins, within coherent pt threshold
@@ -616,20 +616,6 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			//------------------------------------------------------------------------------------------------------------
 			//1. Fit mass in full pt range to get the QED yield value
 			//------------------------------------------------------------------------------------------------------------
-			
-
-
-			//------------------------------------------------------------------------------------------------------------
-			//------------------------------------------------------------------------------------------------------------
-			//Instead of directly get the fitting function and get the crystall ball parameters, we can directly fit the 
-			//simulated the histogram and to the fitting here to get the initial crystall ball parameters of Jpsi crystall ball.
-			//
-			//
-			//
-			//Show Jiazhao how to do this part. 
-			//------------------------------------------------------------------------------------------------------------
-			//------------------------------------------------------------------------------------------------------------
-
 
 
 			//------------------------------------------------------------------------------------------------------------
@@ -901,8 +887,8 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			double nInCohJpsiMax = nJpsiValue;
 			double nDissoJpsiMax = nJpsiValue;
 
-			if 		(i_ncase == 5)									{ nInCohJpsiMax *= 0.8;	nDissoJpsiMax *= 0.8; }
-			else if (i_ncase == 2 || i_ncase == 3 || i_ncase == 4)	{ nInCohJpsiMax *= 0.6;	nDissoJpsiMax *= 0.6; }
+			if 		(i_ncase == 1)									{ nInCohJpsiMax *= 0.1;	nDissoJpsiMax *= 0.01; }
+			else if	(i_ncase == 0)									{ nInCohJpsiMax *= 0.2;	nDissoJpsiMax *= 0.2; }
 			else 													{ nInCohJpsiMax *= 0.3;	nDissoJpsiMax *= 0.3; }
 
 			RooConstVar fracPrim(     "fracPrim",       "fracPrim",      1./(1.+fDValue));
