@@ -862,13 +862,13 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			////------------------------gammagamma-->mumu--------------------------------------------------------------
 			////--------------------------------------------------------------------------------------
 			//if use the simulated tempaltes for gammagamma-->mumu
-//			hQEDPtHist->RebinX(mRebPt);
-//			RooDataHist hQEDPtRooHist("hQEDPtRooHist", "hQEDPtRooHist", mPt, hQEDPtHist);
-//			RooHistPdf  qedPtPdf(     "qedPtPdf",      "qedPtPdf",      mPt, hQEDPtRooHist, 0);
+			hQEDPtHist->RebinX(mRebPt);
+			RooDataHist hQEDPtRooHist("hQEDPtRooHist", "hQEDPtRooHist", mPt, hQEDPtHist);
+			RooHistPdf  qedPtPdf(     "qedPtPdf",      "qedPtPdf",      mPt, hQEDPtRooHist, 0);
 
 			//if use the Side Bands as tempaltes for gammagamma-->mumu
-			RooDataHist hQEDPtRooHist("hQEDPtRooHist", "hQEDPtRooHist", mPt, hPt_SdB);
-			RooHistPdf  qedPtPdf(     "qedPtPdf",      "qedPtPdf",      mPt, hQEDPtRooHist, 0);
+			// RooDataHist hQEDPtRooHist("hQEDPtRooHist", "hQEDPtRooHist", mPt, hPt_SdB);
+			// RooHistPdf  qedPtPdf(     "qedPtPdf",      "qedPtPdf",      mPt, hQEDPtRooHist, 0);
 
 			//RooConstVar bpd("bpd", "bpd", 1.79);
 			//RooConstVar npd("npd", "npd", 3.58);
