@@ -55,11 +55,15 @@ int    qedColor = kGreen-3, qedStyle = 1;
 
 
 const int NnCases = 6;
-const std::vector<int> RunCase = {0,1,2,3,4,5};
+const std::vector<int> RunCase = {0};//{0,1,2,3,4,5};
+
 const TString nCasesName[NnCases] = {"AnAn", "OnOn", "0nXn", "Xn0n", "OnXnSum", "XnXn"};
 TH1D* hCohMass_in_ny[NnCases][nDiffRapBins+1]; //last content is the sum of all y-bins, within coherent pt threshold
 TH1D* hMass_in_ny[NnCases][nDiffRapBins+1];    //last content is the sum of all y-bins, for all pt 
 TH1D* hPt_Jpsi_in_ny[NnCases][nDiffRapBins+1]; //last content is the sum of all y-bins
+TH1D* hPt_LeftSdB_in_ny[NnCases][nDiffRapBins+1];  //last content is the sum of all y-bins
+TH1D* hPt_RightSdB_in_ny[NnCases][nDiffRapBins+1]; //last content is the sum of all y-bins
+TH1D* hPt_SdB_in_ny[NnCases][nDiffRapBins+1];      //last content is the sum of all y-bins
 TH1D* H_EffVsY_CohJpsi;
 TH1D* H_EffVsY_CohPsi;
 TH1D* H_EffVsY_CohPsi2Jpsi;
@@ -155,7 +159,25 @@ void prepareData()
 			
 			hMass_in_ny[i_ncase][iy]    = (TH1D *)hMvsPtvsRap_inWork->ProjectionZ( Form("hMass_iNeuCase%d_iy%d",    i_ncase, iy), rapBinLow, rapBinHi, 1,           nptBinsMax );
 			hPt_Jpsi_in_ny[i_ncase][iy] = (TH1D *)hMvsPtvsRap_inWork->ProjectionY( Form("hPt_Jpsi_iNeuCase%d_iy%d", i_ncase, iy), rapBinLow, rapBinHi, mJpsiBinLow, mJpsiBinHi );
+		
+			//---------------------------------------------------------------------------------------
+			//for side band (left+right sides of Jpsi mass peak)
+			//---------------------------------------------------------------------------------------
+			int mLeftSdB_BinLow   = HistWorker::FindZBin(hMvsPtvsRap_inWork, mLowMassBandLow,   0 );
+			int mLeftSdB_BinHig   = HistWorker::FindZBin(hMvsPtvsRap_inWork, mLowMassBandHi,    1 );
+			int mRightSdB_BinLow  = HistWorker::FindZBin(hMvsPtvsRap_inWork, mHiMassBandLow,    0 );
+			int mRightSdB_BinHig  = HistWorker::FindZBin(hMvsPtvsRap_inWork, mHiMassBandHi,     1 );
 			
+			hPt_LeftSdB_in_ny[i_ncase][iy]  = (TH1D*)hMvsPtvsRap_inWork->ProjectionY(Form("hPt_LeftSdB_iNeuCase%d_iy%d",  i_ncase, iy), rapBinLow,rapBinHi, mLeftSdB_BinLow, mLeftSdB_BinHig);
+			hPt_RightSdB_in_ny[i_ncase][iy] = (TH1D*)hMvsPtvsRap_inWork->ProjectionY(Form("hPt_RightSdB_iNeuCase%d_iy%d", i_ncase, iy), rapBinLow,rapBinHi, mRightSdB_BinLow,mRightSdB_BinHig);
+			
+			//add left and right side band
+			hPt_SdB_in_ny[i_ncase][iy] = (TH1D*) hPt_LeftSdB_in_ny[i_ncase][iy] -> Clone(Form("hPt_SdB_iNeuCase%d_iy%d",  i_ncase, iy));
+			hPt_SdB_in_ny[i_ncase][iy] -> Add( hPt_RightSdB_in_ny[i_ncase][iy] );
+			//---------------------------------------------------------------------------------------
+
+
+
 			//			massBinLow = hMvsPtvsRap_inWork->GetZaxis()->FindBin(mLowMassBandLow + mTinyNum);
 			//			massBinHi  = hMvsPtvsRap_inWork->GetZaxis()->FindBin(mLowMassBandHi  - mTinyNum);
 			//			hLowMassBandPt_NeuDir[ip][im][iy] 
@@ -180,9 +202,12 @@ void prepareData()
 				hMass_in_ny[i_ncase][nDiffRapBins]     = (TH1D *) hMass_in_ny[i_ncase][iy]    ->Clone( Form("hMass_in_iNeuCase%d",    i_ncase) );
 				hPt_Jpsi_in_ny[i_ncase][nDiffRapBins]  = (TH1D *) hPt_Jpsi_in_ny[i_ncase][iy] ->Clone( Form("hPt_Jpsi_in_iNeuCase%d", i_ncase) );
 				
+				hPt_SdB_in_ny[i_ncase][nDiffRapBins]   = (TH1D *) hPt_SdB_in_ny[i_ncase][iy]  ->Clone( Form("hPt_SdB_in_iNeuCase%d",  i_ncase) );
+				
 				hCohMass_in_ny[i_ncase][nDiffRapBins]  -> SetTitle( Form("%1.1f < |y| < %1.1f", mDiffRapLow[nDiffRapBins/2], mDiffRapHi[nDiffRapBins-1]) );
 				hMass_in_ny[i_ncase][nDiffRapBins]     -> SetTitle( Form("%1.1f < |y| < %1.1f", mDiffRapLow[nDiffRapBins/2], mDiffRapHi[nDiffRapBins-1]) );
 				hPt_Jpsi_in_ny[i_ncase][nDiffRapBins]  -> SetTitle( Form("%1.1f < |y| < %1.1f", mDiffRapLow[nDiffRapBins/2], mDiffRapHi[nDiffRapBins-1]) );
+				hPt_SdB_in_ny[i_ncase][nDiffRapBins]   -> SetTitle( Form("%1.1f < |y| < %1.1f", mDiffRapLow[nDiffRapBins/2], mDiffRapHi[nDiffRapBins-1]) );
 			}
 			else
 			{
@@ -190,19 +215,23 @@ void prepareData()
 				
 				hMass_in_ny[i_ncase][nDiffRapBins]     -> Add( hMass_in_ny[i_ncase][iy] );
 				hPt_Jpsi_in_ny[i_ncase][nDiffRapBins]  -> Add( hPt_Jpsi_in_ny[i_ncase][iy] );
+				hPt_SdB_in_ny[i_ncase][nDiffRapBins]   -> Add( hPt_SdB_in_ny[i_ncase][iy] );
 			}
 		}//iy
 
 		if(SymmetricRapBin)
 		{
 			for (int iy = nDiffRapBins/2; iy < nDiffRapBins; ++iy)
-			{	
+			{
 				hCohMass_in_ny[i_ncase][iy]  -> SetTitle( Form("%1.1f < |y| < %1.1f", mDiffRapLow[iy], mDiffRapHi[iy]) );
 				hMass_in_ny[i_ncase][iy]     -> SetTitle( Form("%1.1f < |y| < %1.1f", mDiffRapLow[iy], mDiffRapHi[iy]) );
 				hPt_Jpsi_in_ny[i_ncase][iy]  -> SetTitle( Form("%1.1f < |y| < %1.1f", mDiffRapLow[iy], mDiffRapHi[iy]) );
+				hPt_SdB_in_ny[i_ncase][iy]   -> SetTitle( Form("%1.1f < |y| < %1.1f", mDiffRapLow[iy], mDiffRapHi[iy]) );
+				
 				hCohMass_in_ny[i_ncase][iy]  -> Add( hCohMass_in_ny[i_ncase][nDiffRapBins - iy - 1] );
 				hMass_in_ny[i_ncase][iy]     -> Add( hMass_in_ny[i_ncase][nDiffRapBins - iy - 1] );
 				hPt_Jpsi_in_ny[i_ncase][iy]  -> Add( hPt_Jpsi_in_ny[i_ncase][nDiffRapBins - iy - 1] );
+				hPt_SdB_in_ny[i_ncase][iy]   -> Add( hPt_SdB_in_ny[i_ncase][nDiffRapBins - iy - 1] );
 			}
 		}
 	}//i_ncase
@@ -561,29 +590,48 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 
 			cout<<"iy: "<<iy<<" "<<mDiffRapLow[iy]<<" <y< "<<mDiffRapHi[iy]<<endl;
 	
-			TH1D* hMass = (TH1D*) hMass_in_ny[i_ncase][iy]    ->Clone("hMass");
-			TH1D* hPt   = (TH1D*) hPt_Jpsi_in_ny[i_ncase][iy] ->Clone("hPt");
+			TH1D* hMass   = (TH1D*) hMass_in_ny[i_ncase][iy]    ->Clone("hMass");
+			TH1D* hPt     = (TH1D*) hPt_Jpsi_in_ny[i_ncase][iy] ->Clone("hPt");
+			TH1D* hPt_SdB = (TH1D*) hPt_SdB_in_ny[i_ncase][iy]  ->Clone("hPt_SdB");
 
 			if( i_ncase==0 )
 			{
-				hMass ->Rebin(2);
-				hPt   ->Rebin(2);
+				hMass     ->Rebin(2);
+				hPt       ->Rebin(2);
+				hPt_SdB   ->Rebin(2);
 			}
 			else if ( i_ncase==2|| i_ncase==3 )
 			{
-				hMass ->Rebin(2);
-				hPt   ->Rebin(2);
+				hMass     ->Rebin(2);
+				hPt       ->Rebin(2);
+				hPt_SdB   ->Rebin(2);
 			}
 			else if(  i_ncase==5 )
 			{
-				hMass ->Rebin(2);
-				hPt   ->Rebin(2);
+				hMass     ->Rebin(2);
+				hPt       ->Rebin(2);
+				hPt_SdB   ->Rebin(2);
 			}
 
 			//------------------------------------------------------------------------------------------------------------
 			//1. Fit mass in full pt range to get the QED yield value
 			//------------------------------------------------------------------------------------------------------------
 			
+
+
+			//------------------------------------------------------------------------------------------------------------
+			//------------------------------------------------------------------------------------------------------------
+			//Instead of directly get the fitting function and get the crystall ball parameters, we can directly fit the 
+			//simulated the histogram and to the fitting here to get the initial crystall ball parameters of Jpsi crystall ball.
+			//
+			//
+			//
+			//Show Jiazhao how to do this part. 
+			//------------------------------------------------------------------------------------------------------------
+			//------------------------------------------------------------------------------------------------------------
+
+
+
 			//------------------------------------------------------------------------------------------------------------
 			if(      iy==nDiffRapBins ) fCohJpsiTemp = (TF1 *) inf_Temps->Get( "fCohJpsiTemp" );
 			else if( iy<nDiffRapBins  ) fCohJpsiTemp = (TF1 *) inf_Temps->Get( Form("fCohJpsiTemp_RapBin%d", iy) );
@@ -762,7 +810,6 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 				c1->SaveAs( Form("outplots/massSpecFitPull_4ptFitConstrain_"+nCasesName[i_ncase]+"_iy%d.png",  iy) );
 			//----------------------------------------------------------------------------------------------------------------------------------------------------
 
-
 			delete ResFit;
 			delete hMass;
 			delete frameMass;
@@ -829,18 +876,18 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			////------------------------gammagamma-->mumu--------------------------------------------------------------
 			////--------------------------------------------------------------------------------------
 			//if use the simulated tempaltes for gammagamma-->mumu
-			hQEDPtHist->RebinX(mRebPt);
-			RooDataHist hQEDPtRooHist("hQEDPtRooHist", "hQEDPtRooHist", mPt, hQEDPtHist);
-			RooHistPdf  qedPtPdf(     "qedPtPdf",      "qedPtPdf",      mPt, hQEDPtRooHist, 0);
+//			hQEDPtHist->RebinX(mRebPt);
+//			RooDataHist hQEDPtRooHist("hQEDPtRooHist", "hQEDPtRooHist", mPt, hQEDPtHist);
+//			RooHistPdf  qedPtPdf(     "qedPtPdf",      "qedPtPdf",      mPt, hQEDPtRooHist, 0);
 
-			////if use the Side Bands as tempaltes for gammagamma-->mumu
-			//RooDataHist hQEDPtRooHist("hQEDPtRooHist", "hQEDPtRooHist", mPt, hPt_SideBand);
-			//RooHistPdf  qedPtPdf(     "qedPtPdf",      "qedPtPdf",      mPt, hQEDPtRooHist, 0);
+			//if use the Side Bands as tempaltes for gammagamma-->mumu
+			RooDataHist hQEDPtRooHist("hQEDPtRooHist", "hQEDPtRooHist", mPt, hPt_SdB);
+			RooHistPdf  qedPtPdf(     "qedPtPdf",      "qedPtPdf",      mPt, hQEDPtRooHist, 0);
 
 			//RooConstVar bpd("bpd", "bpd", 1.79);
 			//RooConstVar npd("npd", "npd", 3.58);
 			RooRealVar bpd("bpd", "bpd", 1.79, 0, 5.0);
-			RooRealVar npd("npd", "npd", 3.58, 0, 10);
+			RooRealVar npd("npd", "npd", 3.58, 0, 10.);
 			RooGenericPdf *dissoJpsiPdf = new RooGenericPdf("dissoJpsiPdf", "dissoJpsiPdf", "mPt*TMath::Power(1+(bpd/npd)*mPt*mPt, -npd)", RooArgSet(mPt, bpd, npd));
 		
 			const int    higBin_FDW = hFeeddownJpsiPtHist->FindBin( mPtCut4Coh );
@@ -1055,8 +1102,8 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 
 void saveFile(const TString headerTitle = "Default")
 {
-	TFile file_JpsiXsec = TFile(Form("JpsiXsecValues/JpsiXsec_%s_%dRapBins.root", headerTitle.Data(), nDiffRapBins), "recreate");
-	cout<<"Saving JpsiXsec into: "<<file_JpsiXsec.GetName()<<endl;
+	TFile *file_JpsiXsec = new TFile(Form("JpsiXsecValues/JpsiXsec_%s_%dRapBins.root", headerTitle.Data(), nDiffRapBins), "recreate");
+	cout<<"Saving JpsiXsec into: "<<file_JpsiXsec->GetName()<<endl;
 
 	for(int iCase=0; iCase<RunCase.size(); iCase++)
 	{
@@ -1073,5 +1120,5 @@ void saveFile(const TString headerTitle = "Default")
 		}
 		hJpsiXsec.Write();
 	}
-	file_JpsiXsec.Close();
+	file_JpsiXsec->Close();
 }
