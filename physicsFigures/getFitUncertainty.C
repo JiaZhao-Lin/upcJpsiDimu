@@ -31,7 +31,8 @@ void getFitUncertainty()
 	std::map<TString, std::vector<double>> CB_FixCBA_Poly3_Map 	= getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_FixCBA_Poly3_PUShuai_6RapBins.root");
 	std::map<TString, std::vector<double>> CB_FixCBN_Poly3_Map 	= getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_FixCBN_Poly3_PUShuai_6RapBins.root");
 	std::map<TString, std::vector<double>> CB_FixCBAN_Poly3_Map = getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_FixCBAN_Poly3_PUShuai_6RapBins.root");
-	// std::map<TString, std::vector<double>> CBG_Poly3_Map 		= getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CBG_Poly3_PUShuai_6RapBins.root");
+	std::map<TString, std::vector<double>> CBG_Poly3_Map 		= getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CBG_Poly3_PUShuai_6RapBins.root");
+	std::map<TString, std::vector<double>> CB_Poly3_SdB_Map 	= getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_SdB_PUShuai_6RapBins.root");
 
 	const std::map<TString, std::vector<double>> JpsiXsec_Default		= CB_Poly3_Map;
 
@@ -52,7 +53,8 @@ void getFitUncertainty()
 	plot_Uncer(CB_FixCBA_Poly3_Map,		JpsiXsec_Default,	"Ws",	"Sigmas",	1,	2,	legendW,	"CB_FixCBA_Poly3");
 	plot_Uncer(CB_FixCBN_Poly3_Map,		JpsiXsec_Default,	"Ws",	"Sigmas",	1,	3,	legendW,	"CB_FixCBN_Poly3");
 	plot_Uncer(CB_FixCBAN_Poly3_Map,	JpsiXsec_Default,	"Ws",	"Sigmas",	1,	4,	legendW,	"CB_FixCBAN_Poly3");
-	// plot_Uncer(CBG_Poly3_Map,			JpsiXsec_Default,	"Ws",	"Sigmas",	1,	6,	legendW,	"CBG_Poly3");
+	plot_Uncer(CBG_Poly3_Map,			JpsiXsec_Default,	"Ws",	"Sigmas",	1,	6,	legendW,	"CBG_Poly3");
+	plot_Uncer(CB_Poly3_SdB_Map,		JpsiXsec_Default,	"Ws",	"Sigmas",	1,	14,	legendW,	"CB_Poly3_SdB");
 	legendW->Draw("same");
 	//-----------------------------------------------------------------------------------
 
@@ -69,7 +71,8 @@ void getFitUncertainty()
 	plot_Uncer(CB_FixCBA_Poly3_Map,		JpsiXsec_Default,	"Xs",	"R",	1,	2,	legendR,	"CB_FixCBA_Poly3");
 	plot_Uncer(CB_FixCBN_Poly3_Map,		JpsiXsec_Default,	"Xs",	"R",	1,	3,	legendR,	"CB_FixCBN_Poly3");
 	plot_Uncer(CB_FixCBAN_Poly3_Map,	JpsiXsec_Default,	"Xs",	"R",	1,	4,	legendR,	"CB_FixCBAN_Poly3");
-	// plot_Uncer(CBG_Poly3_Map,			JpsiXsec_Default,	"Xs",	"R",	1,	6,	legendR,	"CBG_Poly3");
+	plot_Uncer(CBG_Poly3_Map,			JpsiXsec_Default,	"Xs",	"R",	1,	6,	legendR,	"CBG_Poly3");
+	plot_Uncer(CB_Poly3_SdB_Map,		JpsiXsec_Default,	"Xs",	"R",	1,	14,	legendR,	"CB_Poly3_SdB");
 	legendR->Draw("same");
 	//-----------------------------------------------------------------------------------
 }

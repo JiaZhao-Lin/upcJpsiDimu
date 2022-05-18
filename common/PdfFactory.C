@@ -200,11 +200,11 @@ struct JpsiPdf : public PdfFactory
 					RooArgSet(mMass, cbAlpha, cbN, jpsiSigma, jpsiMu));
 	}
 
-	void InitCrystalBallGauss(RooRealVar& cbAlpha, RooRealVar& cbN, RooRealVar& jpsiSigma, RooRealVar& jpsiMu, RooRealVar& gausN, RooRealVar& gausSigma)
+	void InitCrystalBallGauss(RooRealVar& cbAlpha, RooRealVar& cbN, RooRealVar& jpsiSigma, RooConstVar& sigmaRatio, RooRealVar& jpsiMu, RooRealVar& gausN)
 	{
 		Pdf = new RooGenericPdf("jpsiCrystalBallGaussPdf", "jpsiCrystalBallGaussPdf",
-					"ROOT::Math::crystalball_function(mMass,cbAlpha,cbN,jpsiSigma,jpsiMu) + gausN*TMath::Gaus(mMass, jpsiMu, gausSigma)", 
-					RooArgSet(mMass, cbAlpha, cbN, jpsiSigma, jpsiMu, gausN, gausSigma));
+					"ROOT::Math::crystalball_function(mMass,cbAlpha,cbN,jpsiSigma*sigmaRatio,jpsiMu) + gausN*TMath::Gaus(mMass, jpsiMu, jpsiSigma)", 
+					RooArgSet(mMass, cbAlpha, cbN, jpsiSigma, sigmaRatio, jpsiMu, gausN));
 	}
 
 	void InitDoubleCrystalBall(RooRealVar& jpsiN, RooRealVar& jpsiMu, RooRealVar& jpsiSigma, RooRealVar& cbNL, RooRealVar& cbAlphaL, RooRealVar& cbNR, RooRealVar& cbAlphaR)
@@ -261,11 +261,11 @@ struct PsiPdf : public PdfFactory
 					RooArgSet(mMass, cbAlpha, cbN, jpsiSigma, jpsiMu, massRatio)); // psiMu = jpsiMu * massRatio; psiSigma = jpsiSigma * massRatio
 	}
 
-	void InitCrystalBallGauss(RooRealVar& cbAlpha, RooRealVar& cbN, RooRealVar& jpsiSigma, RooRealVar& jpsiMu, RooRealVar& gausN, RooRealVar& gausSigma)
+	void InitCrystalBallGauss(RooRealVar& cbAlpha, RooRealVar& cbN, RooRealVar& jpsiSigma, RooConstVar& sigmaRatio, RooRealVar& jpsiMu, RooRealVar& gausN)
 	{
 		Pdf = new RooGenericPdf("psiCrystalBallGaussPdf",  "psiCrystalBallGaussPdf",
-					"ROOT::Math::crystalball_function(mMass,cbAlpha,cbN,jpsiSigma*massRatio,jpsiMu*massRatio) + gausN*TMath::Gaus(mMass, jpsiMu*massRatio, gausSigma*massRatio)", 
-					RooArgSet(mMass, cbAlpha, cbN, jpsiSigma, jpsiMu, massRatio, gausN, gausSigma)); // psiMu = jpsiMu * massRatio; psiSigma = jpsiSigma * massRatio
+					"ROOT::Math::crystalball_function(mMass,cbAlpha,cbN,jpsiSigma*sigmaRatio*massRatio,jpsiMu*massRatio) + gausN*TMath::Gaus(mMass, jpsiMu*massRatio, jpsiSigma*massRatio)", 
+					RooArgSet(mMass, cbAlpha, cbN, jpsiSigma, sigmaRatio, jpsiMu, massRatio, gausN)); // psiMu = jpsiMu * massRatio; psiSigma = jpsiSigma * sigmaRatio * massRatio
 	}
 
 	void InitDoubleCrystalBall(RooRealVar& psiN, RooRealVar& jpsiMu, RooRealVar& jpsiSigma, RooRealVar& cbNL, RooRealVar& cbAlphaL, RooRealVar& cbNR, RooRealVar& cbAlphaR)

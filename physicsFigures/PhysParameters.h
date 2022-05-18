@@ -3,6 +3,8 @@
 
 //------------------------------------------------------------------------------------------------------------
 const std::vector<double> ALICE_W_Run1 = {19.6, 92.4}, ALICE_Xsec_Run1 = {6.1e-3, 17.6e-3}, ALICE_XsecErr1_Run1 = {2.0e-3, 2.0e-3}, ALICE_XsecErr2_Run1 = {1.8e-3, 2.7e-3};
+const double Flux_LowSF 	= 1.15;
+const double Flux_HighSF 	= 1.05;
 
 //------------------------------------------------------------------------------------------------------------
 
@@ -16,7 +18,7 @@ const std::vector<double> ALICE_Run2_Psi_x  = {0.00061691554},	ALICE_Run2_Psi_R 
 //-------------------------------------------Run2 ALICE Sigma ----------------------------------------------
 const std::vector<double> ALICE_Run2_MidRap_W  = {124.68568},      ALICE_Run2_MidRap_Sigma	    = {4.07/2/81.026},	ALICE_Run2_MidRap_Sigma_Err	=	{4.07/2/81.026 * 0.25495/4.07};
 const std::vector<double> ALICE_Run2_FwdRap_y  = {-3.875, -3.625}, ALICE_Run2_FwdRap_dSigmady	=	{1.615, 1.938},	ALICE_Run2_FwdRap_dSigmady_Err	=	{0.147,0.190};
-const std::vector<double> ALICE_Run2_FwdRap_Flux={201.308, 193.547};
+const std::vector<double> ALICE_Run2_FwdRap_Flux={201.308*Flux_LowSF, 193.547*Flux_LowSF};
 std::vector<double> ALICE_Run2_FwdRap_W  = {},	ALICE_Run2_FwdRap_Sigma	=	{},	ALICE_Run2_FwdRap_Sigma_Err	=	{};
 //------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------
@@ -50,9 +52,9 @@ std::vector<double> ALICE_Run2_FwdRap_W  = {},	ALICE_Run2_FwdRap_Sigma	=	{},	ALI
 // const std::vector<TVector2>  flux_0nXnSum = { { 18.294,		7.151 },	{ 18.279,	8.980	},	{ 18.257,	10.721	}	}; //N(y)
 // const std::vector<TVector2>  flux_XnXn    = { { 6.521,		3.716 },	{ 6.521,	4.367	},	{ 6.519,	4.911	}	}; //N(y)
 //----------------------------------------Rap:  1.75,	-1.75 		  2.0,		-2.0 		  2.25,		-2.25
-const std::vector<TVector2>  flux_0n0n    = { { 14.027,	110.526 },	{ 10.012,	118.272	},	{ 6.806,	126.025	}	}; //N(y)
-const std::vector<TVector2>  flux_0nXnSum = { { 10.721,	18.257 },	{ 8.980,	18.279	},	{ 7.151,	18.294	}	}; //N(y)
-const std::vector<TVector2>  flux_XnXn    = { { 4.911,	6.519 },	{ 4.367,	6.521	},	{ 3.716,	6.521	}	}; //N(y)
+const std::vector<TVector2>  flux_0n0n    = { { 14.027*Flux_HighSF,	110.526*Flux_LowSF },	{ 10.012*Flux_HighSF,	118.272*Flux_LowSF	},	{ 6.806*Flux_HighSF,	126.025*Flux_LowSF	}	}; //N(y)
+const std::vector<TVector2>  flux_0nXnSum = { { 10.721*Flux_HighSF,	18.257*Flux_LowSF },	{ 8.980*Flux_HighSF,	18.279*Flux_LowSF	},	{ 7.151*Flux_HighSF,	18.294*Flux_LowSF	}	}; //N(y)
+const std::vector<TVector2>  flux_XnXn    = { { 4.911*Flux_HighSF,	6.519*Flux_LowSF },	{ 4.367*Flux_HighSF,	6.521*Flux_LowSF	},	{ 3.716*Flux_HighSF,	6.521*Flux_LowSF	}	}; //N(y)
 
 
 //----------------CrystalBall:			  Rap: |-2.25|,	|-2.0|,	|-1.75| --------------------------------------
