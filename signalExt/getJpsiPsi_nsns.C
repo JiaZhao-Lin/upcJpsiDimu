@@ -53,6 +53,12 @@ int    feeddownJpsiColor  = kAzure+10,  feeddownJpsiStyle = 1;
 int    qedColor = kGreen-3, qedStyle = 1;
 //------------------------------------------------------------------------------------------------------------
 
+const TString TnPcases[4]		= {"", ".appliedTnP", ".appliedTnP_Low", ".appliedTnP_Hig"};
+const int   RunTnPcase         	= 1;	//Default 1
+
+const double HFscaleFactor[3]	= {1,	0.97549056,	1.1137430};
+const TString HFcases[4]		= {"", ".looseHF", ".tightHF", ".removeHF"};
+const int   RunHFcase         	= 0;	//Default 0
 
 const int NnCases = 6;
 const std::vector<int> RunCase = {0,1,2,3,4,5};//{0,1,2,3,4,5};
@@ -112,7 +118,7 @@ void getJpsiPsi_nsns()
 //------------------------------------------------------------------------------------------------------------
 void prepareData()
 {
-	TString inFileDir 		  = "../anaData/jpsiHistos/rawSig.root";
+	TString inFileDir 		  = Form("../anaData/jpsiHistos/rawSig%s.root", HFcases[RunHFcase].Data());
 
 	LoadMvsPtvsRap_NeuDir * hMvsPtvsRap_NeuDir = new LoadMvsPtvsRap_NeuDir(inFileDir);
 
@@ -126,6 +132,16 @@ void prepareData()
 	TH3D *hMvsPtvsRap_0nXnSum = (TH3D*) hMvsPtvsRap_NeuDir->GetHist(0,1)->Clone( "hMvsPtvsRap_0nXnSum" );
 	hMvsPtvsRap_0nXnSum       -> Add(hMvsPtvsRap_NeuDir->GetHist(1,0));
 	
+	if (RunHFcase != 0)
+	{
+		hMvsPtvsRap_AnAn->Scale(HFscaleFactor[RunHFcase]);
+		hMvsPtvsRap_0n0n->Scale(HFscaleFactor[RunHFcase]);
+		hMvsPtvsRap_XnXn->Scale(HFscaleFactor[RunHFcase]);
+		hMvsPtvsRap_0nXn->Scale(HFscaleFactor[RunHFcase]);
+		hMvsPtvsRap_Xn0n->Scale(HFscaleFactor[RunHFcase]);
+		hMvsPtvsRap_0nXnSum->Scale(HFscaleFactor[RunHFcase]);
+	}
+
 	cout<<"hMvsPtvsRap_0nXn->GetEntries(): "<<hMvsPtvsRap_0nXn->GetEntries()<<endl;
 	cout<<"hMvsPtvsRap_Xn0n->GetEntries(): "<<hMvsPtvsRap_Xn0n->GetEntries()<<endl;
 	
@@ -240,7 +256,7 @@ void prepareData()
 //------------------------------------------------------------------------------------------------------------
 void loadEff()
 {
-	LoadEfficiency Efficiency(Form("../simulation/out4effAndTemp/Efficiency_AllSpecs_%dRapBins.root", nDiffRapBins), SymmetricRapBin);
+	LoadEfficiency Efficiency(Form("../simulation/out4effAndTemp/Efficiency_AllSpecs_%dRapBins%s%s.root", nDiffRapBins, TnPcases[RunTnPcase].Data(), HFcases[RunHFcase].Data()), SymmetricRapBin);
 	H_EffVsY_CohJpsi 		= (TH1D*)	Efficiency.GetCohJpsi()	 	->Clone();
 	H_EffVsY_CohPsi 		= (TH1D*)	Efficiency.GetCohPsi()	 	->Clone();
 	H_EffVsY_CohPsi2Jpsi 	= (TH1D*)	Efficiency.GetCohPsi2Jpsi()	->Clone();
@@ -264,7 +280,7 @@ void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4
 	c1->SetLogy(0);
 	RooRealVar  mMass("mMass", "m_{#mu#mu} (GeV)", massLow4Fit, massHig4Fit);
 
-	TFile *inf_Temps = TFile::Open(Form("../simulation/out4effAndTemp/MassPtTemp_AllSpecs_massWindow_2.95_3.25_%dRapBins.root", nDiffRapBins));
+	TFile *inf_Temps = TFile::Open(Form("../simulation/out4effAndTemp/MassPtTemp_AllSpecs_massWindow_2.95_3.25_%dRapBins%s%s.root", nDiffRapBins, TnPcases[RunTnPcase].Data(), HFcases[RunHFcase].Data()));
 	TF1 *fQED;
 	fQED = new TF1("fQED", fReject4QED, massLow4Fit, massHig4Fit, 4);
 	TF1 *fCohJpsiTemp;
@@ -338,7 +354,7 @@ void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4
 
 			RooRealVar  cbAlpha 	( "cbAlpha",     	"cbAlpha",		Init_cbAlpha,	0, 20   );
 			RooRealVar  cbN 		( "cbN",         	"cbN",			Init_cbN,		0, 20   );
-			RooRealVar  jpsiMu		( "jpsiMu",      	"jpsiMu",		3.096,	2.9,	3.3 	);
+			RooRealVar  jpsiMu		( "jpsiMu",      	"jpsiMu",		3.096,	2.90,	3.2 	);
 			RooRealVar  jpsiSigma	( "jpsiSigma",   	"jpsiSigma",	0.045,	0.01,	0.2 	);
 
 			// RooRealVar  gausN		( "gausN",       	"gausN",		3.5,	0.00,	20 		);
@@ -635,7 +651,7 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			//------------------------------------------------------------------------------------------------------------
 			RooRealVar  cbAlpha 	( "cbAlpha",     	"cbAlpha",		Init_cbAlpha,	0, 20   );
 			RooRealVar  cbN 		( "cbN",         	"cbN",			Init_cbN,		0, 20   );
-			RooRealVar  jpsiMu		( "jpsiMu",      	"jpsiMu",		3.096,	2.9,	3.3 	);
+			RooRealVar  jpsiMu		( "jpsiMu",      	"jpsiMu",		3.096,	2.90,	3.2 	);
 			RooRealVar  jpsiSigma	( "jpsiSigma",   	"jpsiSigma",	0.045,	0.01,	0.2 	);
 
 			// RooRealVar  gausN		( "gausN",       	"gausN",		3.5,	0.00,	20 		);
@@ -652,7 +668,6 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			// RooRealVar  cbNL(       "cbNL",			"cbNL",        Init_cbNL,		0, 20 );
 			// RooRealVar  cbAlphaR(   "cbAlphaR",		"cbAlphaR",    Init_cbAlphaR,	0, 20 );
 			// RooRealVar  cbNR(       "cbNR",			"cbNR",        Init_cbNR,		0, 20 );
-
 
 			QEDPdf 	cQEDPdf(	hMass, mMass, massLow4Fit, massHig4Fit, 3);
 			cQEDPdf.Init();
@@ -1088,7 +1103,7 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 
 void saveFile(const TString headerTitle = "Default")
 {
-	TFile *file_JpsiXsec = new TFile(Form("JpsiXsecValues/JpsiXsec_%s_%dRapBins.root", headerTitle.Data(), nDiffRapBins), "recreate");
+	TFile *file_JpsiXsec = new TFile(Form("JpsiXsecValues/JpsiXsec_%s_%dRapBins%s%s.root", headerTitle.Data(), nDiffRapBins, TnPcases[RunTnPcase].Data(), HFcases[RunHFcase].Data()), "recreate");
 	cout<<"Saving JpsiXsec into: "<<file_JpsiXsec->GetName()<<endl;
 
 	for(int iCase=0; iCase<RunCase.size(); iCase++)

@@ -28,7 +28,6 @@ static const double pi       = 3.141592654;
 static const double twoPi    = 2 * pi;
 static const double alpha    = 1/137.035999074;
 
-std::vector<double> W_IA, Sigma_IA, Sigma_IA_Err;
 
 double formFactor(Double_t *t, Double_t *par)
 {
@@ -47,8 +46,9 @@ double formFactor(Double_t *t, Double_t *par)
   return ff*ff;
         
 }
-std::vector<std::vector<double>> runUPC_AAModel(const std::vector<double> Ws, TString nucleus="Pb"){
+void runUPC_AAModel(std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap, TString nucleus="Pb"){
 
+  std::vector<double> W_IA, Sigma_IA, Sigma_IA_Err;
   //constants
   double Mvm=3.09;//mass jpsi
   double M_N= (0.93827+0.93957) / 2;
@@ -157,9 +157,9 @@ std::vector<std::vector<double>> runUPC_AAModel(const std::vector<double> Ws, TS
   // const std::vector<double> Ws = {41.503042, 50.691930, 306.668307, 374.565516};
   std::vector<double> IAs = {}, IAs_Err={};
   h_IA_->SetMarkerColor(kRed);
-  for (int i = 0; i < Ws.size(); ++i)
+  for (int i = 0; i < ShadowRatio_ParamsMap["Ws"].size(); ++i)
   {
-    int bin   = h_IA->FindBin( Ws[i] );
+    int bin   = h_IA->FindBin( ShadowRatio_ParamsMap["Ws"][i] );
     double s  = h_IA->GetBinContent( bin );
     double s_err  = h_IA->GetBinError( bin );
     h_IA_->SetBinContent(bin, s);
@@ -175,9 +175,9 @@ std::vector<std::vector<double>> runUPC_AAModel(const std::vector<double> Ws, TS
   h_IA->Draw("same HIST L");
   h_IA_->Draw("same AP");
 
-  for (int i = 0; i < Ws.size(); ++i)
+  for (int i = 0; i < ShadowRatio_ParamsMap["Ws"].size(); ++i)
   {
-    TLatex *latex1 = new TLatex(0.33, 0.35-0.04*i, Form("W_{#gamma p} = %.2f GeV, #sigma^{#gamma+A #rightarrow VM+A} (W_{#gamma p}) = %f #pm %f mb",Ws[i],IAs[i],IAs_Err[i]));
+    TLatex *latex1 = new TLatex(0.33, 0.35-0.04*i, Form("W_{#gamma p} = %.2f GeV, #sigma^{#gamma+A #rightarrow VM+A} (W_{#gamma p}) = %f #pm %f mb",ShadowRatio_ParamsMap["Ws"][i],IAs[i],IAs_Err[i]));
     latex1->SetNDC();
     latex1->SetTextSize(20);
     latex1->SetTextFont(43);
@@ -200,11 +200,17 @@ std::vector<std::vector<double>> runUPC_AAModel(const std::vector<double> Ws, TS
     latex1->Draw("same");
   }
 
+  ShadowRatio_ParamsMap["Ws_FitIA"]         = W_IA;
+  ShadowRatio_ParamsMap["Sigmas_FitIA"]     = Sigma_IA;
+  ShadowRatio_ParamsMap["Sigmas_FitIA_Err"] = Sigma_IA_Err;
+
+  ShadowRatio_ParamsMap["Sigmas_IA"]        = IAs;
+  ShadowRatio_ParamsMap["Sigmas_IA_Err"]    = IAs_Err;
+
   // c1->SaveAs("./ImpulseApproximation/runUPC_AAModel_0.png");
   // c2->SaveAs("./ImpulseApproximation/runUPC_AAModel_1.png");
   // c3->SaveAs("./ImpulseApproximation/runUPC_AAModel_2.png");
   delete c1;
   delete c2;
   delete c3;
-  return {IAs, IAs_Err};
 }

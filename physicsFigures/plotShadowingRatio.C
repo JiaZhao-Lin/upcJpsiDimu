@@ -79,7 +79,7 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 	TGraphErrors* ge_ALICE_Run2_FwdRap	= new TGraphErrors(ALICE_Run2_FwdRap_W.size(),	&ALICE_Run2_FwdRap_W[0],	&ALICE_Run2_FwdRap_Sigma[0],	0,	&ALICE_Run2_FwdRap_Sigma_Err[0]	);
 
 	TGraphErrors* ge_CGCnoFluct = new TGraphErrors(CGC_JpsiNoFluct_W.size(),	&CGC_JpsiNoFluct_W[0],	&CGC_JpsiNoFluct_CohXsec[0],	0,	0);
-	TGraphErrors* ge_IA        	= new TGraphErrors(W_IA.size(),	&W_IA[0],	&Sigma_IA[0],	0,	0);
+	TGraphErrors* ge_IA        	= new TGraphErrors(ShadowRatio_ParamsMap["Ws_FitIA"].size(),	&ShadowRatio_ParamsMap["Ws_FitIA"][0],	&ShadowRatio_ParamsMap["Sigmas_FitIA"][0],	0,	0);
 
 	ge_CMS->SetMarkerStyle(20);
 	ge_CMS->SetMarkerSize(1.1);
@@ -140,6 +140,9 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 		legTheory->AddEntry(ge_CGCnoFluct,        "CGC",                   "l");
 		legTheory->AddEntry(ge_IA,                "Impulse Approximation", "l");
 		legTheory->Draw("same");
+
+		c->SaveAs("outplots/SigmaVsW_logXY.png");
+		c->SaveAs("outplots/SigmaVsW_logXY.pdf");
 	}
 	else
 	{
@@ -162,16 +165,8 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 		legTheory->AddEntry(ge_IA,                "IA", "l");
 		legTheory->Draw("same");
 
-	}
-	if(flag4Axis==0)
-	{
 		c->SaveAs("outplots/SigmaVsW_logY.png");
 		c->SaveAs("outplots/SigmaVsW_logY.pdf");
-	}
-	else if (flag4Axis==1)
-	{
-		c->SaveAs("outplots/SigmaVsW_logXY.png");
-		c->SaveAs("outplots/SigmaVsW_logXY.pdf");
 	}
 
 	delete c;
@@ -265,7 +260,7 @@ void plotRvsX( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap )
 	return ShadowRatio_ParamsMap;
 }
 
-std::map<TString, std::vector<double>> getParamsMap(const TString infile = "../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins.root")
+std::map<TString, std::vector<double>> getParamsMap(const TString infile = "../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins.appliedTnP.root", const double flux_uncer = 1.0)
 {
 	std::map<TString, std::vector<double>> ShadowRatio_ParamsMap = {
 		{"Raps",		{}},	{"Raps_Err",		{}},
@@ -274,11 +269,14 @@ std::map<TString, std::vector<double>> getParamsMap(const TString infile = "../s
 		{"R",			{}},	{"R_Err",			{}},
 		{"Xs",			{}},	{"Xs_Err",			{}},
 		{"Ws",			{}},	{"Ws_Err",			{}},
+
+		{"Ws_FitIA",		{}},
+		{"Sigmas_FitIA",	{}},	{"Sigmas_FitIA_Err",	{}}
 	};
 
 	LoadJpsiXsec loadJpsiXsec(infile);
 
-	{auto Temp = fit2D(loadJpsiXsec.GetMap()); ShadowRatio_ParamsMap["Raps"] = Temp[0]; ShadowRatio_ParamsMap["Raps_Err"] = Temp[1]; ShadowRatio_ParamsMap["Sigmas"] = Temp[2]; ShadowRatio_ParamsMap["Sigmas_Err"] = Temp[3];}
+	{auto Temp = fit2D(loadJpsiXsec.GetMap(), flux_uncer); ShadowRatio_ParamsMap["Raps"] = Temp[0]; ShadowRatio_ParamsMap["Raps_Err"] = Temp[1]; ShadowRatio_ParamsMap["Sigmas"] = Temp[2]; ShadowRatio_ParamsMap["Sigmas_Err"] = Temp[3];}
 	for (int i = 0; i < ShadowRatio_ParamsMap["Raps"].size(); ++i)
 	{
 		ShadowRatio_ParamsMap["Xs"] 		.push_back( y2x(ShadowRatio_ParamsMap["Raps"][i]) 	);
@@ -290,7 +288,7 @@ std::map<TString, std::vector<double>> getParamsMap(const TString infile = "../s
 		cout<<"x from W: "<<pow(JpsiMass,2)/pow(ShadowRatio_ParamsMap["Ws"][i],2)<<endl;
 	}
 	
-	{auto Temp = runUPC_AAModel(ShadowRatio_ParamsMap["Ws"]); ShadowRatio_ParamsMap["Sigmas_IA"] = Temp[0]; ShadowRatio_ParamsMap["Sigmas_IA_Err"] = Temp[1];}
+	{runUPC_AAModel(ShadowRatio_ParamsMap);}
 
 	for (int i = 0; i < ShadowRatio_ParamsMap["Raps"].size(); ++i)
 	{

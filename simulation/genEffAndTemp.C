@@ -31,11 +31,22 @@ const double massWindowHig = mJpsiMassHi;
 const TString ptname   = Form("_toCorr_onlyFor_pt_%.2f_%.2f_", ptWindowLow,   ptWindowHig   );
 const TString massname = Form("_massWindow_%.2f_%.2f_",        massWindowLow, massWindowHig );
 
+const TString TnPcases[4]	= {"", ".appliedTnP", ".appliedTnP_Low", ".appliedTnP_Hig"};
+const int   RunTnPcase         = 1;	//Default 1
+
+const double HFscaleFactor[3]	= {1,	0.97549056,	1.1137430};
+const TString HFcases[4]	= {"", ".looseHF", ".tightHF", ".removeHF"};
+const int   RunHFcase         = 0;	//Default 0
+
 const int   nSpecs            = 9;
 const TString specName[nSpecs]  = {"CohJpsi", "CohJpsi_0n0n", "CohJpsi_0nXn", "CohJpsi_XnXn", 
 	"InCohJpsi", "CohPsi2SFeeddown", "CohPsi2S", "InCohPsi2S", "LowMassGammaGamma"};
-const TString specTitle[nSpecs] = {"Coherent J/#psi", "Coherent J/#psi (0n0n)", "Coherent J/#psi (0nXn)", "Coherent J/#psi (XnXn)", 
-	"Incoherent J/#psi", "Coherent #psi(2S) #rightarrow J/#psi + X", "Coherent #psi(2S)", "Incoherent #psi(2S)", "#gamma#gamma#rightarrow#mu#mu"};
+// const TString specTitle[nSpecs] = {"Coherent J/#psi", "Coherent J/#psi (0n0n)", "Coherent J/#psi (0nXn)", "Coherent J/#psi (XnXn)", 
+// 	"Incoherent J/#psi", "Coherent #psi(2S) #rightarrow J/#psi + X", "Coherent #psi(2S)", "Incoherent #psi(2S)", "#gamma#gamma#rightarrow#mu#mu"};
+const TString specFileName[nSpecs]  = {"CohJpsi" + TnPcases[RunTnPcase] + HFcases[RunHFcase], "CohJpsi_0n0n" + TnPcases[RunTnPcase] + HFcases[RunHFcase], "CohJpsi_0nXn" + TnPcases[RunTnPcase] + HFcases[RunHFcase], "CohJpsi_XnXn" + TnPcases[RunTnPcase] + HFcases[RunHFcase], 
+	"InCohJpsi" + TnPcases[RunTnPcase] + HFcases[RunHFcase], "CohPsi2SFeeddown" + TnPcases[RunTnPcase] + HFcases[RunHFcase], "CohPsi2S" + TnPcases[RunTnPcase] + HFcases[RunHFcase], "InCohPsi2S" + TnPcases[RunTnPcase] + HFcases[RunHFcase], "LowMassGammaGamma" + TnPcases[RunTnPcase] + HFcases[RunHFcase]};
+const TString specTitle[nSpecs] = {"Coherent J/#psi" + TnPcases[RunTnPcase] + HFcases[RunHFcase], "Coherent J/#psi (0n0n)" + TnPcases[RunTnPcase] + HFcases[RunHFcase], "Coherent J/#psi (0nXn)" + TnPcases[RunTnPcase] + HFcases[RunHFcase], "Coherent J/#psi (XnXn)" + TnPcases[RunTnPcase] + HFcases[RunHFcase], 
+	"Incoherent J/#psi" + TnPcases[RunTnPcase] + HFcases[RunHFcase], "Coherent #psi(2S) #rightarrow J/#psi + X" + TnPcases[RunTnPcase] + HFcases[RunHFcase], "Coherent #psi(2S)" + TnPcases[RunTnPcase] + HFcases[RunHFcase], "Incoherent #psi(2S)" + TnPcases[RunTnPcase] + HFcases[RunHFcase], "#gamma#gamma#rightarrow#mu#mu" + TnPcases[RunTnPcase] + HFcases[RunHFcase]};
 const Double_t mMass[nSpecs-1]  = {3.096, 3.096, 3.096, 3.096, 3.096, 3.096, 3.686, 3.686}; //for fit to get signal shape parameters
 
 //const int nSpecs = 2;
@@ -465,7 +476,7 @@ void readFiles( )
 {
 	for(int is=0; is<nSpecs; is++)
 	{
-		f[is] = TFile::Open( Form("mcHistos/dimuonHistos.%s.root", specName[is].Data()) );
+		f[is] = TFile::Open( Form("mcHistos/dimuonHistos.%s.root", specFileName[is].Data()) );
 
 		cout<<"readin: "<<f[is]->GetName()<<endl;
 
@@ -612,8 +623,8 @@ void drawEff()
 		else if(specName[is].EqualTo("LowMassGammaGamma")) drawLatex(0.43, 0.95, Form("%s", specTitle[is].Data()), mFont, 0.06, 1);
 		else                                               drawLatex(0.38, 0.95, Form("%s", specTitle[is].Data()), mFont, 0.06, 1);
 
-		c2->SaveAs(Form("%s/EffvsRap_%s.png", outDir.Data(), specName[is].Data()));
-		c2->SaveAs(Form("%s/EffvsRap_%s.pdf", outDir.Data(), specName[is].Data()));
+		c2->SaveAs(Form("%s/EffvsRap_%s.png", outDir.Data(), specFileName[is].Data()));
+		c2->SaveAs(Form("%s/EffvsRap_%s.pdf", outDir.Data(), specFileName[is].Data()));
 		//----------------------------------------------------------------------------------------------------------------------------------------------------------
 		//----------------------------------------------------------------------------------------------------------------------------------------------------------
 	}//is
@@ -691,7 +702,7 @@ void getTemp( )//get pt and mass shape and parameters as templates of particles 
 		//----------------------------------------------------------------------------------------------------------------------------------------------------------
 		// working for templates
 		//----------------------------------------------------------------------------------------------------------------------------------------------------------
-		TString tempDir = Form("%s/%sTemp", outDir.Data(), specName[is].Data());
+		TString tempDir = Form("%s/%sTemp", outDir.Data(), specFileName[is].Data());
 		system(Form("mkdir -p %s", tempDir.Data()));
 
 		if(is<nSpecs-1)
@@ -775,7 +786,7 @@ void getTemp( )//get pt and mass shape and parameters as templates of particles 
 		drawLatex(0.39, 0.95, Form("%1.1f < |y| < %1.1f", mDiffRapLow[nDiffRapBins/2], mDiffRapHi[nDiffRapBins-1]), mFont, 0.06, 1);
 
 		//c2->SaveAs(Form("%s/%sTemp"+massname+".pdf", tempDir.Data(), specName[is].Data()));
-		c2->SaveAs(Form("%s/%sTemp"+massname+".png", tempDir.Data(), specName[is].Data()));
+		c2->SaveAs(Form("%s/%sTemp"+massname+".png", tempDir.Data(), specFileName[is].Data()));
 
 		for(int irap=0; irap<nDiffRapBins; irap++)
 		{
@@ -863,7 +874,7 @@ void getTemp( )//get pt and mass shape and parameters as templates of particles 
 			drawLatex(0.39, 0.95, Form("%1.1f < |y| < %1.1f, %1.2f < mass < %1.2f", mDiffRapLow[nDiffRapBins/2], mDiffRapHi[nDiffRapBins-1], massWindowLow, massWindowHig), mFont, 0.06, 1);
 
 			//c2->SaveAs(Form("%s/%sTemp_RapBin%d"+massname+".pdf", tempDir.Data(), specName[is].Data(), irap));
-			c2->SaveAs(Form("%s/%sTemp_RapBin%d"+massname+".png", tempDir.Data(), specName[is].Data(), irap));
+			c2->SaveAs(Form("%s/%sTemp_RapBin%d"+massname+".png", tempDir.Data(), specFileName[is].Data(), irap));
 		}//iy
 	}//ispec
 
@@ -876,7 +887,7 @@ void saveFiles( )
 	// write down efficiencies
 	//----------------------------------------------------------------------------------------------------------------------------------------------------------
 
-	TFile *fOut = new TFile(Form("%s/Efficiency_AllSpecs_%dRapBins.root", outDir.Data(), nDiffRapBins), "recreate");
+	TFile *fOut = new TFile(Form("%s/Efficiency_AllSpecs_%dRapBins%s%s.root", outDir.Data(), nDiffRapBins, TnPcases[RunTnPcase].Data(), HFcases[RunHFcase].Data()), "recreate");
 	cout<<"save efficiencies into: "<<fOut->GetName()<<endl;
 	fOut->cd();
 
@@ -895,7 +906,7 @@ void saveFiles( )
 	//----------------------------------------------------------------------------------------------------------------------------------------------------------
 	// write down templates
 	//----------------------------------------------------------------------------------------------------------------------------------------------------------
-	TFile *fOutTemp = new TFile( Form("%s/MassPtTemp_AllSpecs"+massname+"%dRapBins.root", outDir.Data(), nDiffRapBins), "recreate");
+	TFile *fOutTemp = new TFile( Form("%s/MassPtTemp_AllSpecs"+massname+"%dRapBins%s%s.root", outDir.Data(), nDiffRapBins, TnPcases[RunTnPcase].Data(), HFcases[RunHFcase].Data()), "recreate");
 	cout<<"save templates into: "<<fOutTemp->GetName()<<endl;
 	fOutTemp->cd();
 

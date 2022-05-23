@@ -12,7 +12,7 @@ Double_t func(Double_t *val, Double_t *par)
 }
 
 
-std::vector<std::vector<double>> fit2D(std::map<TString, std::vector<double>> Map_Xsec)
+std::vector<std::vector<double>> fit2D(std::map<TString, std::vector<double>> Map_Xsec, const double flux_uncer = 1.0)
 {
    std::vector<std::vector<double>> Xs, Ys, Zs, Zs_Err;
    std::vector<double> Raps,   Raps_Err;
@@ -27,8 +27,8 @@ std::vector<std::vector<double>> fit2D(std::map<TString, std::vector<double>> Ma
    for (int i = 0; i < flux_0n0n.size(); ++i)
    {
       std::vector<double> X, Y, Z, Z_Err;
-      X.push_back(flux_0n0n[i].X());      X.push_back(flux_0nXnSum[i].X());      X.push_back(flux_XnXn[i].X());
-      Y.push_back(flux_0n0n[i].Y());      Y.push_back(flux_0nXnSum[i].Y());      Y.push_back(flux_XnXn[i].Y());
+      X.push_back(flux_0n0n[i].X()*flux_uncer);      X.push_back(flux_0nXnSum[i].X()*flux_uncer);      X.push_back(flux_XnXn[i].X()*flux_uncer);
+      Y.push_back(flux_0n0n[i].Y()*flux_uncer);      Y.push_back(flux_0nXnSum[i].Y()*flux_uncer);      Y.push_back(flux_XnXn[i].Y()*flux_uncer);
       Z.push_back(Xsec_0n0n[i]);          Z.push_back(Xsec_0nXnSum[i]);          Z.push_back(Xsec_XnXn[i]);
       Z_Err.push_back(XsecErr_0n0n[i]);   Z_Err.push_back(XsecErr_0nXnSum[i]);   Z_Err.push_back(XsecErr_XnXn[i]);
       Xs.push_back(X);
