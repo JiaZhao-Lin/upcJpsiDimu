@@ -26,7 +26,7 @@ double y2W(const double y)
 	return sqrt( (2 * Gamma_beam * Mass_N * JpsiMass) * exp(y) );
 }
 
-void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap, const int flag4Axis = 0 ) //0: logY only, 1: logX and LogY
+void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap, const std::map<TString, std::vector<double>> &SysUncer_Map, const int flag4Axis = 0 ) //0: logY only, 1: logX and LogY
 {
 	for (int i = 0; i < ALICE_Run2_FwdRap_y.size(); ++i)
 	{
@@ -71,8 +71,24 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 	SigmaVsW->SetTickLength(0.04);
 	SigmaVsW->Draw("");
 
-	TGraphErrors* ge_CMS        		= new TGraphErrors(ShadowRatio_ParamsMap["Ws"].size(),	&ShadowRatio_ParamsMap["Ws"][0],	&ShadowRatio_ParamsMap["Sigmas"][0],	0,	&ShadowRatio_ParamsMap["Sigmas_Err"][0]	);
-	
+	auto X_AXIS_ERR = std::vector<double>(ShadowRatio_ParamsMap["Ws"].size(), 3);
+	TGraphErrors* ge_CMS        			 = new TGraphErrors(ShadowRatio_ParamsMap["Ws"].size(),	&ShadowRatio_ParamsMap["Ws"][0],	&ShadowRatio_ParamsMap["Sigmas"][0],	0,	&ShadowRatio_ParamsMap["Sigmas_Err"][0]	);
+	TGraphAsymmErrors* ge_SysUncer_CMS 	= new TGraphAsymmErrors(
+												ShadowRatio_ParamsMap["Ws"].size(),
+												&ShadowRatio_ParamsMap["Ws"][0],        &ShadowRatio_ParamsMap["Sigmas"][0],
+												&X_AXIS_ERR[0],  &X_AXIS_ERR[0],
+												&SysUncer_Map.at("Sigmas_Err")[0], &SysUncer_Map.at("Sigmas_Err")[0]);
+	// auto gme_CMS = new TGraphMultiErrors(ShadowRatio_ParamsMap["Ws"].size(), &ShadowRatio_ParamsMap["Ws"][0],        &ShadowRatio_ParamsMap["Sigmas"][0]
+	// 								, 0, 0, &ShadowRatio_ParamsMap["Sigmas_Err"][0], &ShadowRatio_ParamsMap["Sigmas_Err"][0]);
+	// gme_CMS->AddYError(ShadowRatio_ParamsMap["Ws"].size(), &SysUncer_Map.at("Sigmas_Err")[0], &SysUncer_Map.at("Sigmas_Err")[0]);
+	// gme_CMS->SetMarkerStyle(20);
+	// gme_CMS->SetLineColor(kRed);
+	// // gme_CMS->GetAttLine(0)->SetLineColor(kRed);
+	// gme_CMS->GetAttLine(1)->SetLineColor(kBlue);
+	// gme_CMS->GetAttFill(1)->SetFillStyle(1001);
+	// gme_CMS->Draw("PS same; Z ; 5 s=0.5");
+
+
 	TGraphAsymmErrors *gae_Xsec_ALICE_Run1 = new TGraphAsymmErrors(ALICE_W_Run1.size(), &ALICE_W_Run1[0],&ALICE_Xsec_Run1[0],0,0, &ALICE_XsecErr2_Run1[0], &ALICE_XsecErr1_Run1[0]);
 	
 	TGraphErrors* ge_ALICE_Run2_MidRap	= new TGraphErrors(ALICE_Run2_MidRap_W.size(),	&ALICE_Run2_MidRap_W[0],	&ALICE_Run2_MidRap_Sigma[0],	0,	&ALICE_Run2_MidRap_Sigma_Err[0]	);
@@ -81,12 +97,17 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 	TGraphErrors* ge_CGCnoFluct = new TGraphErrors(CGC_JpsiNoFluct_W.size(),	&CGC_JpsiNoFluct_W[0],	&CGC_JpsiNoFluct_CohXsec[0],	0,	0);
 	TGraphErrors* ge_IA        	= new TGraphErrors(ShadowRatio_ParamsMap["Ws_FitIA"].size(),	&ShadowRatio_ParamsMap["Ws_FitIA"][0],	&ShadowRatio_ParamsMap["Sigmas_FitIA"][0],	0,	0);
 
+	ge_SysUncer_CMS  ->SetMarkerStyle(24);
+	ge_SysUncer_CMS ->SetFillColor(kRed);
+	ge_SysUncer_CMS ->SetFillStyle(3001);
+	ge_SysUncer_CMS ->Draw("2same");
 	ge_CMS->SetMarkerStyle(20);
 	ge_CMS->SetMarkerSize(1.1);
 	ge_CMS->SetMarkerColor(1);
 	ge_CMS->SetLineColor(1);
 	ge_CMS->SetLineWidth(2);
 	ge_CMS->Draw("pezsame");
+
 
 	ge_ALICE_Run2_MidRap->SetMarkerStyle(24);
 	ge_ALICE_Run2_MidRap->SetMarkerColor(4);
@@ -172,7 +193,7 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 	delete c;
 }
 
-void plotRvsX( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap )
+void plotRvsX( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap, const std::map<TString, std::vector<double>> &SysUncer_Map )
 {	
 	auto c = new TCanvas();
 
@@ -199,12 +220,32 @@ void plotRvsX( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap )
 	htem2d->SetTickLength(0.04);
 	htem2d->Draw();
 
+	std::vector<double> X_AXIS_ERR = {5e-6,1.5e-4,4e-6,2e-4,3e-6,2.5e-4};
 	TGraphErrors* ge_CMS        	= new TGraphErrors(ShadowRatio_ParamsMap["Xs"].size(),    &ShadowRatio_ParamsMap["Xs"][0], 
 					&ShadowRatio_ParamsMap["R"][0],	&ShadowRatio_ParamsMap["Xs_Err"][0],	&ShadowRatio_ParamsMap["R_Err"][0]);
+	TGraphAsymmErrors* ge_SysUncer_CMS 	= new TGraphAsymmErrors(
+												ShadowRatio_ParamsMap["Xs"].size(),
+												&ShadowRatio_ParamsMap["Xs"][0],        &ShadowRatio_ParamsMap["R"][0],
+												&X_AXIS_ERR[0],  &X_AXIS_ERR[0],
+												&SysUncer_Map.at("R_Err")[0], &SysUncer_Map.at("R_Err")[0]);
+	// auto gme_CMS = new TGraphMultiErrors(ShadowRatio_ParamsMap["Xs"].size(), &ShadowRatio_ParamsMap["Xs"][0],        &ShadowRatio_ParamsMap["R"][0]
+	// 								, &X_AXIS_ERR[0],  &X_AXIS_ERR[0], &ShadowRatio_ParamsMap["R_Err"][0], &ShadowRatio_ParamsMap["R_Err"][0]);
+	// gme_CMS->AddYError(ShadowRatio_ParamsMap["Xs"].size(), &SysUncer_Map.at("R_Err")[0], &SysUncer_Map.at("R_Err")[0]);
+	// gme_CMS->SetMarkerStyle(20);
+	// gme_CMS->SetLineColor(kRed);
+	// // gme_CMS->GetAttLine(0)->SetLineColor(kRed);
+	// gme_CMS->GetAttLine(1)->SetLineColor(kBlue);
+	// gme_CMS->GetAttFill(1)->SetFillStyle(0);
+	// gme_CMS->Draw("PS same; Z ; 5 s=0.5");
+
 	TGraphErrors* ge_ALICE_Run1 	= new TGraphErrors(ALICE_x.size(),      &ALICE_x[0],      &ALICE_R[0],      0,          &ALICE_R_Err[0] );
 	TGraphErrors* ge_ALICE_Run2 	= new TGraphErrors(ALICE_Run2_x.size(), &ALICE_Run2_x[0], &ALICE_Run2_R[0], 0,          &ALICE_Run2_R_Err[0] );
 	TGraphErrors* ge_ALICE_Run2_Psi = new TGraphErrors(ALICE_Run2_Psi_x.size(), &ALICE_Run2_Psi_x[0], &ALICE_Run2_Psi_R[0], 0,          &ALICE_Run2_R_Err[0] );
 
+	ge_SysUncer_CMS  ->SetMarkerStyle(24);
+	ge_SysUncer_CMS ->SetFillColor(kRed);
+	ge_SysUncer_CMS ->SetFillStyle(3001);
+	ge_SysUncer_CMS ->Draw("2same");
 	ge_CMS->SetMarkerStyle(20);
 	ge_CMS->SetMarkerColor(1);
 	ge_CMS->SetLineColor(1);
@@ -303,6 +344,8 @@ std::map<TString, std::vector<double>> getParamsMap(const TString infile = "../s
 void plotShadowingRatio()
 {
 	auto ShadowRatio_ParamsMap = getParamsMap();
-	plotSigmaVsW(ShadowRatio_ParamsMap);
-	plotRvsX(ShadowRatio_ParamsMap);
+	LoadUncertainty loadUncertainty("uncertainties/SysUncertainties.root");
+	auto SysUncer_Map = loadUncertainty.GetMap();
+	plotSigmaVsW(ShadowRatio_ParamsMap,SysUncer_Map);
+	plotRvsX(ShadowRatio_ParamsMap,SysUncer_Map);
 }

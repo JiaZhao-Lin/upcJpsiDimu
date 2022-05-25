@@ -95,7 +95,7 @@ void runUPC_AAModel(std::map<TString, std::vector<double>> &ShadowRatio_ParamsMa
     //Eq. 12 in Eur.Phys.J.C 74 (2014) 7, 2942
     double IA = gammaP_xs * Phi_A;
     h_IA->SetBinContent(ibin+1, IA);
-    h_IA->SetBinError(ibin+1, IA*0.02);//2% error for now
+    h_IA->SetBinError(ibin+1, IA*0.054);//5% error for now
 
     W_IA.push_back(w); Sigma_IA.push_back(IA/1e6); Sigma_IA_Err.push_back(IA/1e6*0.02);
   }

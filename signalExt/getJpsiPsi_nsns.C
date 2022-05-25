@@ -56,7 +56,8 @@ int    qedColor = kGreen-3, qedStyle = 1;
 const TString TnPcases[4]		= {"", ".appliedTnP", ".appliedTnP_Low", ".appliedTnP_Hig"};
 const int   RunTnPcase         	= 1;	//Default 1
 
-const double HFscaleFactor[3]	= {1,	0.97549056,	1.1137430};
+// const double HFscaleFactor[3]	= {1,	0.97549056,	1.1137430};
+const double HFscaleFactor[3]	= {1,	1,	1.1137430};
 const TString HFcases[4]		= {"", ".looseHF", ".tightHF", ".removeHF"};
 const int   RunHFcase         	= 0;	//Default 0
 

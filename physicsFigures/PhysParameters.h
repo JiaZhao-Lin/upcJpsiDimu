@@ -1,6 +1,12 @@
 #ifndef PHYSPARAETERS_H
 #define PHYSPARAETERS_H
 
+//---------------------------------------Systematic Uncertainties---------------------------------------------
+const double Lumi_Uncer = 0.015;
+const double Jpsi2MuMuBR_Uncer = 0.033/5.961;
+
+//------------------------------------------------------------------------------------------------------------
+
 //------------------------------------------------------------------------------------------------------------
 const std::vector<double> ALICE_W_Run1 = {19.6, 92.4}, ALICE_Xsec_Run1 = {6.1e-3, 17.6e-3}, ALICE_XsecErr1_Run1 = {2.0e-3, 2.0e-3}, ALICE_XsecErr2_Run1 = {1.8e-3, 2.7e-3};
 

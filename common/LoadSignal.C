@@ -175,3 +175,49 @@ struct LoadJpsiXsec : public LoadSignal
 	std::vector<double> GetMapElement(const TString n)	{if(!Map_Xsec.size())	std::runtime_error("LoadJpsiXsec: Empty!!!");	return Map_Xsec[n];}
 	double GetMapElementVal(const TString n, const int i)	{if(!Map_Xsec.size())	std::runtime_error("LoadJpsiXsec: Empty!!!");	return Map_Xsec[n][i];}
 };
+
+struct LoadUncertainty : public LoadSignal
+{
+	//Priviate but not so priviate members-----------------------------------------------
+	TH1D* V_TotalSysUncer[4];
+	std::map<TString, std::vector<double>> Map_Uncer;
+	//-----------------------------------------------------------------------------------
+
+	//Constructor------------------------------------------------------------------------
+	LoadUncertainty(TString infileDir) : LoadSignal{infileDir}	{	Read();	}
+	virtual ~LoadUncertainty() = default;
+	//-----------------------------------------------------------------------------------
+
+	//Virtual Functions------------------------------------------------------------------
+	virtual Bool_t Read() override
+	{	
+		cout<<"------>START Reading Uncertainty: "<<infile->GetName()<<endl;
+
+		V_TotalSysUncer[0] = (TH1D*) infile->Get("hTotalSysSigmas") ;
+		V_TotalSysUncer[1] = (TH1D*) infile->Get("hTotalSysSigmasUncerPerc") ;
+		V_TotalSysUncer[2] = (TH1D*) infile->Get("hTotalSysR") ;
+		V_TotalSysUncer[3] = (TH1D*) infile->Get("hTotalSysRUncerPerc") ;
+
+		std::vector<double> Sigmas, R;
+		std::vector<double> TotalSysSigmas_Err, TotalSysR_Err;
+		for (int i = 0 ; i < V_TotalSysUncer[0]->GetNbinsX() ; ++i)
+		{
+			Sigmas 				.push_back( V_TotalSysUncer[0]->GetBinContent(i+1) );
+			TotalSysSigmas_Err	.push_back( V_TotalSysUncer[0]->GetBinError(i+1) );
+			R 					.push_back( V_TotalSysUncer[2]->GetBinContent(i+1) );
+			TotalSysR_Err 		.push_back( V_TotalSysUncer[2]->GetBinError(i+1) );
+		}
+		Map_Uncer["Sigmas"] = Sigmas; 					Map_Uncer["Sigmas_Err"] = TotalSysSigmas_Err;
+		Map_Uncer["R"] 		= R; 						Map_Uncer["R_Err"] 	  = TotalSysR_Err;
+
+		cout<<"------>DONE  Reading Uncertainty: "<<infile->GetName()<<endl;
+		return kTRUE;
+	}
+	//-----------------------------------------------------------------------------------
+
+	//Free Functions---------------------------------------------------------------------
+	TH1D* GetUncertainty(const int i)	{if(!V_TotalSysUncer[i])	std::runtime_error("LoadUncertainty: Empty!!!"); return V_TotalSysUncer[i];}
+	std::map<TString, std::vector<double>> GetMap()	const {if(!Map_Uncer.size())	std::runtime_error("LoadUncertainty: Empty!!!"); 	return Map_Uncer;}
+	std::vector<double> GetMapElement(const TString n)	{if(!Map_Uncer.size())	std::runtime_error("LoadUncertainty: Empty!!!");	return Map_Uncer[n];}
+	double GetMapElementVal(const TString n, const int i)	{if(!Map_Uncer.size())	std::runtime_error("LoadUncertainty: Empty!!!");	return Map_Uncer[n][i];}
+};

@@ -1,6 +1,12 @@
 #include "plotShadowingRatio.C"
 
 
+std::map<TString, std::vector<double>> TotalSysUncer_Map = {
+	{"Xs",			{}},	{"Ws",					{}},
+	{"Sigmas",		{}},	{"R",					{}},
+	{"R_SysUncer",	{}},	{"Sigmas_SysUncer",		{}}
+};
+
 void Relative_Uncer( std::map<TString, std::vector<double>> &m1,	std::map<TString, std::vector<double>> m2, const TString param)
 {
 	std::vector<double> out;
@@ -11,18 +17,114 @@ void Relative_Uncer( std::map<TString, std::vector<double>> &m1,	std::map<TStrin
 	m1[param+"_Uncer"] = out;
 }
 
-void plot_Uncer(std::map<TString, std::vector<double>> &Map, const std::map<TString, std::vector<double>> &Map_Default,
-				TString paramX, TString paramY, int style, int color, TLegend *legend, TString legendName)
+void Cal_R_Uncer( std::map<TString, std::vector<double>> &map , const bool AddIA_Uncer = false)
 {
-	Relative_Uncer(Map,	Map_Default,	paramY);
+	for (int i = 0; i < map["Xs"].size(); ++i)
+	{
+		if (AddIA_Uncer)	map["R_Uncer"].push_back( 0.5 * 100 * map["Sigmas_IA_Err"][i] / map["Sigmas_IA"][i] );
+		else 				map["R_Uncer"].push_back( 0.5 * map["Sigmas_Uncer"][i] 	);
+	}
+}
 
-	auto gr	= new TGraph(Map[paramX].size(),		&Map[paramX][0],		&Map[paramY+"_Uncer"][0]);
-	gr->SetMarkerSize(1.1);
+void CalculateUncer( std::map<TString, std::vector<double>> &Map, const std::map<TString, std::vector<double>> &Map_Default)
+{
+	//calculate the uncertainty if it has not been calculated
+	if ( Map.find("Sigmas_Uncer") == Map.end() ){	Relative_Uncer(Map,	Map_Default,	"Sigmas");	}
+	if ( Map.find("R_Uncer") 	  == Map.end() ){	Cal_R_Uncer(Map);					}
+}
+
+std::map<TString, std::vector<double>> getLargestUncer_Map(const std::vector< std::map<TString, std::vector<double>> > Maps, TString paramX, TString paramY)
+{
+	//pick the largest uncertainty for each point from the maps
+	std::map<TString, std::vector<double>> LargestUncer_Map;
+	LargestUncer_Map[paramX]	=	Maps[0].at(paramX);
+	LargestUncer_Map[paramY+"_Uncer"]	=	std::vector<double>(LargestUncer_Map[paramX].size(),	0);
+
+	for (int i = 0; i < LargestUncer_Map[paramX].size(); ++i)
+	{
+		for (int j = 0; j < Maps.size(); ++j)
+		{
+			if (LargestUncer_Map[paramY+"_Uncer"][i] < Maps[j].at(paramY+"_Uncer")[i])
+			{
+				LargestUncer_Map[paramY+"_Uncer"][i] = Maps[j].at(paramY+"_Uncer")[i];
+			}
+		}
+	}
+	return LargestUncer_Map;
+}
+
+std::map<TString, std::vector<double>> getCombinedUncer_Map(const std::vector< std::map<TString, std::vector<double>> > Maps, TString paramX, TString paramY)
+{
+	std::map<TString, std::vector<double>> CombinedUncer_Map;
+	CombinedUncer_Map[paramX]	=	Maps[0].at(paramX);
+	CombinedUncer_Map[paramY+"_Uncer"]	=	std::vector<double>(CombinedUncer_Map[paramX].size(),	0);
+
+	for (int i = 0; i < CombinedUncer_Map[paramX].size(); ++i)
+	{
+		for (int j = 0; j < Maps.size(); ++j)
+		{
+			CombinedUncer_Map.at(paramY+"_Uncer")[i] = TMath::Hypot(CombinedUncer_Map.at(paramY+"_Uncer")[i],
+																	Maps[j].at(paramY+"_Uncer")[i]				);
+		}
+	}
+	return CombinedUncer_Map;
+}
+
+
+void AddToTotalSysUncer(	const std::map<TString, std::vector<double>> &Map, TString paramY)
+{
+	for (int i = 0; i < Map.at(paramY+"_Uncer").size(); ++i)
+	{
+		TotalSysUncer_Map.at(paramY+"_SysUncer")[i]		=	TMath::Hypot(TotalSysUncer_Map.at(paramY+"_SysUncer")[i],		Map.at(paramY+"_Uncer")[i]);
+	}
+}
+
+void plot_Uncer( std::map<TString, std::vector<double>> &Map, const std::map<TString, std::vector<double>> &Map_Default,
+				TString paramX, TString paramY, int style, int color, TLegend *legend, TString legendName,	const bool AddIA_Uncer = false)
+{
+	if(AddIA_Uncer && paramY == "R")	Cal_R_Uncer(Map,	AddIA_Uncer);
+
+	AddToTotalSysUncer(Map,	paramY);
+
+	auto gr	= new TGraph(Map.at(paramX).size(),		&Map.at(paramX)[0],		&Map.at(paramY+"_Uncer")[0]);
+	gr->SetMarkerSize(1.5);
 	gr->SetMarkerColor(color);
 	gr->SetMarkerStyle(style);
 	gr->Draw("psame");
 
 	legend->AddEntry(gr, legendName, "p");
+}
+
+void plot_ConstUncer(const std::map<TString, std::vector<double>> &Map,	TString paramX,	TString paramY,TLegend *legend)
+{
+	std::vector<double> v_Lumi_Uncer	(Map.at(paramX).size(),	Lumi_Uncer*100);
+	std::vector<double> v_BR_Uncer		(Map.at(paramX).size(),	Jpsi2MuMuBR_Uncer*100);
+
+	AddToTotalSysUncer({{"Sigmas_Uncer",	v_Lumi_Uncer}},	"Sigmas");	AddToTotalSysUncer({{"R_Uncer",	v_Lumi_Uncer}},	"R");
+	AddToTotalSysUncer({{"Sigmas_Uncer",	v_BR_Uncer}},	"Sigmas");	AddToTotalSysUncer({{"R_Uncer",	v_BR_Uncer}},	"R");
+
+	auto gr_Lumi_Uncer		= new TGraph(Map.at(paramX).size(),		&Map.at(paramX)[0],		&v_Lumi_Uncer[0]	);
+	auto gr_BR_Uncer		= new TGraph(Map.at(paramX).size(),		&Map.at(paramX)[0],		&v_BR_Uncer[0]		);
+	auto gr_TotalSys_Uncer	= new TGraph(TotalSysUncer_Map.at(paramX).size(),		&TotalSysUncer_Map.at(paramX)[0],		&TotalSysUncer_Map.at(paramY+"_SysUncer")[0]		);
+
+	gr_Lumi_Uncer->SetMarkerStyle(56);
+	gr_Lumi_Uncer->SetMarkerSize(1.5);
+	gr_Lumi_Uncer->SetMarkerColor(1);
+	gr_Lumi_Uncer->Draw("psame");
+
+	gr_BR_Uncer->SetMarkerStyle(56);
+	gr_BR_Uncer->SetMarkerSize(1.5);
+	gr_BR_Uncer->SetMarkerColor(2);
+	gr_BR_Uncer->Draw("psame");
+
+	gr_TotalSys_Uncer->SetMarkerStyle(47);
+	gr_TotalSys_Uncer->SetMarkerSize(1.8);
+	gr_TotalSys_Uncer->SetMarkerColor(1);
+	gr_TotalSys_Uncer->Draw("psame");
+
+	legend->AddEntry(gr_BR_Uncer,		"BR", 		"p");
+	legend->AddEntry(gr_Lumi_Uncer,		"Lumi", 	"p");
+	legend->AddEntry(gr_TotalSys_Uncer,	"Total", 	"p");
 }
 
 void plotSigmaVsW( std::map<TString, std::vector<double>> &Map, const double shift,
@@ -192,7 +294,7 @@ void plotRvsX( std::map<TString, std::vector<double>> &Map, const double shift,
 
 		leg->SetFillStyle(0);
 		leg->SetFillColor(0);
-		leg->SetTextSize(0.040);
+		leg->SetTextSize(0.035);
 
 		//leg->AddEntry(ge_ALICE_Run1,  "ALICE Run1", "lp"); //Run1
 		leg->AddEntry(ge_ALICE_Run2,  "ALICE", "lp"); //Run2
@@ -226,6 +328,65 @@ void plotRvsX( std::map<TString, std::vector<double>> &Map, const double shift,
 	}
 }
 
+void saveFile(const std::vector<std::map<TString, std::vector<double>>> Maps)
+{
+	TFile *file = new TFile(Form("uncertainties/SysUncertainties.root"), "recreate");
+	cout<<"Saving uncertainties into: "<<file->GetName()<<endl;
+	int nBins = TotalSysUncer_Map.at("Ws").size();
+
+	TH1D hTotalSysSigmas( "hTotalSysSigmas", "hTotalSysSigmas;iBin;", nBins, 0, nBins);
+	TH1D hTotalSysSigmasUncerPerc( "hTotalSysSigmasUncerPerc", "hTotalSysSigmasUncerPerc;iBin;", nBins, 0, nBins);
+	TH1D hTotalSysR( "hTotalSysR", "hTotalSysR;iBin;", nBins, 0, nBins);
+	TH1D hTotalSysRUncerPerc( "hTotalSysRUncerPerc", "hTotalSysRUncerPerc;iBin;", nBins, 0, nBins);
+
+	for (int iBin = 0; iBin < nBins; ++iBin)
+	{
+		double TotalSysSigmas 		 	= TotalSysUncer_Map.at("Sigmas")[iBin];
+		double TotalSysSigmas_Uncer		= TotalSysUncer_Map.at("Sigmas_SysUncer")[iBin];
+		double TotalSysR 		 		= TotalSysUncer_Map.at("R")[iBin];
+		double TotalSysR_Uncer 			= TotalSysUncer_Map.at("R_SysUncer")[iBin];
+
+		hTotalSysSigmas.SetBinContent			(iBin+1, TotalSysSigmas);
+		hTotalSysSigmas.SetBinError				(iBin+1, TotalSysSigmas*TotalSysSigmas_Uncer/100);
+		hTotalSysSigmasUncerPerc.SetBinContent	(iBin+1, TotalSysSigmas_Uncer);
+		hTotalSysR.SetBinContent				(iBin+1, TotalSysR);
+		hTotalSysR.SetBinError					(iBin+1, TotalSysR*TotalSysR_Uncer/100);
+		hTotalSysRUncerPerc.SetBinContent		(iBin+1, TotalSysR_Uncer);
+	}
+	hTotalSysSigmas.Write();
+	hTotalSysSigmasUncerPerc.Write();
+	hTotalSysR.Write();
+	hTotalSysRUncerPerc.Write();
+
+	for(int i=0; i<Maps.size(); i++)
+	{
+		TH1D hSigmas( Form("hSigmas%d", i), Form("hSigmas%d", i), nBins, 0, nBins);
+		TH1D hSigmasUncerPerc( Form("hSigmasUncerPerc%d", i), Form("hSigmasUncerPerc%d", i), nBins, 0, nBins);
+		TH1D hR( Form("hR%d", i), Form("hR%d", i), nBins, 0, nBins);
+		TH1D hRUncerPerc( Form("hRUncerPerc%d", i), Form("hRUncerPerc%d", i), nBins, 0, nBins);
+		
+		for (int iBin = 0; iBin < nBins; ++iBin)
+		{
+			double Sigmas 		 	= Maps[i].at("Sigmas")[iBin];
+			double Sigmas_Uncer		= Maps[i].at("Sigmas_Uncer")[iBin];
+			double R 		 		= Maps[i].at("R")[iBin];
+			double R_Uncer 			= Maps[i].at("R_Uncer")[iBin];
+
+			hSigmas.SetBinContent			(iBin+1, Sigmas);
+			hSigmas.SetBinError				(iBin+1, Sigmas*Sigmas_Uncer/100);
+			hSigmasUncerPerc.SetBinContent	(iBin+1, Sigmas_Uncer);
+			hR.SetBinContent				(iBin+1, R);
+			hR.SetBinError					(iBin+1, R*R_Uncer/100);
+			hRUncerPerc.SetBinContent		(iBin+1, R_Uncer);
+		}
+		hSigmas.Write();
+		hSigmasUncerPerc.Write();
+		hR.Write();
+		hRUncerPerc.Write();
+	}
+	file->Close();
+}
+
 void getFitUncertainty()
 {
 	std::map<TString, std::vector<double>> CB_Poly3_Map 		= getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins.appliedTnP.root");
@@ -233,87 +394,125 @@ void getFitUncertainty()
 	std::map<TString, std::vector<double>> CB_FixCBAN_Poly3_Map = getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_FixCBAN_Poly3_PUShuai_6RapBins.appliedTnP.root");
 	std::map<TString, std::vector<double>> CBG_Poly3_Map 		= getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CBG_Poly3_PUShuai_6RapBins.appliedTnP.root");
 	std::map<TString, std::vector<double>> CB_Poly3_SdB_Map 	= getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_SdB_PUShuai_6RapBins.appliedTnP.root");
+	std::map<TString, std::vector<double>> CB_Poly3_NarrMass_Map= getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_NarrowMass_6RapBins.appliedTnP.root");
+	std::map<TString, std::vector<double>> CB_Poly3_WideMass_Map= getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_WideMass_6RapBins.appliedTnP.root");
 	std::map<TString, std::vector<double>> CB_Poly3_looseHF_Map = getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins.looseHF.root");
 	// std::map<TString, std::vector<double>> CB_Poly3_tightHF_Map = getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins.tightHF.root");
 	std::map<TString, std::vector<double>> CB_Poly3_fluxP_Map 	= getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins.appliedTnP.root", 1.05);
 	std::map<TString, std::vector<double>> CB_Poly3_fluxM_Map 	= getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins.appliedTnP.root", 0.95);
-	std::map<TString, std::vector<double>> CB_Poly3_TnP_Low_Map 	= getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins.appliedTnP_Low.root");
-	std::map<TString, std::vector<double>> CB_Poly3_TnP_Hig_Map 	= getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins.appliedTnP_Hig.root");
+	std::map<TString, std::vector<double>> CB_Poly3_TnP_Low_Map = getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins.appliedTnP_Low.root");
+	std::map<TString, std::vector<double>> CB_Poly3_TnP_Hig_Map	= getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins.appliedTnP_Hig.root");
+	std::map<TString, std::vector<double>> CB_Poly3_PU_Map 		= getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUATLAS_6RapBins.appliedTnP.root");
 
 	const std::map<TString, std::vector<double>> JpsiXsec_Default		= CB_Poly3_Map;
 
+	CalculateUncer(CB_Poly4_Map,			JpsiXsec_Default);		CalculateUncer(CB_FixCBAN_Poly3_Map,	JpsiXsec_Default);
+	CalculateUncer(CBG_Poly3_Map,			JpsiXsec_Default);		CalculateUncer(CB_Poly3_SdB_Map,		JpsiXsec_Default);
+	CalculateUncer(CB_Poly3_NarrMass_Map,	JpsiXsec_Default);		CalculateUncer(CB_Poly3_WideMass_Map,	JpsiXsec_Default);
+	CalculateUncer(CB_Poly3_looseHF_Map,	JpsiXsec_Default);		CalculateUncer(CB_Poly3_fluxP_Map,		JpsiXsec_Default);
+	CalculateUncer(CB_Poly3_fluxM_Map,		JpsiXsec_Default);		CalculateUncer(CB_Poly3_TnP_Low_Map,	JpsiXsec_Default);
+	CalculateUncer(CB_Poly3_TnP_Hig_Map,	JpsiXsec_Default);		CalculateUncer(CB_Poly3_PU_Map,			JpsiXsec_Default);
 
+	TotalSysUncer_Map["Ws"] = JpsiXsec_Default.at("Ws");	TotalSysUncer_Map["Xs"] = JpsiXsec_Default.at("Xs");
+	TotalSysUncer_Map["Sigmas"] 	= JpsiXsec_Default.at("Sigmas");
+	TotalSysUncer_Map["R"] 			= JpsiXsec_Default.at("R");
+	TotalSysUncer_Map["Sigmas_SysUncer"] 	= std::vector<double>(JpsiXsec_Default.at("Ws").size(),	0);
+	TotalSysUncer_Map["R_SysUncer"] 		= std::vector<double>(JpsiXsec_Default.at("Xs").size(),	0);	
+
+	//-----------------------------------------------------------------------------------
 	//-----------------------------------Comparing SigmaVsW------------------------------
-	plotSigmaVsW(CB_Poly3_Map,			0,	24,	1,	"CB_Poly3"				);
-	plotSigmaVsW(CB_Poly4_Map,			0,	24,	2,	"CB_Poly4"				);
-	plotSigmaVsW(CB_FixCBAN_Poly3_Map,	0,	24,	3,	"CB_FixCBAN_Poly3"		);
-	plotSigmaVsW(CBG_Poly3_Map,			0,	24,	28,	"CBG_Poly3"				);
-	plotSigmaVsW(CB_Poly3_SdB_Map,		0,	24,	6,	"CB_Poly3_SdB"			);
+	plotSigmaVsW(CB_Poly3_Map,			0,	47,	1,	"Default"				);
+	// plotSigmaVsW(CB_Poly4_Map,			0,	24,	1,	"CB_Poly4"				);
+	// plotSigmaVsW(CB_FixCBAN_Poly3_Map,	0,	24,	2,	"CB_FixCBAN_Poly3"		);
+	// plotSigmaVsW(CBG_Poly3_Map,			0,	24,	6,	"CBG_Poly3"				);
+	// plotSigmaVsW(CB_Poly3_SdB_Map,		0,	24,	28,	"QEDPtShape"			);
+	// plotSigmaVsW(CB_Poly3_NarrMass_Map,	0,	24,	29,	"NarrMass"				);
+	// plotSigmaVsW(CB_Poly3_WideMass_Map,	0,	24,	30,	"WideMass"				);
 
-	plotSigmaVsW(CB_Poly3_looseHF_Map,	5,	25,	1,	"CB_Poly3_looseHF"		);
+	plotSigmaVsW(CB_Poly3_looseHF_Map,	5,	26,	1,	"HFveto"		);
 	// plotSigmaVsW(CB_Poly3_fluxP_Map,	10,	26,	1,	"CB_Poly3_fluxP"		);
-	plotSigmaVsW(CB_Poly3_fluxM_Map,	10,	26,	1,	"CB_Poly3_fluxM", 	true);
+	// plotSigmaVsW(CB_Poly3_fluxM_Map,	5,	26,	2,	"PhotonFlux" 			);
+	// plotSigmaVsW(CB_Poly3_PU_Map,		5,	26,	4,	"n-PileUp"				);
+	// plotSigmaVsW(CB_Poly3_TnP_Low_Map,	5,	26,	6,	"TnP", 				true);
 	//-----------------------------------------------------------------------------------
 
-
+	//-----------------------------------------------------------------------------------
 	//-----------------------------------Comparing RVsW----------------------------------
-	plotRvsX(CB_Poly3_Map,			0,	24,	1,	"CB_Poly3"				);
-	plotRvsX(CB_Poly4_Map,			0,	24,	2,	"CB_Poly4"				);
-	plotRvsX(CB_FixCBAN_Poly3_Map,	0,	24,	3,	"CB_FixCBAN_Poly3"		);
-	plotRvsX(CBG_Poly3_Map,			0,	24,	28,	"CBG_Poly3"				);
-	plotRvsX(CB_Poly3_SdB_Map,		0,	24,	6,	"CB_Poly3_SdB"			);
+	plotRvsX(CB_Poly3_Map,			0,	47,	1,	"Default"				);
+	// plotRvsX(CB_Poly4_Map,			0,	24,	1,	"CB_Poly4"				);
+	// plotRvsX(CB_FixCBAN_Poly3_Map,	0,	24,	2,	"CB_FixCBAN_Poly3"		);
+	// plotRvsX(CBG_Poly3_Map,			0,	24,	6,	"CBG_Poly3"				);
+	// plotRvsX(CB_Poly3_SdB_Map,		0,	24,	28,	"QEDPtShape"			);
+	// plotRvsX(CB_Poly3_NarrMass_Map,	0,	24,	29,	"NarrMass"				);
+	// plotRvsX(CB_Poly3_WideMass_Map,	0,	24,	30,	"WideMass"				);
 
-	plotRvsX(CB_Poly3_looseHF_Map,	4e-4,	25,	1,	"CB_Poly3_looseHF"		);
+	plotRvsX(CB_Poly3_looseHF_Map,	4e-4,	26,	1,	"HFveto"			);
 	// plotRvsX(CB_Poly3_fluxP_Map,	0,	55,	1,	"CB_Poly3_fluxP"		);
-	plotRvsX(CB_Poly3_fluxM_Map,	8e-4,	26,	1,	"CB_Poly3_fluxM", 	true);
+	// plotRvsX(CB_Poly3_fluxM_Map,	4e-4,	26,	2,	"PhotonFlux"		);
+	// plotRvsX(CB_Poly3_PU_Map,		4e-4,	26,	4,	"n-PileUp"			);
+	// plotRvsX(CB_Poly3_TnP_Low_Map,	4e-4,	26,	6,	"TnP", 			true);
 	//-----------------------------------------------------------------------------------
 
-
+	//-----------------------------------------------------------------------------------
 	//-----------------------------------W Unicertainty----------------------------------
 	auto c2 = new TCanvas();
-	auto Sigma_FitUncer	= new TH2D("Sigma_FitUncertainty", ";W_{#gammaPb} (GeV);#sigma Uncer.(%);", 10,14,520, 10,0,20);
+	c2->SetLogx();
+	auto Sigma_FitUncer	= new TH2D("Sigma_FitUncertainty", ";W_{#gammaPb} (GeV);#sigma Uncer.(%);", 10,30,520, 10,0,15);
 	Sigma_FitUncer->Draw();
 
-	TLegend  *legendW =  new TLegend(0.15, 0.70, 0.30, 0.90);
+	TLegend  *legendW =  new TLegend(0.35, 0.60, 0.50, 0.90);
 	legendW->SetFillStyle(0);
-	legendW->SetTextSize(0.040);
-	plot_Uncer(CB_Poly4_Map,			JpsiXsec_Default,	"Ws",	"Sigmas",	53,	1,	legendW,	"CB_Poly4");
-	plot_Uncer(CB_FixCBAN_Poly3_Map,	JpsiXsec_Default,	"Ws",	"Sigmas",	53,	2,	legendW,	"CB_FixCBAN_Poly3");
-	plot_Uncer(CBG_Poly3_Map,			JpsiXsec_Default,	"Ws",	"Sigmas",	53,	3,	legendW,	"CBG_Poly3");
-	plot_Uncer(CB_Poly3_SdB_Map,		JpsiXsec_Default,	"Ws",	"Sigmas",	53,	4,	legendW,	"CB_Poly3_SdB");
+	legendW->SetTextSize(0.035);
 
-	plot_Uncer(CB_Poly3_looseHF_Map,	JpsiXsec_Default,	"Ws",	"Sigmas",	54,	1,	legendW,	"CB_Poly3_looseHF");
-	// plot_Uncer(CB_Poly3_tightHF_Map,	JpsiXsec_Default,	"Ws",	"Sigmas",	54,	2,	legendW,	"CB_Poly3_tightHF");
-	// plot_Uncer(CB_Poly3_fluxP_Map,		JpsiXsec_Default,	"Ws",	"Sigmas",	55,	1,	legendW,	"CB_Poly3_fluxP");
-	plot_Uncer(CB_Poly3_fluxM_Map,		JpsiXsec_Default,	"Ws",	"Sigmas",	55,	2,	legendW,	"CB_Poly3_fluxM");
+	auto SigmasMassFitRangeUncer_Map	= getLargestUncer_Map( { CB_Poly3_NarrMass_Map,	CB_Poly3_WideMass_Map},	"Ws",	"Sigmas");
+	auto SigmasTotalFitUncer_Map 		= getCombinedUncer_Map( { CB_Poly4_Map,		CB_FixCBAN_Poly3_Map,	CBG_Poly3_Map,
+																CB_Poly3_SdB_Map,	SigmasMassFitRangeUncer_Map},"Ws",	"Sigmas");
+	auto SigmasFluxUncer_Map			= getLargestUncer_Map( { CB_Poly3_fluxM_Map,	CB_Poly3_fluxP_Map},	"Ws",	"Sigmas" );
+	auto SigmasTnPUncer_Map				= getLargestUncer_Map( { CB_Poly3_TnP_Low_Map,	CB_Poly3_TnP_Hig_Map},	"Ws",	"Sigmas" );
 
-	// plot_Uncer(CB_Poly3_TnP_Low_Map,	JpsiXsec_Default,	"Ws",	"Sigmas",	57,	1,	legendW,	"CB_Poly3_TnP_Low_Map");
-	// plot_Uncer(CB_Poly3_TnP_Hig_Map,	JpsiXsec_Default,	"Ws",	"Sigmas",	57,	2,	legendW,	"CB_Poly3_TnP_Hig_Map");
+	plot_Uncer(SigmasTotalFitUncer_Map,	JpsiXsec_Default,	"Ws",	"Sigmas",	53,	1,	legendW,	"Signal Ext");
+	plot_Uncer(SigmasFluxUncer_Map,		JpsiXsec_Default,	"Ws",	"Sigmas",	54,	1,	legendW,	"PhotonFlux");
+	plot_Uncer(CB_Poly3_looseHF_Map,	JpsiXsec_Default,	"Ws",	"Sigmas",	55,	1,	legendW,	"HFveto");
+	plot_Uncer(CB_Poly3_PU_Map,			JpsiXsec_Default,	"Ws",	"Sigmas",	57,	1,	legendW,	"n-PileUp");
+	plot_Uncer(SigmasTnPUncer_Map,		JpsiXsec_Default,	"Ws",	"Sigmas",	59,	1,	legendW,	"TnP");
+
+	plot_ConstUncer(JpsiXsec_Default,	"Ws",	"Sigmas",	legendW);
 	legendW->Draw("same");
 	//-----------------------------------------------------------------------------------
 
-
+	//-----------------------------------------------------------------------------------
 	//-----------------------------------R Unicertainty----------------------------------
 	auto c3 = new TCanvas();
 	c3->SetLogx();
-	auto R_FitUncer	= new TH2D("R_FitUncertainty", ";x;R^{Pb}_{g} Uncer.(%);", 10,4.0e-5,1.1e-2, 10, 0, 10);
+	auto R_FitUncer	= new TH2D("R_FitUncertainty", ";x;R^{Pb}_{g} Uncer.(%);", 10,4.0e-5,1.1e-2, 10, 0, 15);
 	R_FitUncer->Draw();
 
-	TLegend  *legendR =  new TLegend(0.15, 0.70, 0.30, 0.90);
+	TLegend  *legendR =  new TLegend(0.35, 0.60, 0.50, 0.90);
 	legendR->SetFillStyle(0);
-	legendR->SetTextSize(0.040);
-	plot_Uncer(CB_Poly4_Map,			JpsiXsec_Default,	"Xs",	"R",	53,	1,	legendR,	"CB_Poly4");
-	plot_Uncer(CB_FixCBAN_Poly3_Map,	JpsiXsec_Default,	"Xs",	"R",	53,	2,	legendR,	"CB_FixCBAN_Poly3");
-	plot_Uncer(CBG_Poly3_Map,			JpsiXsec_Default,	"Xs",	"R",	53,	3,	legendR,	"CBG_Poly3");
-	plot_Uncer(CB_Poly3_SdB_Map,		JpsiXsec_Default,	"Xs",	"R",	53,	4,	legendR,	"CB_Poly3_SdB");
+	legendR->SetTextSize(0.035);
 
-	plot_Uncer(CB_Poly3_looseHF_Map,	JpsiXsec_Default,	"Xs",	"R",	54,	1,	legendR,	"CB_Poly3_looseHF");
-	// plot_Uncer(CB_Poly3_tightHF_Map,	JpsiXsec_Default,	"Xs",	"R",	54,	2,	legendR,	"CB_Poly3_tightHF");
-	// plot_Uncer(CB_Poly3_fluxP_Map,		JpsiXsec_Default,	"Xs",	"R",	55,	1,	legendR,	"CB_Poly3_fluxP");
-	plot_Uncer(CB_Poly3_fluxM_Map,		JpsiXsec_Default,	"Xs",	"R",	55,	2,	legendR,	"CB_Poly3_fluxM");
+	auto RMassFitRangeUncer_Map		= getLargestUncer_Map( { CB_Poly3_NarrMass_Map,	CB_Poly3_WideMass_Map},	"Xs",	"R");
+	auto RTotalFitUncer_Map 		= getCombinedUncer_Map( { CB_Poly4_Map,		CB_FixCBAN_Poly3_Map,	CBG_Poly3_Map,
+																CB_Poly3_SdB_Map,	RMassFitRangeUncer_Map},"Xs",	"R");
+	auto RFluxUncer_Map				= getLargestUncer_Map( { CB_Poly3_fluxM_Map,	CB_Poly3_fluxP_Map},	"Xs",	"R" );
+	auto RTnPUncer_Map				= getLargestUncer_Map( { CB_Poly3_TnP_Low_Map,	CB_Poly3_TnP_Hig_Map},	"Xs",	"R" );
 
-	// plot_Uncer(CB_Poly3_TnP_Low_Map,	JpsiXsec_Default,	"Xs",	"R",	57,	1,	legendR,	"CB_Poly3_TnP_Low_Map");
-	// plot_Uncer(CB_Poly3_TnP_Hig_Map,	JpsiXsec_Default,	"Xs",	"R",	57,	2,	legendR,	"CB_Poly3_TnP_Hig_Map");
+	plot_Uncer(RTotalFitUncer_Map,	JpsiXsec_Default,	"Xs",	"R",	53,	1,	legendR,	"Signal Ext");
+	plot_Uncer(RFluxUncer_Map,		JpsiXsec_Default,	"Xs",	"R",	54,	1,	legendR,	"PhotonFlux");
+	plot_Uncer(CB_Poly3_looseHF_Map,JpsiXsec_Default,	"Xs",	"R",	55,	1,	legendR,	"HFveto");
+	plot_Uncer(CB_Poly3_PU_Map,		JpsiXsec_Default,	"Xs",	"R",	57,	1,	legendR,	"n-PileUp");
+	plot_Uncer(RTnPUncer_Map,		JpsiXsec_Default,	"Xs",	"R",	59,	1,	legendR,	"TnP");
+
+	plot_Uncer(CB_Poly3_Map,		JpsiXsec_Default,	"Xs",	"R",	56,	4,	legendR,	"IA", 	true);
+	plot_ConstUncer(JpsiXsec_Default,	"Xs",	"R",	legendR);
 	legendR->Draw("same");
 	//-----------------------------------------------------------------------------------
+
+	for (int i = 0; i < TotalSysUncer_Map.at("Ws").size(); ++i)
+	{
+		cout<<Form("W:%f,	dSigma:%f,	X:%f,	dR:%f", TotalSysUncer_Map.at("Ws")[i],	TotalSysUncer_Map.at("Sigmas_SysUncer")[i],
+													TotalSysUncer_Map.at("Xs")[i],	TotalSysUncer_Map.at("R_SysUncer")[i])<<endl;
+	}
+
+	saveFile({});
 }

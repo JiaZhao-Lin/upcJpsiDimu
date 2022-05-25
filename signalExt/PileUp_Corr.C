@@ -1,5 +1,5 @@
 
-// const int nDmatrixs = 3; 
+// const int nDmatrixs = 3; //For ALTAS method
 const int nDmatrixs = 4; //For Shuai's method
 TMatrixD MigrationMatrix(nDmatrixs,nDmatrixs);
 TMatrixD MigrationMatrixInvert(nDmatrixs,nDmatrixs);
