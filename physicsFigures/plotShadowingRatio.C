@@ -97,9 +97,9 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 	TGraphErrors* ge_CGCnoFluct = new TGraphErrors(CGC_JpsiNoFluct_W.size(),	&CGC_JpsiNoFluct_W[0],	&CGC_JpsiNoFluct_CohXsec[0],	0,	0);
 	TGraphErrors* ge_IA        	= new TGraphErrors(ShadowRatio_ParamsMap["Ws_FitIA"].size(),	&ShadowRatio_ParamsMap["Ws_FitIA"][0],	&ShadowRatio_ParamsMap["Sigmas_FitIA"][0],	0,	0);
 
-	ge_SysUncer_CMS  ->SetMarkerStyle(24);
-	ge_SysUncer_CMS ->SetFillColor(kRed);
-	ge_SysUncer_CMS ->SetFillStyle(3001);
+	ge_SysUncer_CMS ->SetMarkerStyle(24);
+	ge_SysUncer_CMS ->SetFillColorAlpha(16, 0.7);
+	ge_SysUncer_CMS ->SetFillStyle(1001);
 	ge_SysUncer_CMS ->Draw("2same");
 	ge_CMS->SetMarkerStyle(20);
 	ge_CMS->SetMarkerSize(1.1);
@@ -242,9 +242,9 @@ void plotRvsX( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap, co
 	TGraphErrors* ge_ALICE_Run2 	= new TGraphErrors(ALICE_Run2_x.size(), &ALICE_Run2_x[0], &ALICE_Run2_R[0], 0,          &ALICE_Run2_R_Err[0] );
 	TGraphErrors* ge_ALICE_Run2_Psi = new TGraphErrors(ALICE_Run2_Psi_x.size(), &ALICE_Run2_Psi_x[0], &ALICE_Run2_Psi_R[0], 0,          &ALICE_Run2_R_Err[0] );
 
-	ge_SysUncer_CMS  ->SetMarkerStyle(24);
-	ge_SysUncer_CMS ->SetFillColor(kRed);
-	ge_SysUncer_CMS ->SetFillStyle(3001);
+	ge_SysUncer_CMS ->SetMarkerStyle(24);
+	ge_SysUncer_CMS ->SetFillColorAlpha(16, 0.7);
+	ge_SysUncer_CMS ->SetFillStyle(1001);
 	ge_SysUncer_CMS ->Draw("2same");
 	ge_CMS->SetMarkerStyle(20);
 	ge_CMS->SetMarkerColor(1);
