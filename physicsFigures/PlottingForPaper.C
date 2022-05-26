@@ -1,31 +1,60 @@
-#include "./ImpulseApproximation/runUPC_AAModel.C"
-#include "fit2D.C"
-#include "../common/LoadSignal.C"
-
 const double JpsiMass   = 3.096916;
 const double Sqrt_s     = 5020;
 const double Gamma_beam = 2672.9;
 const double Mass_N     = (0.93827+0.93957) / 2;
 
-void Cal_R_Error(std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap)
+const std::vector<double>  CGC_JpsiNoFluct_W	= {37, 47, 59,75, 95, 121, 153, 194, 246, 311, 394, 599  },
+						   CGC_JpsiNoFluct_CohXsec 		= {0.01759987558438179, 0.020489530220598236, 0.023324292435666014, 0.02714433695284619, 0.03137306416640146, 0.036389263389293006, 0.041829124040095714, 0.04793443973914736, 0.05473231107873076, 0.06212140529983476, 0.07032820925862308, 0.0874426817784331},
+						   CGC_JpsiNoFluct_InCohXsec	= {0.005314082049208781, 0.006081113144220922, 0.00684657722834769, 0.008057272329685066, 0.009032600408812817, 0.010363958837189501, 0.01173848797350525, 0.013306012198701258, 0.014398401192654236, 0.016650908354141573, 0.01846420961715733, 0.022516649102744427};
+const std::vector<double> ALICE_W_Run1 = {19.6, 92.4}, ALICE_Xsec_Run1 = {6.1e-3, 17.6e-3}, ALICE_XsecErr1_Run1 = {2.0e-3, 2.0e-3}, ALICE_XsecErr2_Run1 = {1.8e-3, 2.7e-3};
+
+//------------------------------------------------------------------------------------------------------------
+
+//-------------------------------------------Run1 ALICE R Factor----------------------------------------------
+const std::vector<double> ALICE_x       = {9.94672e-4, 2.19314e-2},	ALICE_R	=	{6.10145e-1, 7.42029e-1},	ALICE_R_Err	=	{6.59420e-1-6.10145e-1, 8.50725e-1-7.42029e-1};
+const std::vector<double> Theory_x_max  = {1.26443e-2, 6.64163e-3, 3.52690e-3, 1.48931e-3, 6.02034e-4, 2.23019e-4},	Theory_R_max	=	{9.80944e-1, 9.58010e-1, 9.47218e-1, 9.39123e-1, 9.32378e-1, 9.26981e-1};
+const std::vector<double> Theory_x_min  = {4.15416e-2, 3.30337e-2, 2.04374e-2, 9.62526e-3, 2.46034e-3, 2.68479e-4},	Theory_R_min	=	{9.51265e-1, 8.59528e-1, 6.46374e-1, 4.38617e-1, 2.95616e-1, 2.20067e-1};
+//-------------------------------------------Run2 ALICE R Factor----------------------------------------------
+const std::vector<double> ALICE_Run2_x  	= {1.e-3},	ALICE_Run2_R		=	{0.65},	ALICE_Run2_R_Err	=	{0.03};
+const std::vector<double> ALICE_Run2_Psi_x  = {0.00061691554},	ALICE_Run2_Psi_R 	=	{sqrt(0.76/2/81.026/ 0.069885)},	ALICE_Run2_Psi_R_Err	=	{sqrt(0.76/2/81.026/ 0.069885) * sqrt(pow(0.3/4.10,2) + pow(0.001398,2))};
+//-------------------------------------------Run2 ALICE Sigma ----------------------------------------------
+const std::vector<double> ALICE_Run2_MidRap_W  = {124.68568},      ALICE_Run2_MidRap_Sigma	    = {4.07/2/81.026},	ALICE_Run2_MidRap_Sigma_Err	=	{4.07/2/81.026 * 0.25495/4.07};
+const std::vector<double> ALICE_Run2_FwdRap_y  = {-3.875, -3.625}, ALICE_Run2_FwdRap_dSigmady	=	{1.615, 1.938},	ALICE_Run2_FwdRap_dSigmady_Err	=	{0.147,0.190};
+const std::vector<double> ALICE_Run2_FwdRap_Flux={201.308, 193.547};
+std::vector<double> ALICE_Run2_FwdRap_W  = {},	ALICE_Run2_FwdRap_Sigma	=	{},	ALICE_Run2_FwdRap_Sigma_Err	=	{};
+//------------------------------------------------------------------------------------------------------------
+
+std::map<TString, std::vector<double>> readMap(TString fileName = "rootfiles/Results_Map.root")
 {
-	for (int i = 0; i < ShadowRatio_ParamsMap["Raps"].size(); ++i)
-	{
-		double tem = ShadowRatio_ParamsMap["R"][i]*ShadowRatio_ParamsMap["R"][i] * sqrt(pow(ShadowRatio_ParamsMap["Sigmas_Err"][i]/ShadowRatio_ParamsMap["Sigmas"][i],2) + pow(ShadowRatio_ParamsMap["Sigmas_IA_Err"][i]/ShadowRatio_ParamsMap["Sigmas_IA"][i],2) );
-		ShadowRatio_ParamsMap["R_Err"].push_back( tem/ShadowRatio_ParamsMap["R"][i]/2);
+	TFile *file = TFile::Open(fileName, "READ");
+	std::map<TString, std::vector<double>> map;
+
+	std::vector<TString> *keys;
+	file->GetObject("keys", keys); // I try to retrieve the vector
+	for(auto it = keys->begin(); it != keys->end(); ++it) {
+		std::vector<Double_t> *temp;
+
+		file->GetObject(*it, temp);
+		std::cout << "Retrieving key to map:	" << *it << endl;
+		map[*it] = *temp;
 	}
+	return map;
 }
-
-double y2x(const double y)
-{
-	return (JpsiMass / Sqrt_s) * exp(-y);
-}
-
 double y2W(const double y)
 {
 	return sqrt( (2 * Gamma_beam * Mass_N * JpsiMass) * exp(y) );
 }
-
+TLatex* drawLatex(double x, double y, TString text, int textFont, double textSize, int colorIndex, double textAngle=0)
+{
+	TLatex *latex = new TLatex(x,y,text.Data());
+	latex->SetNDC();
+	latex->SetTextFont(textFont);
+	latex->SetTextSize(textSize);
+	latex->SetTextColor(colorIndex);
+	latex->SetTextAngle(textAngle);
+	latex->Draw("same");
+	return latex;
+}
 void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap, const std::map<TString, std::vector<double>> &TotalSysUncer_Map, const int flag4Axis = 0 ) //0: logY only, 1: logX and LogY
 {
 	for (int i = 0; i < ALICE_Run2_FwdRap_y.size(); ++i)
@@ -311,88 +340,8 @@ void plotRvsX( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap, co
 	return ShadowRatio_ParamsMap;
 }
 
-std::map<TString, std::vector<double>> getParamsMap(const TString infile = "../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins.appliedTnP.root", const double flux_uncer = 1.0)
+void PlottingForPaper()
 {
-	std::map<TString, std::vector<double>> ShadowRatio_ParamsMap = {
-		{"Raps",		{}},	{"Raps_Err",		{}},
-		{"Sigmas",		{}},	{"Sigmas_Err",		{}},
-		{"Sigmas_IA",	{}},	{"Sigmas_IA_Err",	{}},
-		{"R",			{}},	{"R_Err",			{}},
-		{"Xs",			{}},	{"Xs_Err",			{}},
-		{"Ws",			{}},	{"Ws_Err",			{}},
-
-		{"Ws_FitIA",		{}},
-		{"Sigmas_FitIA",	{}},	{"Sigmas_FitIA_Err",	{}}
-	};
-
-	LoadJpsiXsec loadJpsiXsec(infile);
-
-	{auto Temp = fit2D(loadJpsiXsec.GetMap(), flux_uncer); ShadowRatio_ParamsMap["Raps"] = Temp[0]; ShadowRatio_ParamsMap["Raps_Err"] = Temp[1]; ShadowRatio_ParamsMap["Sigmas"] = Temp[2]; ShadowRatio_ParamsMap["Sigmas_Err"] = Temp[3];}
-	for (int i = 0; i < ShadowRatio_ParamsMap["Raps"].size(); ++i)
-	{
-		ShadowRatio_ParamsMap["Xs"] 		.push_back( y2x(ShadowRatio_ParamsMap["Raps"][i]) 	);
-		ShadowRatio_ParamsMap["Xs_Err"]		.push_back( 0 );
-		ShadowRatio_ParamsMap["Ws"] 		.push_back( y2W(ShadowRatio_ParamsMap["Raps"][i]) 	);
-		ShadowRatio_ParamsMap["Ws_Err"] 	.push_back( 0 );
-
-		cout<<Form("y: %f,	x: %f,	W: %f", ShadowRatio_ParamsMap["Raps"][i], ShadowRatio_ParamsMap["Xs"][i], ShadowRatio_ParamsMap["Ws"][i])<<endl;
-		cout<<"x from W: "<<pow(JpsiMass,2)/pow(ShadowRatio_ParamsMap["Ws"][i],2)<<endl;
-	}
-	
-	{runUPC_AAModel(ShadowRatio_ParamsMap);}
-
-	for (int i = 0; i < ShadowRatio_ParamsMap["Raps"].size(); ++i)
-	{
-		ShadowRatio_ParamsMap["R"].push_back( sqrt( ShadowRatio_ParamsMap["Sigmas"][i]/ShadowRatio_ParamsMap["Sigmas_IA"][i] ) );
-	}
-	
-	Cal_R_Error(ShadowRatio_ParamsMap);
-
-	return ShadowRatio_ParamsMap;
-}
-
-void saveMap(std::map<TString, std::vector<double>> map, TString fileName = "ResultMap.root")
-{
-	TFile *file = TFile::Open(fileName.Data(), "RECREATE");
-	std::vector<TString> keys;
-
-	for (auto it = map.begin(); it != map.end(); ++it)
-	{
-		TString key 	=	it->first;
-		keys.push_back(key);
-  		std::vector<double> 	value	=	it->second;
-		file->WriteObject(&value, key.Data()); // I store the vector in the TFile
-	}
-	file->WriteObject(&keys, "keys");
-	file->Close();
-}
-
-std::map<TString, std::vector<double>> readMap(TString fileName = "rootfiles/Results_Map.root")
-{
-	TFile *file = TFile::Open(fileName, "READ");
-	std::map<TString, std::vector<double>> map;
-
-	std::vector<TString> *keys;
-	file->GetObject("keys", keys); // I try to retrieve the vector
-	for(auto it = keys->begin(); it != keys->end(); ++it) {
-		std::vector<Double_t> *temp;
-
-		file->GetObject(*it, temp);
-		std::cout << "Retrieving key to map:	" << *it << endl;
-		map[*it] = *temp;
-	}
-	return map;
-}
-
-void plotShadowingRatio()
-{
-	// auto ShadowRatio_ParamsMap = getParamsMap();
-	// auto TotalSysUncer_Map 		= readMap("rootfiles/TotalSysUncer_Map.root");
-	// plotSigmaVsW(ShadowRatio_ParamsMap,TotalSysUncer_Map);
-	// plotRvsX(ShadowRatio_ParamsMap,TotalSysUncer_Map);
-	// saveMap(ShadowRatio_ParamsMap);
-
-
 	auto ShadowRatio_ParamsMap 	= readMap("rootfiles/Results_Map.root");
 	auto TotalSysUncer_Map 		= readMap("rootfiles/TotalSysUncer_Map.root");
 	plotSigmaVsW(ShadowRatio_ParamsMap,TotalSysUncer_Map);
