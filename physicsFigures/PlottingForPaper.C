@@ -24,6 +24,9 @@ const std::vector<double> ALICE_Run2_FwdRap_Flux={201.308, 193.547};
 std::vector<double> ALICE_Run2_FwdRap_W  = {},	ALICE_Run2_FwdRap_Sigma	=	{},	ALICE_Run2_FwdRap_Sigma_Err	=	{};
 //------------------------------------------------------------------------------------------------------------
 
+const TString outDir = "outfigure4Paper";
+
+
 std::map<TString, std::vector<double>> readMap(TString fileName = "rootfiles/Results_Map.root")
 {
 	TFile *file = TFile::Open(fileName, "READ");
@@ -57,6 +60,8 @@ TLatex* drawLatex(double x, double y, TString text, int textFont, double textSiz
 }
 void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap, const std::map<TString, std::vector<double>> &TotalSysUncer_Map, const int flag4Axis = 0 ) //0: logY only, 1: logX and LogY
 {
+	system("mkdir -p outfigure4Paper");
+
 	for (int i = 0; i < ALICE_Run2_FwdRap_y.size(); ++i)
 	{
 		ALICE_Run2_FwdRap_W        .push_back( y2W(ALICE_Run2_FwdRap_y[i]) );
@@ -196,8 +201,8 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 		legTheory->AddEntry(ge_IA,                "Impulse Approximation", "l");
 		legTheory->Draw("same");
 
-		c->SaveAs("outplots/SigmaVsW_logXY.png");
-		c->SaveAs("outplots/SigmaVsW_logXY.pdf");
+		c->SaveAs(outDir+"/SigmaVsW_logXY.png");
+		c->SaveAs(outDir+"/SigmaVsW_logXY.pdf");
 	}
 	else
 	{
@@ -220,8 +225,8 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 		legTheory->AddEntry(ge_IA,                "IA", "l");
 		legTheory->Draw("same");
 
-		c->SaveAs("outplots/SigmaVsW_logY.png");
-		c->SaveAs("outplots/SigmaVsW_logY.pdf");
+		c->SaveAs(outDir+"/SigmaVsW_logY.png");
+		c->SaveAs(outDir+"/SigmaVsW_logY.pdf");
 	}
 
 	delete c;
@@ -333,8 +338,9 @@ void plotRvsX( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap, co
 	drawLatex(0.15, 0.86, "Pb+Pb UPC #sqrt{s_{NN}} = 5.02 TeV",  42,        0.05,      1 );
 	drawLatex(0.42, 0.22, "Nuclear suppression factor", 42, 0.06, 1);
 
-	c->SaveAs("outplots/ShadowingRatiovsX.png");
-	c->SaveAs("outplots/ShadowingRatiovsX.pdf");
+	c->SaveAs(outDir+"/ShadowingRatiovsX.png");
+	c->SaveAs(outDir+"/ShadowingRatiovsX.pdf");
+
 	delete c;
 
 	return ShadowRatio_ParamsMap;
