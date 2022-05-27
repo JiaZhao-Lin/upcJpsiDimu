@@ -8,22 +8,42 @@ const double Jpsi2MuMuBR_Uncer = 0.033/5.961;
 //------------------------------------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------------------------------------
-const std::vector<double> ALICE_W_Run1 = {19.6, 92.4}, ALICE_Xsec_Run1 = {6.1e-3, 17.6e-3}, ALICE_XsecErr1_Run1 = {2.0e-3, 2.0e-3}, ALICE_XsecErr2_Run1 = {1.8e-3, 2.7e-3};
+//-------------------------------------------Run2 ALICE MidRap------------------------------------------------
+const std::vector<double> ALICE_Run2_MidRap_W  				= 	{ 124.67672		},
+						ALICE_Run2_MidRap_Sigma	    		= 	{ 4.07/2/81.026 },
+						ALICE_Run2_MidRap_Sigma_StatErr		=	{ ALICE_Run2_MidRap_Sigma[0] * 0.11/4.07 },
+						ALICE_Run2_MidRap_Sigma_SysErrLow	=	{ ALICE_Run2_MidRap_Sigma[0] * TMath::Hypot( 0.23/4.07,	 0.05)	}, // 5% error for flux
+						ALICE_Run2_MidRap_Sigma_SysErrHig	=	{ ALICE_Run2_MidRap_Sigma[0] * TMath::Hypot( 0.23/4.07,	 0.05)	}, // 5% error for flux
+						ALICE_Run2_MidRap_x	    			= 	{ 0.00061691554 },
+						ALICE_Run2_MidRap_Sigma_IA	    	= 	{ 0.069926461 	},
+						ALICE_Run2_MidRap_Sigma_IA_Err		= 	{ 0.0037760289 	},
+						ALICE_Run2_MidRap_R	    			= 	{ sqrt(ALICE_Run2_MidRap_Sigma[0] / ALICE_Run2_MidRap_Sigma_IA[0]) },
+						ALICE_Run2_MidRap_R_StatErr	    	= 	{ 0.5 * ALICE_Run2_MidRap_R[0] * ALICE_Run2_MidRap_Sigma_StatErr[0]/ALICE_Run2_MidRap_Sigma[0] },
+						ALICE_Run2_MidRap_R_SysErrLow  		= 	{ 0.5 * ALICE_Run2_MidRap_R[0] * TMath::Hypot( ALICE_Run2_MidRap_Sigma_SysErrLow[0]/ALICE_Run2_MidRap_Sigma[0],
+																								ALICE_Run2_MidRap_Sigma_IA_Err[0]/ALICE_Run2_MidRap_Sigma_IA[0]) },
+						ALICE_Run2_MidRap_R_SysErrHig  		= 	{ 0.5 * ALICE_Run2_MidRap_R[0] * TMath::Hypot( ALICE_Run2_MidRap_Sigma_SysErrHig[0]/ALICE_Run2_MidRap_Sigma[0],
+																								ALICE_Run2_MidRap_Sigma_IA_Err[0]/ALICE_Run2_MidRap_Sigma_IA[0]) };
+//-------------------------------------------Run2 ALICE FwdRap------------------------------------------------
+const std::vector<double> ALICE_Run2_FwdRap_y  				= 	{ -3.875,		-3.625 	},
+						ALICE_Run2_FwdRap_dSigmady			=	{ 1.615,		1.938 	},
+						ALICE_Run2_FwdRap_dSigmady_StatErr	=	{ 0.060,		0.0420 	},
+						ALICE_Run2_FwdRap_dSigmady_SysErrLow=	{ 0.147,		0.190 	},
+						ALICE_Run2_FwdRap_dSigmady_SysErrHig=	{ 0.135,		0.166 	},
+						ALICE_Run2_FwdRap_Flux 				=	{ 201.308,		193.547 },
+						ALICE_Run2_FwdRap_Flux_Err 			=	{ 201.308*0.05,	193.547*0.05}, // 5% error for flux
+						ALICE_Run2_FwdRap_Sigma_IA 			=	{ 0.011413847,	0.01347654		},
+						ALICE_Run2_FwdRap_Sigma_IA_Err 		=	{ 0.00061634772,0.00072773330	};
 
-//------------------------------------------------------------------------------------------------------------
-
-//-------------------------------------------Run1 ALICE R Factor----------------------------------------------
-const std::vector<double> ALICE_x       = {9.94672e-4, 2.19314e-2},	ALICE_R	=	{6.10145e-1, 7.42029e-1},	ALICE_R_Err	=	{6.59420e-1-6.10145e-1, 8.50725e-1-7.42029e-1};
-const std::vector<double> Theory_x_max  = {1.26443e-2, 6.64163e-3, 3.52690e-3, 1.48931e-3, 6.02034e-4, 2.23019e-4},	Theory_R_max	=	{9.80944e-1, 9.58010e-1, 9.47218e-1, 9.39123e-1, 9.32378e-1, 9.26981e-1};
-const std::vector<double> Theory_x_min  = {4.15416e-2, 3.30337e-2, 2.04374e-2, 9.62526e-3, 2.46034e-3, 2.68479e-4},	Theory_R_min	=	{9.51265e-1, 8.59528e-1, 6.46374e-1, 4.38617e-1, 2.95616e-1, 2.20067e-1};
-//-------------------------------------------Run2 ALICE R Factor----------------------------------------------
-const std::vector<double> ALICE_Run2_x  	= {1.e-3},	ALICE_Run2_R		=	{0.65},	ALICE_Run2_R_Err	=	{0.03};
-const std::vector<double> ALICE_Run2_Psi_x  = {0.00061691554},	ALICE_Run2_Psi_R 	=	{sqrt(0.76/2/81.026/ 0.069885)},	ALICE_Run2_Psi_R_Err	=	{sqrt(0.76/2/81.026/ 0.069885) * sqrt(pow(0.3/4.10,2) + pow(0.001398,2))};
-//-------------------------------------------Run2 ALICE Sigma ----------------------------------------------
-const std::vector<double> ALICE_Run2_MidRap_W  = {124.68568},      ALICE_Run2_MidRap_Sigma	    = {4.07/2/81.026},	ALICE_Run2_MidRap_Sigma_Err	=	{4.07/2/81.026 * 0.25495/4.07};
-const std::vector<double> ALICE_Run2_FwdRap_y  = {-3.875, -3.625}, ALICE_Run2_FwdRap_dSigmady	=	{1.615, 1.938},	ALICE_Run2_FwdRap_dSigmady_Err	=	{0.147,0.190};
-const std::vector<double> ALICE_Run2_FwdRap_Flux={201.308, 193.547};
-std::vector<double> ALICE_Run2_FwdRap_W  = {},	ALICE_Run2_FwdRap_Sigma	=	{},	ALICE_Run2_FwdRap_Sigma_Err	=	{};
+std::vector<double> 	ALICE_Run2_FwdRap_W  				= 	{},	
+						ALICE_Run2_FwdRap_Sigma				=	{},	
+						ALICE_Run2_FwdRap_Sigma_StatErr		=	{},
+						ALICE_Run2_FwdRap_Sigma_SysErrLow	=	{},
+						ALICE_Run2_FwdRap_Sigma_SysErrHig	=	{},
+						ALICE_Run2_FwdRap_x 				=	{},
+						ALICE_Run2_FwdRap_R 				=	{},
+						ALICE_Run2_FwdRap_R_StatErr 		=	{},
+						ALICE_Run2_FwdRap_R_SysErrLow 		=	{},
+						ALICE_Run2_FwdRap_R_SysErrHig 		=	{};
 //------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------
 

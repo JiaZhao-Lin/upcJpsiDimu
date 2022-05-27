@@ -6,22 +6,47 @@ const double Mass_N     = (0.93827+0.93957) / 2;
 const std::vector<double>  CGC_JpsiNoFluct_W	= {37, 47, 59,75, 95, 121, 153, 194, 246, 311, 394, 599  },
 						   CGC_JpsiNoFluct_CohXsec 		= {0.01759987558438179, 0.020489530220598236, 0.023324292435666014, 0.02714433695284619, 0.03137306416640146, 0.036389263389293006, 0.041829124040095714, 0.04793443973914736, 0.05473231107873076, 0.06212140529983476, 0.07032820925862308, 0.0874426817784331},
 						   CGC_JpsiNoFluct_InCohXsec	= {0.005314082049208781, 0.006081113144220922, 0.00684657722834769, 0.008057272329685066, 0.009032600408812817, 0.010363958837189501, 0.01173848797350525, 0.013306012198701258, 0.014398401192654236, 0.016650908354141573, 0.01846420961715733, 0.022516649102744427};
-const std::vector<double> ALICE_W_Run1 = {19.6, 92.4}, ALICE_Xsec_Run1 = {6.1e-3, 17.6e-3}, ALICE_XsecErr1_Run1 = {2.0e-3, 2.0e-3}, ALICE_XsecErr2_Run1 = {1.8e-3, 2.7e-3};
 
 //------------------------------------------------------------------------------------------------------------
 
-//-------------------------------------------Run1 ALICE R Factor----------------------------------------------
-const std::vector<double> ALICE_x       = {9.94672e-4, 2.19314e-2},	ALICE_R	=	{6.10145e-1, 7.42029e-1},	ALICE_R_Err	=	{6.59420e-1-6.10145e-1, 8.50725e-1-7.42029e-1};
-const std::vector<double> Theory_x_max  = {1.26443e-2, 6.64163e-3, 3.52690e-3, 1.48931e-3, 6.02034e-4, 2.23019e-4},	Theory_R_max	=	{9.80944e-1, 9.58010e-1, 9.47218e-1, 9.39123e-1, 9.32378e-1, 9.26981e-1};
-const std::vector<double> Theory_x_min  = {4.15416e-2, 3.30337e-2, 2.04374e-2, 9.62526e-3, 2.46034e-3, 2.68479e-4},	Theory_R_min	=	{9.51265e-1, 8.59528e-1, 6.46374e-1, 4.38617e-1, 2.95616e-1, 2.20067e-1};
-//-------------------------------------------Run2 ALICE R Factor----------------------------------------------
-const std::vector<double> ALICE_Run2_x  	= {1.e-3},	ALICE_Run2_R		=	{0.65},	ALICE_Run2_R_Err	=	{0.03};
-const std::vector<double> ALICE_Run2_Psi_x  = {0.00061691554},	ALICE_Run2_Psi_R 	=	{sqrt(0.76/2/81.026/ 0.069885)},	ALICE_Run2_Psi_R_Err	=	{sqrt(0.76/2/81.026/ 0.069885) * sqrt(pow(0.3/4.10,2) + pow(0.001398,2))};
-//-------------------------------------------Run2 ALICE Sigma ----------------------------------------------
-const std::vector<double> ALICE_Run2_MidRap_W  = {124.68568},      ALICE_Run2_MidRap_Sigma	    = {4.07/2/81.026},	ALICE_Run2_MidRap_Sigma_Err	=	{4.07/2/81.026 * 0.25495/4.07};
-const std::vector<double> ALICE_Run2_FwdRap_y  = {-3.875, -3.625}, ALICE_Run2_FwdRap_dSigmady	=	{1.615, 1.938},	ALICE_Run2_FwdRap_dSigmady_Err	=	{0.147,0.190};
-const std::vector<double> ALICE_Run2_FwdRap_Flux={201.308, 193.547};
-std::vector<double> ALICE_Run2_FwdRap_W  = {},	ALICE_Run2_FwdRap_Sigma	=	{},	ALICE_Run2_FwdRap_Sigma_Err	=	{};
+//------------------------------------------------------------------------------------------------------------
+//-------------------------------------------Run2 ALICE MidRap------------------------------------------------
+const std::vector<double> ALICE_Run2_MidRap_W  				= 	{ 124.67672		},
+						ALICE_Run2_MidRap_Sigma	    		= 	{ 4.07/2/81.026 },
+						ALICE_Run2_MidRap_Sigma_StatErr		=	{ ALICE_Run2_MidRap_Sigma[0] * 0.11/4.07 },
+						ALICE_Run2_MidRap_Sigma_SysErrLow	=	{ ALICE_Run2_MidRap_Sigma[0] * TMath::Hypot( 0.23/4.07,	 0.05)	}, // 5% error for flux
+						ALICE_Run2_MidRap_Sigma_SysErrHig	=	{ ALICE_Run2_MidRap_Sigma[0] * TMath::Hypot( 0.23/4.07,	 0.05)	}, // 5% error for flux
+						ALICE_Run2_MidRap_x	    			= 	{ 0.00061691554 },
+						ALICE_Run2_MidRap_Sigma_IA	    	= 	{ 0.069926461 	},
+						ALICE_Run2_MidRap_Sigma_IA_Err		= 	{ 0.0037760289 	},
+						ALICE_Run2_MidRap_R	    			= 	{ sqrt(ALICE_Run2_MidRap_Sigma[0] / ALICE_Run2_MidRap_Sigma_IA[0]) },
+						ALICE_Run2_MidRap_R_StatErr	    	= 	{ 0.5 * ALICE_Run2_MidRap_R[0] * ALICE_Run2_MidRap_Sigma_StatErr[0]/ALICE_Run2_MidRap_Sigma[0] },
+						ALICE_Run2_MidRap_R_SysErrLow  		= 	{ 0.5 * ALICE_Run2_MidRap_R[0] * TMath::Hypot( ALICE_Run2_MidRap_Sigma_SysErrLow[0]/ALICE_Run2_MidRap_Sigma[0],
+																								ALICE_Run2_MidRap_Sigma_IA_Err[0]/ALICE_Run2_MidRap_Sigma_IA[0]) },
+						ALICE_Run2_MidRap_R_SysErrHig  		= 	{ 0.5 * ALICE_Run2_MidRap_R[0] * TMath::Hypot( ALICE_Run2_MidRap_Sigma_SysErrHig[0]/ALICE_Run2_MidRap_Sigma[0],
+																								ALICE_Run2_MidRap_Sigma_IA_Err[0]/ALICE_Run2_MidRap_Sigma_IA[0]) };
+//-------------------------------------------Run2 ALICE FwdRap------------------------------------------------
+const std::vector<double> ALICE_Run2_FwdRap_y  				= 	{ -3.875,		-3.625 	},
+						ALICE_Run2_FwdRap_dSigmady			=	{ 1.615,		1.938 	},
+						ALICE_Run2_FwdRap_dSigmady_StatErr	=	{ 0.060,		0.0420 	},
+						ALICE_Run2_FwdRap_dSigmady_SysErrLow=	{ 0.147,		0.190 	},
+						ALICE_Run2_FwdRap_dSigmady_SysErrHig=	{ 0.135,		0.166 	},
+						ALICE_Run2_FwdRap_Flux 				=	{ 201.308,		193.547 },
+						ALICE_Run2_FwdRap_Flux_Err 			=	{ 201.308*0.05,	193.547*0.05}, // 5% error for flux
+						ALICE_Run2_FwdRap_Sigma_IA 			=	{ 0.011413847,	0.01347654		},
+						ALICE_Run2_FwdRap_Sigma_IA_Err 		=	{ 0.00061634772,0.00072773330	};
+
+std::vector<double> 	ALICE_Run2_FwdRap_W  				= 	{},	
+						ALICE_Run2_FwdRap_Sigma				=	{},	
+						ALICE_Run2_FwdRap_Sigma_StatErr		=	{},
+						ALICE_Run2_FwdRap_Sigma_SysErrLow	=	{},
+						ALICE_Run2_FwdRap_Sigma_SysErrHig	=	{},
+						ALICE_Run2_FwdRap_x 				=	{},
+						ALICE_Run2_FwdRap_R 				=	{},
+						ALICE_Run2_FwdRap_R_StatErr 		=	{},
+						ALICE_Run2_FwdRap_R_SysErrLow 		=	{},
+						ALICE_Run2_FwdRap_R_SysErrHig 		=	{};
+//------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------
 
 const TString outDir = "outfigure4Paper";
@@ -42,6 +67,10 @@ std::map<TString, std::vector<double>> readMap(TString fileName = "rootfiles/Res
 		map[*it] = *temp;
 	}
 	return map;
+}
+double y2x(const double y)
+{
+	return (JpsiMass / Sqrt_s) * exp(-y);
 }
 double y2W(const double y)
 {
@@ -64,9 +93,22 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 
 	for (int i = 0; i < ALICE_Run2_FwdRap_y.size(); ++i)
 	{
-		ALICE_Run2_FwdRap_W        .push_back( y2W(ALICE_Run2_FwdRap_y[i]) );
-		ALICE_Run2_FwdRap_Sigma    .push_back( ALICE_Run2_FwdRap_dSigmady[i] / ALICE_Run2_FwdRap_Flux[i] );
-		ALICE_Run2_FwdRap_Sigma_Err.push_back( ALICE_Run2_FwdRap_Sigma[i] * ALICE_Run2_FwdRap_dSigmady_Err[i] / ALICE_Run2_FwdRap_dSigmady[i] );
+		//Calculating the values
+		ALICE_Run2_FwdRap_W        		.push_back( y2W(ALICE_Run2_FwdRap_y[i]) );
+		ALICE_Run2_FwdRap_Sigma    		.push_back( ALICE_Run2_FwdRap_dSigmady[i] / ALICE_Run2_FwdRap_Flux[i] );
+		ALICE_Run2_FwdRap_Sigma_StatErr	.push_back( ALICE_Run2_FwdRap_Sigma[i] * ALICE_Run2_FwdRap_dSigmady_StatErr[i] / ALICE_Run2_FwdRap_dSigmady[i]		);
+		ALICE_Run2_FwdRap_Sigma_SysErrLow.push_back( ALICE_Run2_FwdRap_Sigma[i] * TMath::Hypot(ALICE_Run2_FwdRap_dSigmady_SysErrLow[i] / ALICE_Run2_FwdRap_dSigmady[i],
+																							 ALICE_Run2_FwdRap_Flux_Err[i] / ALICE_Run2_FwdRap_Flux[i])		);
+		ALICE_Run2_FwdRap_Sigma_SysErrHig.push_back( ALICE_Run2_FwdRap_Sigma[i] * TMath::Hypot(ALICE_Run2_FwdRap_dSigmady_SysErrHig[i] / ALICE_Run2_FwdRap_dSigmady[i],
+																							 ALICE_Run2_FwdRap_Flux_Err[i] / ALICE_Run2_FwdRap_Flux[i])		);
+		
+		ALICE_Run2_FwdRap_x        		.push_back( y2x(ALICE_Run2_FwdRap_y[i]) );
+		ALICE_Run2_FwdRap_R 			.push_back( sqrt(ALICE_Run2_FwdRap_Sigma[i]/ALICE_Run2_FwdRap_Sigma_IA[i])	);
+		ALICE_Run2_FwdRap_R_StatErr		.push_back( 0.5 * ALICE_Run2_FwdRap_R[i] * ALICE_Run2_FwdRap_Sigma_StatErr[i]/ALICE_Run2_FwdRap_Sigma[i]	);
+		ALICE_Run2_FwdRap_R_SysErrLow	.push_back( 0.5 * ALICE_Run2_FwdRap_R[i] * TMath::Hypot( ALICE_Run2_FwdRap_Sigma_SysErrLow[i]/ALICE_Run2_FwdRap_Sigma[i],
+																								ALICE_Run2_FwdRap_Sigma_IA_Err[i]/ALICE_Run2_FwdRap_Sigma_IA[i])	);
+		ALICE_Run2_FwdRap_R_SysErrHig	.push_back( 0.5 * ALICE_Run2_FwdRap_R[i] * TMath::Hypot( ALICE_Run2_FwdRap_Sigma_SysErrHig[i]/ALICE_Run2_FwdRap_Sigma[i],
+																								ALICE_Run2_FwdRap_Sigma_IA_Err[i]/ALICE_Run2_FwdRap_Sigma_IA[i])	);
 	}
 
 
@@ -112,34 +154,32 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 		Sigmas_TotalSysErr[i] *= 0.01 * TotalSysUncer_Map.at("Sigmas")[i];
 	}
 	TGraphErrors* ge_CMS        			 = new TGraphErrors(ShadowRatio_ParamsMap["Ws"].size(),	&ShadowRatio_ParamsMap["Ws"][0],	&ShadowRatio_ParamsMap["Sigmas"][0],	0,	&ShadowRatio_ParamsMap["Sigmas_Err"][0]	);
-	TGraphAsymmErrors* ge_SysUncer_CMS 	= new TGraphAsymmErrors(
+	TGraphAsymmErrors* gae_CMS 	= new TGraphAsymmErrors(
 												ShadowRatio_ParamsMap["Ws"].size(),
 												&ShadowRatio_ParamsMap["Ws"][0],        &ShadowRatio_ParamsMap["Sigmas"][0],
 												&X_AXIS_ERR[0],  &X_AXIS_ERR[0],
 												&Sigmas_TotalSysErr[0], &Sigmas_TotalSysErr[0]);
-	// auto gme_CMS = new TGraphMultiErrors(ShadowRatio_ParamsMap["Ws"].size(), &ShadowRatio_ParamsMap["Ws"][0],        &ShadowRatio_ParamsMap["Sigmas"][0]
-	// 								, 0, 0, &ShadowRatio_ParamsMap["Sigmas_Err"][0], &ShadowRatio_ParamsMap["Sigmas_Err"][0]);
-	// gme_CMS->AddYError(ShadowRatio_ParamsMap["Ws"].size(), &Sigmas_TotalSysErr[0], &Sigmas_TotalSysErr[0]);
-	// gme_CMS->SetMarkerStyle(20);
-	// gme_CMS->SetLineColor(kRed);
-	// // gme_CMS->GetAttLine(0)->SetLineColor(kRed);
-	// gme_CMS->GetAttLine(1)->SetLineColor(kBlue);
-	// gme_CMS->GetAttFill(1)->SetFillStyle(1001);
-	// gme_CMS->Draw("PS same; Z ; 5 s=0.5");
-
-
-	TGraphAsymmErrors *gae_Xsec_ALICE_Run1 = new TGraphAsymmErrors(ALICE_W_Run1.size(), &ALICE_W_Run1[0],&ALICE_Xsec_Run1[0],0,0, &ALICE_XsecErr2_Run1[0], &ALICE_XsecErr1_Run1[0]);
 	
-	TGraphErrors* ge_ALICE_Run2_MidRap	= new TGraphErrors(ALICE_Run2_MidRap_W.size(),	&ALICE_Run2_MidRap_W[0],	&ALICE_Run2_MidRap_Sigma[0],	0,	&ALICE_Run2_MidRap_Sigma_Err[0]	);
-	TGraphErrors* ge_ALICE_Run2_FwdRap	= new TGraphErrors(ALICE_Run2_FwdRap_W.size(),	&ALICE_Run2_FwdRap_W[0],	&ALICE_Run2_FwdRap_Sigma[0],	0,	&ALICE_Run2_FwdRap_Sigma_Err[0]	);
+	TGraphErrors* ge_ALICE_Run2_MidRap	= new TGraphErrors(ALICE_Run2_MidRap_W.size(),	&ALICE_Run2_MidRap_W[0],	&ALICE_Run2_MidRap_Sigma[0],	0,	&ALICE_Run2_MidRap_Sigma_StatErr[0]	);
+	TGraphErrors* ge_ALICE_Run2_FwdRap	= new TGraphErrors(ALICE_Run2_FwdRap_W.size(),	&ALICE_Run2_FwdRap_W[0],	&ALICE_Run2_FwdRap_Sigma[0],	0,	&ALICE_Run2_FwdRap_Sigma_StatErr[0]	);
+	TGraphAsymmErrors* gae_ALICE_Run2_MidRap 	= new TGraphAsymmErrors(
+												ALICE_Run2_MidRap_W.size(),
+												&ALICE_Run2_MidRap_W[0],        &ALICE_Run2_MidRap_Sigma[0],
+												&X_AXIS_ERR[0],  &X_AXIS_ERR[0],
+												&ALICE_Run2_MidRap_Sigma_SysErrLow[0], &ALICE_Run2_MidRap_Sigma_SysErrHig[0]);
+	TGraphAsymmErrors* gae_ALICE_Run2_FwdRap 	= new TGraphAsymmErrors(
+												ALICE_Run2_FwdRap_W.size(),
+												&ALICE_Run2_FwdRap_W[0],        &ALICE_Run2_FwdRap_Sigma[0],
+												&X_AXIS_ERR[0],  &X_AXIS_ERR[0],
+												&ALICE_Run2_FwdRap_Sigma_SysErrLow[0], &ALICE_Run2_FwdRap_Sigma_SysErrHig[0]);
 
 	TGraphErrors* ge_CGCnoFluct = new TGraphErrors(CGC_JpsiNoFluct_W.size(),	&CGC_JpsiNoFluct_W[0],	&CGC_JpsiNoFluct_CohXsec[0],	0,	0);
 	TGraphErrors* ge_IA        	= new TGraphErrors(ShadowRatio_ParamsMap["Ws_FitIA"].size(),	&ShadowRatio_ParamsMap["Ws_FitIA"][0],	&ShadowRatio_ParamsMap["Sigmas_FitIA"][0],	0,	0);
 
-	ge_SysUncer_CMS ->SetMarkerStyle(24);
-	ge_SysUncer_CMS ->SetFillColorAlpha(16, 0.7);
-	ge_SysUncer_CMS ->SetFillStyle(1001);
-	ge_SysUncer_CMS ->Draw("2same");
+	gae_CMS ->SetMarkerStyle(24);
+	gae_CMS ->SetFillColorAlpha(16, 0.7);
+	gae_CMS ->SetFillStyle(1001);
+	gae_CMS ->Draw("2same");
 	ge_CMS->SetMarkerStyle(20);
 	ge_CMS->SetMarkerSize(1.1);
 	ge_CMS->SetMarkerColor(1);
@@ -147,24 +187,25 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 	ge_CMS->SetLineWidth(2);
 	ge_CMS->Draw("pezsame");
 
-
+	gae_ALICE_Run2_MidRap ->SetMarkerStyle(24);
+	gae_ALICE_Run2_MidRap ->SetFillColorAlpha(16, 0.7);
+	gae_ALICE_Run2_MidRap ->SetFillStyle(1001);
+	gae_ALICE_Run2_MidRap ->Draw("2same");
 	ge_ALICE_Run2_MidRap->SetMarkerStyle(24);
 	ge_ALICE_Run2_MidRap->SetMarkerColor(4);
 	ge_ALICE_Run2_MidRap->SetLineColor(4);
 	ge_ALICE_Run2_MidRap->SetLineWidth(2);
 	ge_ALICE_Run2_MidRap->Draw("pezsame");
 
+	gae_ALICE_Run2_FwdRap ->SetMarkerStyle(24);
+	gae_ALICE_Run2_FwdRap ->SetFillColorAlpha(16, 0.7);
+	gae_ALICE_Run2_FwdRap ->SetFillStyle(1001);
+	gae_ALICE_Run2_FwdRap ->Draw("2same");
 	ge_ALICE_Run2_FwdRap->SetMarkerStyle(25);
 	ge_ALICE_Run2_FwdRap->SetMarkerColor(4);
 	ge_ALICE_Run2_FwdRap->SetLineColor(4);
 	ge_ALICE_Run2_FwdRap->SetLineWidth(2);
 	ge_ALICE_Run2_FwdRap->Draw("pezsame");
-	
-	// gae_Xsec_ALICE_Run1->SetMarkerStyle(24);
-	// gae_Xsec_ALICE_Run1->SetMarkerColor(1);
-	// gae_Xsec_ALICE_Run1->SetLineColor(1);
-	// gae_Xsec_ALICE_Run1->SetLineWidth(2);
-	// gae_Xsec_ALICE_Run1->Draw("Pesame");
 
 	ge_CGCnoFluct->SetMarkerColor(1);
 	ge_CGCnoFluct->SetLineColor(4);
@@ -201,8 +242,8 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 		legTheory->AddEntry(ge_IA,                "Impulse Approximation", "l");
 		legTheory->Draw("same");
 
-		c->SaveAs(outDir+"/SigmaVsW_logXY.png");
-		c->SaveAs(outDir+"/SigmaVsW_logXY.pdf");
+		c->SaveAs("outplots/SigmaVsW_logXY.png");
+		c->SaveAs("outplots/SigmaVsW_logXY.pdf");
 	}
 	else
 	{
@@ -245,7 +286,7 @@ void plotRvsX( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap, co
 	c->SetLogx();
 
 	//TH2D* htem2d = new TH2D("htem2d", "", 10,3.0e-5,5.0e-2, 10, 0, 1);
-	TH2D* htem2d = new TH2D("htem2d", "", 10,4.0e-5,1.1e-2, 10, 0.2, 1.1);
+	TH2D* htem2d = new TH2D("htem2d", "", 10,4.0e-5,5e-2, 10, 0.2, 1.1);
 	htem2d->SetYTitle("R^{Pb}_{g}(x, #mu^{2}=2.4 GeV^{2})");
 	htem2d->SetXTitle("x");
 
@@ -267,72 +308,63 @@ void plotRvsX( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap, co
 	}
 	TGraphErrors* ge_CMS        	= new TGraphErrors(ShadowRatio_ParamsMap["Xs"].size(),    &ShadowRatio_ParamsMap["Xs"][0], 
 					&ShadowRatio_ParamsMap["R"][0],	&ShadowRatio_ParamsMap["Xs_Err"][0],	&ShadowRatio_ParamsMap["R_Err"][0]);
-	TGraphAsymmErrors* ge_SysUncer_CMS 	= new TGraphAsymmErrors(
+	TGraphAsymmErrors* gae_CMS 	= new TGraphAsymmErrors(
 												ShadowRatio_ParamsMap["Xs"].size(),
 												&ShadowRatio_ParamsMap["Xs"][0],        &ShadowRatio_ParamsMap["R"][0],
 												&X_AXIS_ERR[0],  &X_AXIS_ERR[0],
 												&R_TotalSysErr[0], &R_TotalSysErr[0]);
-	// auto gme_CMS = new TGraphMultiErrors(ShadowRatio_ParamsMap["Xs"].size(), &ShadowRatio_ParamsMap["Xs"][0],        &ShadowRatio_ParamsMap["R"][0]
-	// 								, &X_AXIS_ERR[0],  &X_AXIS_ERR[0], &ShadowRatio_ParamsMap["R_Err"][0], &ShadowRatio_ParamsMap["R_Err"][0]);
-	// gme_CMS->AddYError(ShadowRatio_ParamsMap["Xs"].size(), &R_TotalSysErr[0], &R_TotalSysErr[0]);
-	// gme_CMS->SetMarkerStyle(20);
-	// gme_CMS->SetLineColor(kRed);
-	// // gme_CMS->GetAttLine(0)->SetLineColor(kRed);
-	// gme_CMS->GetAttLine(1)->SetLineColor(kBlue);
-	// gme_CMS->GetAttFill(1)->SetFillStyle(0);
-	// gme_CMS->Draw("PS same; Z ; 5 s=0.5");
 
-	TGraphErrors* ge_ALICE_Run1 	= new TGraphErrors(ALICE_x.size(),      &ALICE_x[0],      &ALICE_R[0],      0,          &ALICE_R_Err[0] );
-	TGraphErrors* ge_ALICE_Run2 	= new TGraphErrors(ALICE_Run2_x.size(), &ALICE_Run2_x[0], &ALICE_Run2_R[0], 0,          &ALICE_Run2_R_Err[0] );
-	TGraphErrors* ge_ALICE_Run2_Psi = new TGraphErrors(ALICE_Run2_Psi_x.size(), &ALICE_Run2_Psi_x[0], &ALICE_Run2_Psi_R[0], 0,          &ALICE_Run2_R_Err[0] );
-
-	ge_SysUncer_CMS ->SetMarkerStyle(24);
-	ge_SysUncer_CMS ->SetFillColorAlpha(16, 0.7);
-	ge_SysUncer_CMS ->SetFillStyle(1001);
-	ge_SysUncer_CMS ->Draw("2same");
+	TGraphErrors* ge_ALICE_Run2_MidRap	= new TGraphErrors(ALICE_Run2_MidRap_x.size(),	&ALICE_Run2_MidRap_x[0],	&ALICE_Run2_MidRap_R[0],	0,	&ALICE_Run2_MidRap_R_StatErr[0]	);
+	TGraphErrors* ge_ALICE_Run2_FwdRap	= new TGraphErrors(ALICE_Run2_FwdRap_x.size(),	&ALICE_Run2_FwdRap_x[0],	&ALICE_Run2_FwdRap_R[0],	0,	&ALICE_Run2_FwdRap_R_StatErr[0]	);
+	X_AXIS_ERR = {3e-5};
+	TGraphAsymmErrors* gae_ALICE_Run2_MidRap 	= new TGraphAsymmErrors(
+												ALICE_Run2_MidRap_x.size(),
+												&ALICE_Run2_MidRap_x[0],        &ALICE_Run2_MidRap_R[0],
+												&X_AXIS_ERR[0],  &X_AXIS_ERR[0],
+												&ALICE_Run2_MidRap_R_SysErrLow[0], &ALICE_Run2_MidRap_R_SysErrHig[0]);
+	X_AXIS_ERR = {1.6e-3,1.2e-3};
+	TGraphAsymmErrors* gae_ALICE_Run2_FwdRap 	= new TGraphAsymmErrors(
+												ALICE_Run2_FwdRap_x.size(),
+												&ALICE_Run2_FwdRap_x[0],        &ALICE_Run2_FwdRap_R[0],
+												&X_AXIS_ERR[0],  &X_AXIS_ERR[0],
+												&ALICE_Run2_FwdRap_R_SysErrLow[0], &ALICE_Run2_FwdRap_R_SysErrHig[0]);
+	gae_CMS ->SetMarkerStyle(24);
+	gae_CMS ->SetFillColorAlpha(16, 0.7);
+	gae_CMS ->SetFillStyle(1001);
+	gae_CMS ->Draw("2same");
 	ge_CMS->SetMarkerStyle(20);
 	ge_CMS->SetMarkerColor(1);
 	ge_CMS->SetLineColor(1);
 	ge_CMS->SetLineWidth(2);
 	ge_CMS->Draw("pezsame");
 
-	ge_ALICE_Run1->SetMarkerStyle(24);
-	ge_ALICE_Run1->SetMarkerColor(4);
-	ge_ALICE_Run1->SetLineColor(4);
-	ge_ALICE_Run1->SetLineWidth(2);
-	//ge_ALICE_Run1->Draw("pesame");
-	ge_ALICE_Run2->SetMarkerStyle(24);
-	ge_ALICE_Run2->SetMarkerColor(4);
-	ge_ALICE_Run2->SetLineColor(4);
-	ge_ALICE_Run2->SetLineWidth(2);
-	ge_ALICE_Run2->Draw("pezsame");
+	gae_ALICE_Run2_MidRap ->SetMarkerStyle(24);
+	gae_ALICE_Run2_MidRap ->SetFillColorAlpha(16, 0.7);
+	gae_ALICE_Run2_MidRap ->SetFillStyle(1001);
+	gae_ALICE_Run2_MidRap ->Draw("2same");
+	ge_ALICE_Run2_MidRap->SetMarkerStyle(24);
+	ge_ALICE_Run2_MidRap->SetMarkerColor(4);
+	ge_ALICE_Run2_MidRap->SetLineColor(4);
+	ge_ALICE_Run2_MidRap->SetLineWidth(2);
+	ge_ALICE_Run2_MidRap->Draw("pezsame");
 
-	ge_ALICE_Run2_Psi->SetMarkerStyle(24);
-	ge_ALICE_Run2_Psi->SetMarkerColor(2);
-	ge_ALICE_Run2_Psi->SetLineColor(2);
-	ge_ALICE_Run2_Psi->SetLineWidth(2);
-	// ge_ALICE_Run2_Psi->Draw("pesame");
-	
-	
-	// TGraph *grshade = new TGraph(2*Theory_x_max.size());
-	// for (int i = 0; i < Theory_x_max.size(); i++) {
-	// 	grshade->SetPoint(i, Theory_x_max[i], Theory_R_max[i]);
-	// 	grshade->SetPoint(Theory_x_max.size()+i,Theory_x_min[i],Theory_R_min[i]);
-	// }
-	// grshade->SetFillStyle(3013);
-	// grshade->SetFillColor(16);
-	// grshade->Draw("f");
-	// grmin->Draw("l");
-	// grmax->Draw("l");
+	gae_ALICE_Run2_FwdRap ->SetMarkerStyle(24);
+	gae_ALICE_Run2_FwdRap ->SetFillColorAlpha(16, 0.7);
+	gae_ALICE_Run2_FwdRap ->SetFillStyle(1001);
+	gae_ALICE_Run2_FwdRap ->Draw("2same");
+	ge_ALICE_Run2_FwdRap->SetMarkerStyle(25);
+	ge_ALICE_Run2_FwdRap->SetMarkerColor(4);
+	ge_ALICE_Run2_FwdRap->SetLineColor(4);
+	ge_ALICE_Run2_FwdRap->SetLineWidth(2);
+	ge_ALICE_Run2_FwdRap->Draw("pezsame");
 
-	TLegend  *leg =  new TLegend(0.17, 0.60, 0.55, 0.80);
+	TLegend  *leg =  new TLegend(0.13, 0.60, 0.40, 0.80);
 	leg->SetFillStyle(0);
 	leg->SetFillColor(0);
 	leg->SetTextSize(0.050);
-	leg->AddEntry(ge_CMS,         "CMS",        "lp");
-	//leg->AddEntry(ge_ALICE_Run1,  "ALICE Run1", "lp"); //Run1
-	leg->AddEntry(ge_ALICE_Run2,  "ALICE", "lp"); //Run2
-	// leg->AddEntry(ge_ALICE_Run2_Psi,  "ALICE Run2 Psi", "lp");
+	leg->AddEntry(ge_CMS,         "CMS",        "p");
+	leg->AddEntry(ge_ALICE_Run2_FwdRap, "ALICE (-4 < y < -3.5)", "p");
+	leg->AddEntry(ge_ALICE_Run2_MidRap, "ALICE (|y| < 0.15)",  "p");
 	leg->Draw("same");
 
 	drawLatex(0.15, 0.86, "Pb+Pb UPC #sqrt{s_{NN}} = 5.02 TeV",  42,        0.05,      1 );
