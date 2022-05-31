@@ -150,11 +150,12 @@ struct LoadJpsiXsec : public LoadSignal
 		V_JpsiXsec[4] = (TH1D*) infile->Get("hOnXnSum") ;
 		V_JpsiXsec[5] = (TH1D*) infile->Get("hXnXn") ;
 
-		std::vector<double> Xsec_0n0n, Xsec_0nXnSum, Xsec_XnXn, Rap;
-		std::vector<double> XsecErr_0n0n, XsecErr_0nXnSum, XsecErr_XnXn, RapErr;
+		std::vector<double> Xsec_0n0n, Xsec_0nXnSum, Xsec_XnXn, Xsec_AnAn, Rap;
+		std::vector<double> XsecErr_0n0n, XsecErr_0nXnSum, XsecErr_XnXn, XsecErr_AnAn, RapErr;
 		for (int iy = nDiffRapBins/2 + 2 ; iy < nDiffRapBins + 2 ; ++iy)
 		{
 			Rap.push_back(	V_JpsiXsec[5]->GetBinCenter(iy)	); 				RapErr.push_back(		V_JpsiXsec[5]->GetBinWidth(iy)/2	);
+			Xsec_AnAn.push_back(	V_JpsiXsec[0]->GetBinContent(iy)	);	XsecErr_AnAn.push_back(		V_JpsiXsec[0]->GetBinError(iy)	);
 			Xsec_0n0n.push_back(	V_JpsiXsec[1]->GetBinContent(iy)	);	XsecErr_0n0n.push_back(		V_JpsiXsec[1]->GetBinError(iy)	);
 			Xsec_0nXnSum.push_back(	V_JpsiXsec[4]->GetBinContent(iy)	);	XsecErr_0nXnSum.push_back(	V_JpsiXsec[4]->GetBinError(iy)	);
 			Xsec_XnXn.push_back(	V_JpsiXsec[5]->GetBinContent(iy)	);	XsecErr_XnXn.push_back(		V_JpsiXsec[5]->GetBinError(iy)	);
@@ -163,6 +164,7 @@ struct LoadJpsiXsec : public LoadSignal
 		Map_Xsec["Xsec_0n0n"] = Xsec_0n0n; 			Map_Xsec["XsecErr_0n0n"] = XsecErr_0n0n;
 		Map_Xsec["Xsec_0nXnSum"] = Xsec_0nXnSum; 	Map_Xsec["XsecErr_0nXnSum"] = XsecErr_0nXnSum;
 		Map_Xsec["Xsec_XnXn"] = Xsec_XnXn; 			Map_Xsec["XsecErr_XnXn"] = XsecErr_XnXn;
+		Map_Xsec["Xsec_AnAn"] = Xsec_AnAn; 			Map_Xsec["XsecErr_AnAn"] = XsecErr_AnAn;
 
 		cout<<"------>DONE  Reading JpsiXsec: "<<infile->GetName()<<endl;
 		return kTRUE;
