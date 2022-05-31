@@ -203,7 +203,7 @@ void drawCMS_NeuConfig()
 	//htem2d_0n0n ->SetTickLength(0.08);
 	htem2d_0n0n->Draw();
 	drawLatex(0.15, 0.85, "Pb+Pb #rightarrow Pb+Pb+J/#psi #sqrt{s_{NN}} = 5.02 TeV (0n0n)",      42,       0.053,      1);
-	gae_XsecVsY_0n0n_CMS2022 ->SetMarkerStyle(24);
+	gae_XsecVsY_0n0n_CMS2022 ->SetMarkerStyle(20);
 	gae_XsecVsY_0n0n_CMS2022 ->SetFillColorAlpha(16, 0.5);
 	gae_XsecVsY_0n0n_CMS2022 ->SetFillStyle(1001);
 	gae_XsecVsY_0n0n_CMS2022 ->Draw("2same");
@@ -215,7 +215,7 @@ void drawCMS_NeuConfig()
 	leg_0n0n->SetFillStyle(0);
 	leg_0n0n->SetFillColor(0);
 	leg_0n0n->SetTextSize(0.050);
-	leg_0n0n->AddEntry(ge_XsecVsY_0n0n_CMS2022,		"CMS",		"lp");
+	leg_0n0n->AddEntry(gae_XsecVsY_0n0n_CMS2022,		"CMS",		"lpf");
 	drawLTA("0n0n",leg_0n0n);
 	leg_0n0n->Draw("same");
 	
@@ -233,7 +233,7 @@ void drawCMS_NeuConfig()
 	//htem2d_0nXnSum ->SetTickLength(0.08);
 	htem2d_0nXnSum->Draw();
 	drawLatex(0.15, 0.85, "Pb+Pb #rightarrow Pb+Pb+J/#psi #sqrt{s_{NN}} = 5.02 TeV (0nXn)",      42,       0.053,      1);
-	gae_XsecVsY_0nXnSum_CMS2022 ->SetMarkerStyle(24);
+	gae_XsecVsY_0nXnSum_CMS2022 ->SetMarkerStyle(20);
 	gae_XsecVsY_0nXnSum_CMS2022 ->SetFillColorAlpha(16, 0.5);
 	gae_XsecVsY_0nXnSum_CMS2022 ->SetFillStyle(1001);
 	gae_XsecVsY_0nXnSum_CMS2022 ->Draw("2same");
@@ -245,7 +245,7 @@ void drawCMS_NeuConfig()
 	leg_0nXnSum->SetFillStyle(0);
 	leg_0nXnSum->SetFillColor(0);
 	leg_0nXnSum->SetTextSize(0.050);
-	leg_0nXnSum->AddEntry(ge_XsecVsY_0nXnSum_CMS2022,		"CMS",		"lp");
+	leg_0nXnSum->AddEntry(gae_XsecVsY_0nXnSum_CMS2022,		"CMS",		"lpf");
 	drawLTA("0nXnSum",leg_0nXnSum);
 	leg_0nXnSum->Draw("same");
 
@@ -263,7 +263,7 @@ void drawCMS_NeuConfig()
 	//htem2d_XnXn ->SetTickLength(0.08);
 	htem2d_XnXn->Draw();
 	drawLatex(0.15, 0.85, "Pb+Pb #rightarrow Pb+Pb+J/#psi #sqrt{s_{NN}} = 5.02 TeV (XnXn)",      42,       0.053,      1);
-	gae_XsecVsY_XnXn_CMS2022 ->SetMarkerStyle(24);
+	gae_XsecVsY_XnXn_CMS2022 ->SetMarkerStyle(20);
 	gae_XsecVsY_XnXn_CMS2022 ->SetFillColorAlpha(16, 0.5);
 	gae_XsecVsY_XnXn_CMS2022 ->SetFillStyle(1001);
 	gae_XsecVsY_XnXn_CMS2022 ->Draw("2same");
@@ -275,7 +275,7 @@ void drawCMS_NeuConfig()
 	leg_XnXn->SetFillStyle(0);
 	leg_XnXn->SetFillColor(0);
 	leg_XnXn->SetTextSize(0.050);
-	leg_XnXn->AddEntry(ge_XsecVsY_XnXn_CMS2022,		"CMS",		"lp");
+	leg_XnXn->AddEntry(gae_XsecVsY_XnXn_CMS2022,		"CMS",		"lpf");
 	drawLTA("XnXn",leg_XnXn);
 	leg_XnXn->Draw("same");
 

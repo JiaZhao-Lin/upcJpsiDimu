@@ -44,7 +44,7 @@ std::vector< std::map<TString, std::vector<double>> > readLTAtheory()
 void drawLTA(TString Case, TLegend * leg)
 {
 	std::vector<TString> Name = {"LTA weak shadowing", "LTA strong shadowing", "EPS09 central"};
-	std::vector<int> colors = {2,3,4};
+	std::vector<int> colors = {2,8,4};
 	auto LTAs = readLTAtheory();
 
 	for (int i = 0; i < LTAs.size(); ++i)

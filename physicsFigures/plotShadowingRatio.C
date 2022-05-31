@@ -63,7 +63,7 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 	if(flag4Axis==0) //logY only
 	{
 		c->SetLogy();
-		SigmaVsW = new TH2D("SigmaVsW", ";W_{#gammaPb} (GeV);#sigma(#gamma A #rightarrow J/#psi A) (mb);", 10,0,420, 10, 0.005, 4);
+		SigmaVsW = new TH2D("SigmaVsW", ";W_{#gammaPb} (GeV);#sigma(#gamma A #rightarrow J/#psi A) (mb);", 10,0,420, 10, 0.005, 0.20);
 	}
 	else //logX and logY as default one
 	{
@@ -177,7 +177,7 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 		legTheory->SetTextSize(0.045);
 		legTheory->AddEntry(ge_CGCnoFluct,        "CGC",                   "l");
 		legTheory->AddEntry(ge_IA,                "Impulse Approximation", "l");
-		drawLTA_Sigmas_R("Sigmas", legTheory);
+		// drawLTA_Sigmas_R("Sigmas", legTheory);
 		legTheory->Draw("same");
 
 		// TF1 *f1 	= new TF1("f1","log10(x)",3.5469263e-5,0.048933106);
@@ -319,7 +319,7 @@ void plotRvsX( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap, co
 	leg->AddEntry(ge_CMS,         "CMS",        "p");
 	leg->AddEntry(ge_ALICE_Run2_FwdRap, "ALICE (-4 < y < -3.5)", "p");
 	leg->AddEntry(ge_ALICE_Run2_MidRap, "ALICE (|y| < 0.15)",  "p");
-	drawLTA_Sigmas_R("R", leg);
+	// drawLTA_Sigmas_R("R", leg);
 	leg->Draw("same");
 
 	drawLatex(0.15, 0.86, "Pb+Pb UPC #sqrt{s_{NN}} = 5.02 TeV",  42,        0.05,      1 );
@@ -354,7 +354,11 @@ std::map<TString, std::vector<double>> getParamsMap(const TString infile = "../s
 
 	LoadJpsiXsec loadJpsiXsec(infile);
 
-	ShadowRatio_ParamsMap.merge(loadJpsiXsec.GetMap());
+	{
+		auto temp_map = loadJpsiXsec.GetMap();
+		ShadowRatio_ParamsMap.insert(temp_map.begin(),	temp_map.end());
+	}
+	
 	for (int i = 0; i < ShadowRatio_ParamsMap.at("Rap").size(); ++i)
 	{
 		ShadowRatio_ParamsMap.at("Rap")[i] *= -1;
