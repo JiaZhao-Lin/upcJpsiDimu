@@ -24,7 +24,8 @@ const int   trigIdx = 7;
 const TString trigName = "SingleMuUPC";
 
 const int mRunNbCut = 326776;     // get this number from Quan (L = 1570.6796 ub^{-1} for runID >= 326776)
-const double mCMSLum = 1570.6796;  // ub^{-1} for HLT_HIUPC_SingleMuOpen_NotMBHF2AND_v with runID >= 326776
+// const double mCMSLum = 1570.6796;  // ub^{-1} for HLT_HIUPC_SingleMuOpen_NotMBHF2AND_v with runID >= 326776
+const double mCMSLum = 1520;  // ub^{-1} for HLT_HIUPC_SingleMuOpen_NotMBHF2AND_v with runID >= 326776
 const int  mCentralityCut = 180;
 const int  mNtrkofflineCut = 2;
 

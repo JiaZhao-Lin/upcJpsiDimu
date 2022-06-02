@@ -152,7 +152,7 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &Map, const double shi
 	static bool FirstCall = true;
 	static auto c1 = new TCanvas();
 	static TH2D* SigmaVsW = new TH2D("SigmaVsW", ";W_{#gammaPb} (GeV);#sigma(#gamma A #rightarrow J/#psi A) (mb);", 10,0,420, 10, 0.005, 0.20);
-	static TLegend  *legData =  new TLegend(0.30, 0.17, 0.26, 0.40);
+	static TLegend  *legData =  new TLegend(0.25, 0.15, 0.4, 0.40);
 
 	if ( FirstCall )
 	{
@@ -249,7 +249,7 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &Map, const double shi
 		TLegend  *legData =  new TLegend(0.13, 0.66, 0.35, 0.82);
 		legData->SetFillStyle(0);
 		legData->SetFillColor(0);
-		legData->SetTextSize(0.045);
+		legData->SetTextSize(0.040);
 		legData->AddEntry(ge_ALICE_Run2_FwdRap, "ALICE (-4 < y < -3.5)", "p");
 		legData->AddEntry(ge_ALICE_Run2_MidRap, "ALICE (|y| < 0.15)",  "p");
 		legData->Draw("same");
@@ -257,7 +257,7 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &Map, const double shi
 		TLegend  *legTheory =  new TLegend(0.50, 0.20, 0.80, 0.30);
 		legTheory->SetFillStyle(0);
 		legTheory->SetFillColor(0);
-		legTheory->SetTextSize(0.045);
+		legTheory->SetTextSize(0.040);
 		legTheory->AddEntry(ge_CGCnoFluct,        "CGC",                   "l");
 		legTheory->AddEntry(ge_IA,                "Impulse Approximation", "l");
 		legTheory->Draw("same");
@@ -275,12 +275,13 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &Map, const double shi
 	ge_CMS->Draw("pezsame");
 
 	legData->AddEntry(ge_CMS,	legendName,	"p");
-	
+	legData->SetTextSize(0.030);
+
 	FirstCall = false;
 	if (LastCall) {
 		legData->Draw("same");
-		// c1->SaveAs("outplots/SigmaVsW_logY.png");
-		// c1->SaveAs("outplots/SigmaVsW_logY.pdf");
+		c1->SaveAs("outplots/ComparingSigmaVsW_logY.png");
+		c1->SaveAs("outplots/ComparingSigmaVsW_logY.pdf");
 		// delete c1;
 	}
 }
@@ -382,13 +383,14 @@ void plotRvsX( std::map<TString, std::vector<double>> &Map, const double shift,
 	ge_CMS->Draw("pezsame");
 	
 	leg->AddEntry(ge_CMS,         legendName,        "lp");
-	
+	leg->SetTextSize(0.030);
+
 	FirstCall = false;
 	if (LastCall)
 	{
 		leg->Draw("same");
-		// c->SaveAs("outplots/ShadowingRatiovsX.png");
-		// c->SaveAs("outplots/ShadowingRatiovsX.pdf");
+		c->SaveAs("outplots/ComparingRvsX.png");
+		c->SaveAs("outplots/ComparingRvsX.pdf");
 		// delete c;
 	}
 }
@@ -437,9 +439,9 @@ void getFitUncertainty()
 	plotSigmaVsW(CB_Poly4_Map,			0,	24,	1,	"CB_Poly4"				);
 	plotSigmaVsW(CB_FixCBAN_Poly3_Map,	0,	24,	2,	"CB_FixCBAN_Poly3"		);
 	plotSigmaVsW(CBG_Poly3_Map,			0,	24,	6,	"CBG_Poly3"				);
-	plotSigmaVsW(CB_Poly3_SdB_Map,		0,	24,	28,	"QEDPtShape"			);
-	plotSigmaVsW(CB_Poly3_NarrMass_Map,	0,	24,	29,	"NarrMass"				);
-	plotSigmaVsW(CB_Poly3_WideMass_Map,	0,	24,	30,	"WideMass"				);
+	plotSigmaVsW(CB_Poly3_SdB_Map,		-5,	24,	28,	"QEDPtShape"			);
+	plotSigmaVsW(CB_Poly3_NarrMass_Map,	-5,	24,	29,	"NarrMass"				);
+	plotSigmaVsW(CB_Poly3_WideMass_Map,	-5,	24,	30,	"WideMass"				);
 
 	plotSigmaVsW(CB_Poly3_looseHF_Map,	5,	26,	1,	"HFveto"		);
 	// plotSigmaVsW(CB_Poly3_fluxP_Map,	10,	26,	1,	"CB_Poly3_fluxP"		);
@@ -454,9 +456,9 @@ void getFitUncertainty()
 	plotRvsX(CB_Poly4_Map,			0,	24,	1,	"CB_Poly4"				);
 	plotRvsX(CB_FixCBAN_Poly3_Map,	0,	24,	2,	"CB_FixCBAN_Poly3"		);
 	plotRvsX(CBG_Poly3_Map,			0,	24,	6,	"CBG_Poly3"				);
-	plotRvsX(CB_Poly3_SdB_Map,		0,	24,	28,	"QEDPtShape"			);
-	plotRvsX(CB_Poly3_NarrMass_Map,	0,	24,	29,	"NarrMass"				);
-	plotRvsX(CB_Poly3_WideMass_Map,	0,	24,	30,	"WideMass"				);
+	plotRvsX(CB_Poly3_SdB_Map,		-4e-4,	24,	28,	"QEDPtShape"			);
+	plotRvsX(CB_Poly3_NarrMass_Map,	-4e-4,	24,	29,	"NarrMass"				);
+	plotRvsX(CB_Poly3_WideMass_Map,	-4e-4,	24,	30,	"WideMass"				);
 
 	plotRvsX(CB_Poly3_looseHF_Map,	4e-4,	26,	1,	"HFveto"			);
 	// plotRvsX(CB_Poly3_fluxP_Map,	0,	26,	1,	"CB_Poly3_fluxP"		);

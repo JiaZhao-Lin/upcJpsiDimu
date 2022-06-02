@@ -28,6 +28,8 @@ static const double pi       = 3.141592654;
 static const double twoPi    = 2 * pi;
 static const double alpha    = 1/137.035999074;
 
+TH1D* h_IA = nullptr;
+std::vector<double> W_IA, Sigma_IA, Sigma_IA_Err;
 
 double formFactor(Double_t *t, Double_t *par)
 {
@@ -46,9 +48,8 @@ double formFactor(Double_t *t, Double_t *par)
   return ff*ff;
         
 }
-void runUPC_AAModel(std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap, TString nucleus="Pb"){
+void runUPC_AAModel(TString nucleus="Pb"){
 
-  std::vector<double> W_IA, Sigma_IA, Sigma_IA_Err;
   //constants
   double Mvm=3.09;//mass jpsi
   double M_N= (0.93827+0.93957) / 2;
@@ -62,7 +63,7 @@ void runUPC_AAModel(std::map<TString, std::vector<double>> &ShadowRatio_ParamsMa
   giveGammaP->SetParameter(2, M_N);
   giveGammaP->SetParameter(3, 0.4);
 
-  TCanvas* c1 = new TCanvas("c1","c1",1,1,900,600);
+  TCanvas* c1 = new TCanvas();
   giveGammaP->GetYaxis()->SetTitle("#frac{d#sigma}{dt}(W_{#gamma p}, t=0) (nb/GeV^{2})");
   giveGammaP->GetXaxis()->SetTitle("W_{#gamma p} (GeV)");
   giveGammaP->Draw();
@@ -84,8 +85,7 @@ void runUPC_AAModel(std::map<TString, std::vector<double>> &ShadowRatio_ParamsMa
   }
   
   //IA histogram as a function of W
-  TH1D* h_IA = new TH1D("h_IA",";W_{#gamma p} (GeV); #sigma^{#gamma+A #rightarrow VM+A} (W_{#gamma p}) [nb]",500,4.5,505.5);
-  TH1D* h_IA_= new TH1D(*h_IA);
+  h_IA = new TH1D("h_IA",";W_{#gamma p} (GeV); #sigma^{#gamma+A #rightarrow VM+A} (W_{#gamma p}) [nb]",500,4.5,505.5);
   for(int ibin=0;ibin<h_IA->GetNbinsX();ibin++){
     double w = h_IA->GetBinCenter(ibin+1);
     double gammaP_xs = giveGammaP->Eval(w);
@@ -100,7 +100,7 @@ void runUPC_AAModel(std::map<TString, std::vector<double>> &ShadowRatio_ParamsMa
     W_IA.push_back(w); Sigma_IA.push_back(IA/1e6); Sigma_IA_Err.push_back(IA/1e6*0.02);
   }
 
-  TCanvas* c2 = new TCanvas("c2","c2",1,1,900,600);
+  TCanvas* c2 = new TCanvas();
   h_IA->SetStats(kFALSE);
   h_IA->SetTitle("Impulse Approximation");
   h_IA->SetMarkerStyle(24);
@@ -150,12 +150,20 @@ void runUPC_AAModel(std::map<TString, std::vector<double>> &ShadowRatio_ParamsMa
     latex1->SetTextColor(kBlack);
     latex1->Draw("same");
   }
-  
 
+  // c1->SaveAs("./ImpulseApproximation/runUPC_AAModel_0.png");
+  // c2->SaveAs("./ImpulseApproximation/runUPC_AAModel_1.png");
+  delete c1;
+  delete c2;
+}
 
+void Interpolate_IA(std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap, bool draw = false, TString nucleus="Pb")
+{
+  if (!h_IA) runUPC_AAModel(nucleus);
 
-  // const std::vector<double> Ws = {41.503042, 50.691930, 306.668307, 374.565516};
+  TH1D* h_IA_= new TH1D(*h_IA);
   std::vector<double> IAs = {}, IAs_Err={};
+
   h_IA_->SetMarkerColor(kRed);
   for (int i = 0; i < ShadowRatio_ParamsMap["Ws"].size(); ++i)
   {
@@ -166,39 +174,6 @@ void runUPC_AAModel(std::map<TString, std::vector<double>> &ShadowRatio_ParamsMa
     IAs.push_back(s/1e6);
     IAs_Err.push_back(s_err/1e6);
   }
-  TCanvas* c3 = new TCanvas("c3","c3",1,1,900,600);
-  // THStack *hs = new THStack("hs", ";W_{#gamma p} (GeV); #sigma^{#gamma+A #rightarrow VM+A} (W_{#gamma p}) [nb]");
-  // hs->Add(h_IA); hs->Add(h_IA_);
-  // hs->Draw("NOSTACK P");
-  TH2D* htem2d = new TH2D("hs", ";W_{#gamma p} (GeV); #sigma^{#gamma+A #rightarrow VM+A} (W_{#gamma p}) [nb]", 10,4.5,505.5,10,0,0.22e6);
-  htem2d->Draw();
-  h_IA->Draw("same HIST L");
-  h_IA_->Draw("same AP");
-
-  for (int i = 0; i < ShadowRatio_ParamsMap["Ws"].size(); ++i)
-  {
-    TLatex *latex1 = new TLatex(0.33, 0.35-0.04*i, Form("W_{#gamma p} = %.2f GeV, #sigma^{#gamma+A #rightarrow VM+A} (W_{#gamma p}) = %f #pm %f mb",ShadowRatio_ParamsMap["Ws"][i],IAs[i],IAs_Err[i]));
-    latex1->SetNDC();
-    latex1->SetTextSize(20);
-    latex1->SetTextFont(43);
-    latex1->SetTextColor(kBlack);
-    latex1->Draw("same");
-  }
-  {
-    TBox* box1 = new TBox(37,20e3,414,180e3);
-    box1->SetFillColorAlpha(kRed+2,0.1);
-    box1->SetFillStyle(1001);
-    box1->SetLineWidth(0);
-    box1->Draw("same");
-    box1->Draw("same");
-
-    TLatex *latex1 = new TLatex(0.16, 0.80, "CMS |y_{VM}| < 2.4 (Run 2 & 3)");
-    latex1->SetNDC();
-    latex1->SetTextSize(23);
-    latex1->SetTextFont(43);
-    latex1->SetTextColor(kBlack);
-    latex1->Draw("same");
-  }
 
   ShadowRatio_ParamsMap["Ws_FitIA"]         = W_IA;
   ShadowRatio_ParamsMap["Sigmas_FitIA"]     = Sigma_IA;
@@ -207,10 +182,40 @@ void runUPC_AAModel(std::map<TString, std::vector<double>> &ShadowRatio_ParamsMa
   ShadowRatio_ParamsMap["Sigmas_IA"]        = IAs;
   ShadowRatio_ParamsMap["Sigmas_IA_Err"]    = IAs_Err;
 
-  // c1->SaveAs("./ImpulseApproximation/runUPC_AAModel_0.png");
-  // c2->SaveAs("./ImpulseApproximation/runUPC_AAModel_1.png");
-  // c3->SaveAs("./ImpulseApproximation/runUPC_AAModel_2.png");
-  delete c1;
-  delete c2;
-  delete c3;
+  if (draw)
+  {
+    TCanvas* c3 = new TCanvas();
+    TH2D* htem2d = new TH2D("hs", ";W_{#gamma p} (GeV); #sigma^{#gamma+A #rightarrow VM+A} (W_{#gamma p}) [nb]", 10,4.5,505.5,10,0,0.22e6);
+    htem2d->Draw();
+    h_IA->Draw("same HIST L");
+    h_IA_->Draw("same AP");
+
+    for (int i = 0; i < ShadowRatio_ParamsMap["Ws"].size(); ++i)
+    {
+      TLatex *latex1 = new TLatex(0.33, 0.35-0.04*i, Form("W_{#gamma p} = %.2f GeV, #sigma^{#gamma+A #rightarrow VM+A} (W_{#gamma p}) = %f #pm %f mb",ShadowRatio_ParamsMap["Ws"][i],IAs[i],IAs_Err[i]));
+      latex1->SetNDC();
+      latex1->SetTextSize(20);
+      latex1->SetTextFont(43);
+      latex1->SetTextColor(kBlack);
+      latex1->Draw("same");
+    }
+    {
+      TBox* box1 = new TBox(37,20e3,414,180e3);
+      box1->SetFillColorAlpha(kRed+2,0.1);
+      box1->SetFillStyle(1001);
+      box1->SetLineWidth(0);
+      box1->Draw("same");
+      box1->Draw("same");
+
+      TLatex *latex1 = new TLatex(0.16, 0.80, "CMS |y_{VM}| < 2.4 (Run 2 & 3)");
+      latex1->SetNDC();
+      latex1->SetTextSize(23);
+      latex1->SetTextFont(43);
+      latex1->SetTextColor(kBlack);
+      latex1->Draw("same");
+    }
+
+    c3->SaveAs("./ImpulseApproximation/runUPC_AAModel_2.png");
+    delete c3;
+  }
 }
