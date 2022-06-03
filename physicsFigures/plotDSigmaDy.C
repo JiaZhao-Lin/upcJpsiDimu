@@ -155,7 +155,8 @@ void drawCMSvsAlice()
 	ge_XsecVsY_LHCb2021  ->SetMarkerSize(0.5);
 	ge_XsecVsY_LHCb2021  ->Draw("pezsame");
 
-	gae_XsecVsY_CMS2022 ->SetMarkerStyle(24);
+	gae_XsecVsY_CMS2022 ->SetMarkerStyle(21);
+	gae_XsecVsY_CMS2022 ->SetMarkerColor(4);
 	gae_XsecVsY_CMS2022 ->SetFillColorAlpha(16, 0.5);
 	gae_XsecVsY_CMS2022 ->SetFillStyle(1001);
 	gae_XsecVsY_CMS2022 ->Draw("2same");
@@ -172,7 +173,7 @@ void drawCMSvsAlice()
 	leg->SetFillStyle(0);
 	leg->SetFillColor(0);
 	leg->SetTextSize(0.050);
-	leg->AddEntry(ge_XsecVsY_CMS2022,               "CMS",               "lp" );
+	leg->AddEntry(gae_XsecVsY_CMS2022,              "CMS",               "lpf" );
 	leg->AddEntry(gae_XsecVsY_Alice2019,            "ALICE 2019",        "lpf");
 	leg->AddEntry(gae_XsecVsY_Alice2021,            "ALICE 2021",        "lpf");
 	leg->AddEntry(gae_XsecVsY_LHCb2021,             "LHCb  2021",        "lpf");

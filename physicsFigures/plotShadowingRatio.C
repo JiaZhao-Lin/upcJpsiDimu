@@ -161,7 +161,7 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 	{
 		drawLatex(0.15, 0.87, "Pb+Pb UPC #sqrt{s_{NN}} = 5.02 TeV",  42,        0.05,      1 );
 		
-		TLegend  *legData =  new TLegend(0.13, 0.66, 0.35, 0.82);
+		TLegend  *legData =  new TLegend(0.10, 0.66, 0.35, 0.82);
 		legData->SetFillStyle(0);
 		legData->SetFillColor(0);
 		legData->SetTextSize(0.045);
@@ -170,7 +170,7 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 		legData->AddEntry(ge_ALICE_Run2_MidRap, "ALICE (|y| < 0.15)",  "p");
 		legData->Draw("same");
 
-		TLegend  *legTheory =  new TLegend(0.50, 0.20, 0.80, 0.30);
+		TLegend  *legTheory =  new TLegend(0.45, 0.15, 0.80, 0.40);
 		legTheory->SetFillStyle(0);
 		legTheory->SetFillColor(0);
 		legTheory->SetTextSize(0.045);
@@ -202,7 +202,7 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 	{
 		drawLatex(0.15, 0.85, "Pb+Pb UPC #sqrt{s_{NN}} = 5.02 TeV",  42,        0.06,      1 );
 
-		TLegend  *legData =  new TLegend(0.30, 0.20, 0.55, 0.35);
+		TLegend  *legData =  new TLegend(0.25, 0.20, 0.55, 0.35);
 		legData->SetFillStyle(0);
 		legData->SetFillColor(0);
 		legData->SetTextSize(0.045);
@@ -211,7 +211,7 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 		legData->AddEntry(ge_ALICE_Run2_MidRap, "ALICE (|y| < 0.15)",    "p");
 		legData->Draw("same");
 
-		TLegend  *legTheory =  new TLegend(0.75, 0.20, 0.95, 0.30);
+		TLegend  *legTheory =  new TLegend(0.60, 0.15, 0.95, 0.38);
 		legTheory->SetFillStyle(0);
 		legTheory->SetFillColor(0);
 		legTheory->SetTextSize(0.045);
@@ -313,13 +313,13 @@ void plotRvsX( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap, co
 	ge_ALICE_Run2_FwdRap->SetLineWidth(2);
 	ge_ALICE_Run2_FwdRap->Draw("pezsame");
 
-	TLegend  *leg =  new TLegend(0.13, 0.60, 0.40, 0.80);
+	TLegend  *leg =  new TLegend(0.13, 0.50, 0.40, 0.80);
 	leg->SetFillStyle(0);
 	leg->SetFillColor(0);
 	leg->SetTextSize(0.050);
-	leg->AddEntry(ge_CMS,         "CMS",        "p");
+	leg->AddEntry(ge_CMS,               "CMS",                   "p");
 	leg->AddEntry(ge_ALICE_Run2_FwdRap, "ALICE (-4 < y < -3.5)", "p");
-	leg->AddEntry(ge_ALICE_Run2_MidRap, "ALICE (|y| < 0.15)",  "p");
+	leg->AddEntry(ge_ALICE_Run2_MidRap, "ALICE (|y| < 0.15)",    "p");
 	drawGG("R",leg);
 	drawLTA_Sigmas_R("R", leg);
 	leg->Draw("same");

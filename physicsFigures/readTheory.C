@@ -158,7 +158,7 @@ std::map<TString, std::vector<double>> readLTAtheory_Sigmas_R()
 
 void drawLTA_Sigmas_R(TString Case, TLegend * leg)
 {
-	std::vector<TString> Name = {"LTA_StrSuppr","LTA_WeakSuppr"};
+	std::vector<TString> Name = {"LTA_SS","LTA_WS"};
 	std::vector<int> colors = {2,8,4};
 	auto LTAs = readLTAtheory_Sigmas_R();
 
