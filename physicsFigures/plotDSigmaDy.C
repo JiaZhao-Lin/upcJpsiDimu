@@ -1,6 +1,8 @@
 #include "../common/headers.h"
+#include "../common/function.C"
 #include "../common/funUtil.h"
-#include "plotShadowingRatio.C"
+#include "readTheory.C"
+#include "Map_IO.C"
 
 TGraphErrors*       ge_XsecVsY_Alice2019;
 TGraphAsymmErrors* gae_XsecVsY_Alice2019;
@@ -21,6 +23,7 @@ void getCMSData(const TString infile = "../signalExt/JpsiXsecValues/JpsiXsec_CB_
 void getAliceData();
 void drawCMSvsAlice();
 void drawCMS_NeuConfig();
+void drawDDP(TString Name,	TLegend* legend);
 
 void plotDSigmaDy( )
 {
@@ -173,6 +176,8 @@ void drawCMSvsAlice()
 	leg->SetFillStyle(0);
 	leg->SetFillColor(0);
 	leg->SetTextSize(0.050);
+
+	drawDDP("DDP",	leg);
 	leg->AddEntry(gae_XsecVsY_CMS2022,              "CMS",               "lpf" );
 	leg->AddEntry(gae_XsecVsY_Alice2019,            "ALICE 2019",        "lpf");
 	leg->AddEntry(gae_XsecVsY_Alice2021,            "ALICE 2021",        "lpf");
@@ -348,17 +353,32 @@ void drawCMS_NeuConfig()
 	c2->SaveAs("outplots/Xsec_NeuConfig.pdf");
 }
 
+void drawDDP(TString Name,	TLegend* legend)
+{
+	auto Xsec_AnAn_DataDrivenPrediction	= readMap("rootfiles/DataDrivenPrediction.root");
+
+	auto gr_AnAn_DataDrivenPrediction = new TGraph(Xsec_AnAn_DataDrivenPrediction.at("Xsec_AnAn_Prediction").size(),
+												Xsec_AnAn_DataDrivenPrediction.at("Raps").data(),
+												Xsec_AnAn_DataDrivenPrediction.at("Xsec_AnAn_Prediction").data());
+
+	gr_AnAn_DataDrivenPrediction->Draw("same");
+	gr_AnAn_DataDrivenPrediction->SetLineColor(1);
+	gr_AnAn_DataDrivenPrediction->SetLineWidth(2);
+	legend->AddEntry(gr_AnAn_DataDrivenPrediction,	Name.Data(),		"l" );
+}
+
 void getCMSData(const TString infile = "../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins.appliedTnP.root" )
 {
-	LoadJpsiXsec loadJpsiXsec(infile);
-	auto ParamsMap = loadJpsiXsec.GetMap();
+	// LoadJpsiXsec loadJpsiXsec(infile);
+	// auto ParamsMap = loadJpsiXsec.GetMap();
+	auto ParamsMap				= readMap();
 	auto TotalSysUncer_Map 		= readMap("rootfiles/TotalSysUncer_Map.root");
-	for (int i = 0; i < ParamsMap["Rap"].size(); ++i)
-	{
-		ParamsMap["Rap"][i] *= -1;
-	}
+	// for (int i = 0; i < ParamsMap["Rap"].size(); ++i)
+	// {
+	// 	ParamsMap["Rap"][i] *= -1;
+	// }
 
-	std::vector<double> X_AXIS_ERR = ParamsMap["RapErr"];
+	std::vector<double> X_AXIS_ERR = ParamsMap.at("RapErr");
 	auto Xsec_AnAn_TotalSysErr = ParamsMap.at("Xsec_AnAn");
 	auto Xsec_0n0n_TotalSysErr = ParamsMap.at("Xsec_0n0n");
 	auto Xsec_0nXnSum_TotalSysErr = ParamsMap.at("Xsec_0nXnSum");
@@ -369,8 +389,8 @@ void getCMSData(const TString infile = "../signalExt/JpsiXsecValues/JpsiXsec_CB_
 		Xsec_0n0n_TotalSysErr[i] 	*= 0.01 * TotalSysUncer_Map.at("Xsec_0n0n_TotalSysUncer")[i];
 		Xsec_0nXnSum_TotalSysErr[i] *= 0.01 * TotalSysUncer_Map.at("Xsec_0nXnSum_TotalSysUncer")[i];
 		Xsec_XnXn_TotalSysErr[i] 	*= 0.01 * TotalSysUncer_Map.at("Xsec_XnXn_TotalSysUncer")[i];
-		cout<<Form("AnAn_TotalSysErr: %f,	0n0n_TotalSysErr: %f,	0nXnSum_TotalSysErr: %f,	XnXn_TotalSysErr: %f",
-				Xsec_AnAn_TotalSysErr[i],Xsec_0n0n_TotalSysErr[i],Xsec_0nXnSum_TotalSysErr[i],Xsec_XnXn_TotalSysErr[i])<<endl;
+		cout<<Form("Rap:%f,	AnAn_TotalSysErr:%f,	0n0n_TotalSysErr:%f,	0nXnSum_TotalSysErr:%f,	XnXn_TotalSysErr:%f",
+				ParamsMap.at("Rap")[i],Xsec_AnAn_TotalSysErr[i],Xsec_0n0n_TotalSysErr[i],Xsec_0nXnSum_TotalSysErr[i],Xsec_XnXn_TotalSysErr[i])<<endl;
 	}
 
 	ge_XsecVsY_CMS2022  = new TGraphErrors(

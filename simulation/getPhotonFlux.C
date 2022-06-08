@@ -1,212 +1,125 @@
 #include "../common/function.C"
 
-
-//-----------------CMS Data----------------------------------------
-// const int     nPots_CMS2022 = 2;
-// const double  Rap_CMS2022[nPots_CMS2022]        	= { -2.2,  -1.8 };
-// const double  RapErrLow_CMS2022[nPots_CMS2022]  	= { 0.20,  0.20 };
-// const double  RapErrHig_CMS2022[nPots_CMS2022]  	= { 0.20,  0.20 };
-
-const int     nPots_CMS2022 = 3;
-const double  Rap_CMS2022[nPots_CMS2022]        	= { -2.25,  -2.0,  -1.75 };
-//-----------------------------------------------------------------
-
-std::vector<double> energy, flux, fluxTable;
-std::vector<double> biter_0n0n, PofPhotonB_0n0n, PofHadronB_0n0n, PofB_0n0n;
-std::vector<double> biter_0nXnSum, PofPhotonB_0nXnSum, PofHadronB_0nXnSum, PofB_0nXnSum;
-std::vector<double> biter_XnXn, PofPhotonB_XnXn, PofHadronB_XnXn, PofB_XnXn;
-std::vector<double> yTable, NyTable;
-std::vector<double>  PhotonEnergy_CMS2022, PhotonFlux_CMS2022, Raps_CMS2022;
-const int NnCases = 6;
-const int nstep = 100;
-const double Emin = 1.000000e-05, Emax = 4.777493e+02;
-const double JpsiMass = 3.096916;
-const TString nCasesName[NnCases] = {"AnAn", "OnOn", "0nXn", "Xn0n", "OnXnSum", "XnXn"};
-TString Name, Case;
-
-double Jpsi_rap2EgammCM(double rap);
-double interpolateFlux(const double Egamma);
-void plotFlux();
-void plotPofB();
-double Derivative(const double x);
-void nk2Ny();
-
-void getPhotonFlux()
+std::map<TString, std::vector<double>> PhotonFluxMap	=
 {
-	TString inFileDir 		  = "flux/Flux_AnAn.txt";
-	TString inFileDir1 		  = "flux/PofB_0n0n.txt";
-	TString inFileDir2 		  = "flux/PofB_0nXnSum.txt";
-	TString inFileDir3 		  = "flux/PofB_XnXn.txt";
-	Name = TString(inFileDir);
-	Name.ReplaceAll("flux/","");
-	Name.ReplaceAll(".txt", "");
-	Case = TString(Name);
-	Case.ReplaceAll("Flux_","");
-	cout<<Name<<endl;
+	{"Energy_Table_AnAn",{}},	{"Raps_Table_AnAn",{}}	,{"dNdk_Table_AnAn",	{}},{"dNdy_Table_AnAn",	{}},
+	{"Energy_Table_0n0n",{}},	{"Raps_Table_0n0n",{}}	,{"dNdk_Table_0n0n",	{}},{"dNdy_Table_0n0n",	{}},
+	{"Energy_Table_0nXnSum",{}},{"Raps_Table_0nXnSum",{}},{"dNdk_Table_0nXnSum",{}},{"dNdy_Table_0nXnSum",	{}},
+	{"Energy_Table_XnXn",{}},{"Raps_Table_XnXn",{}}	,	{"dNdk_Table_XnXn",		{}},{"dNdy_Table_XnXn",	{}},
+	{"biter_0n0n",	{}},	{"PofPhotonB_0n0n",	{}},	{"PofHadronB_0n0n",	{}},	{"PofB_0n0n",	{}},
+	{"biter_0nXnSum",{}},	{"PofPhotonB_0nXnSum",{}},	{"PofHadronB_0nXnSum",{}},	{"PofB_0nXnSum",{}},
+	{"biter_XnXn",	{}},	{"PofPhotonB_XnXn",	{}},	{"PofHadronB_XnXn",	{}},	{"PofB_XnXn",	{}}
+};
 
-	ifstream myfile(inFileDir);
-	ifstream myfile1(inFileDir1);
-	ifstream myfile2(inFileDir2);
-	ifstream myfile3(inFileDir3);
+double Interpolate(const double Egamma, TString Case);
+void plotFlux(std::map<TString, std::vector<double>> Map, TString Case);
+void plotPofB();
 
-	//Calculate photon energy from the rap
-	for (int i = 0; i < nPots_CMS2022; ++i)
+void loadPhotonFlux(TString inFileDir	= "flux/")
+{
+	cout<<"loadPhotonFlux-------->Loading Photon Flux From Flux_*.txt in the Dir:"<<inFileDir<<endl;
+
+	std::vector<TString> CasesName = {"AnAn", "0n0n", "0nXnSum", "XnXn"};
+	const double JpsiMass = 3.096916;
+
+	for (int i = 0; i < CasesName.size(); ++i)
 	{
-		PhotonEnergy_CMS2022.push_back( JpsiMass/2 * exp(Rap_CMS2022[i]) );
-		PhotonEnergy_CMS2022.push_back( JpsiMass/2 * exp(-Rap_CMS2022[i]) );
-		Raps_CMS2022		.push_back(Rap_CMS2022[i]);
-		Raps_CMS2022		.push_back(-Rap_CMS2022[i]);
-	}
+		ifstream myfile(Form("%sFlux_%s.txt", inFileDir.Data(), CasesName[i].Data()));
 
-	if (myfile.is_open())
-	{
-		std::string line;
-		// Read one line at a time into the variable line:
-		while(std::getline(myfile, line))
+		if (myfile.is_open())
 		{
-			std::vector<double>   	lineData;
-			std::stringstream  		lineStream(line);
-
-			double value;
-			// Read an integer at a time from the line
-			while(lineStream >> value)
+			std::string line;
+			// Read one line at a time into the variable line:
+			while(std::getline(myfile, line))
 			{
-				// Add the integers from a line to a 1D array (vector)
-				lineData.push_back(value);
+				std::vector<double>   	lineData;
+				std::stringstream  		lineStream(line);
+
+				double value;
+				// Read an integer at a time from the line
+				while(lineStream >> value)
+				{
+					// Add the integers from a line to a 1D array (vector)
+					lineData.push_back(value);
+				}
+				// cout<<line<<endl;
+				// When all the integers have been read, add the 1D array
+				PhotonFluxMap.at("Energy_Table_" + CasesName[i]).push_back(lineData[0]);
+				PhotonFluxMap.at("dNdk_Table_" + CasesName[i]) 	.push_back(lineData[1]);
+				PhotonFluxMap.at("dNdy_Table_" + CasesName[i])	.push_back(lineData[2]);
+
+				PhotonFluxMap.at("Raps_Table_" + CasesName[i])	.push_back( log( 2 / JpsiMass * lineData[0] )	);
 			}
-			cout<<line<<endl;
-			// When all the integers have been read, add the 1D array
-			energy		.push_back(lineData[0]);
-			flux 		.push_back(lineData[1]);
-			fluxTable	.push_back(lineData[2]);
 		}
-	}
-	else cout << "ERROR!!! Unable to open Flux file!!!";
+		else cout << "ERROR!!! Unable to open Flux file!!!";
 
-
-	if (myfile1.is_open())
-	{
-		std::string line;
-		// Read one line at a time into the variable line:
-		while(std::getline(myfile1, line))
+		if (i == 0) continue;
+		ifstream myfile1(Form("%sPofB_%s.txt", inFileDir.Data(), CasesName[i].Data()));
+		if (myfile1.is_open())
 		{
-			std::vector<double>   	lineData;
-			std::stringstream  		lineStream(line);
-
-			double value;
-			// Read an integer at a time from the line
-			while(lineStream >> value)
+			std::string line;
+			// Read one line at a time into the variable line:
+			while(std::getline(myfile1, line))
 			{
-				// Add the integers from a line to a 1D array (vector)
-				lineData.push_back(value);
+				std::vector<double>   	lineData;
+				std::stringstream  		lineStream(line);
+
+				double value;
+				// Read an integer at a time from the line
+				while(lineStream >> value)
+				{
+					// Add the integers from a line to a 1D array (vector)
+					lineData.push_back(value);
+				}
+				// cout<<line<<endl;
+				// When all the integers have been read, add the 1D array
+				PhotonFluxMap.at("biter_" + CasesName[i])		.push_back(lineData[0]);
+				PhotonFluxMap.at("PofPhotonB_" + CasesName[i]) 	.push_back(lineData[1]);
+				PhotonFluxMap.at("PofHadronB_" + CasesName[i]) 	.push_back(lineData[2]);
+				PhotonFluxMap.at("PofB_" + CasesName[i])  		.push_back(lineData[3]);
 			}
-			cout<<line<<endl;
-			// When all the integers have been read, add the 1D array
-			biter_0n0n			.push_back(lineData[0]);
-			PofPhotonB_0n0n 	.push_back(lineData[1]);
-			PofHadronB_0n0n 	.push_back(lineData[2]);
-			PofB_0n0n 	 		.push_back(lineData[3]);
 		}
+		else cout << "ERROR!!! Unable to open PofB file!!!";
 	}
-	else cout << "ERROR!!! Unable to open PofB file!!!";
-
-
-	if (myfile2.is_open())
-	{
-		std::string line;
-		// Read one line at a time into the variable line:
-		while(std::getline(myfile2, line))
-		{
-			std::vector<double>   	lineData;
-			std::stringstream  		lineStream(line);
-
-			double value;
-			// Read an integer at a time from the line
-			while(lineStream >> value)
-			{
-				// Add the integers from a line to a 1D array (vector)
-				lineData.push_back(value);
-			}
-			cout<<line<<endl;
-			// When all the integers have been read, add the 1D array
-			biter_0nXnSum			.push_back(lineData[0]);
-			PofPhotonB_0nXnSum 		.push_back(lineData[1]);
-			PofHadronB_0nXnSum 		.push_back(lineData[2]);
-			PofB_0nXnSum 	 		.push_back(lineData[3]);
-		}
-	}
-	else cout << "ERROR!!! Unable to open PofB file!!!";
-
-	if (myfile3.is_open())
-	{
-		std::string line;
-		// Read one line at a time into the variable line:
-		while(std::getline(myfile3, line))
-		{
-			std::vector<double>   	lineData;
-			std::stringstream  		lineStream(line);
-
-			double value;
-			// Read an integer at a time from the line
-			while(lineStream >> value)
-			{
-				// Add the integers from a line to a 1D array (vector)
-				lineData.push_back(value);
-			}
-			cout<<line<<endl;
-			// When all the integers have been read, add the 1D array
-			biter_XnXn			.push_back(lineData[0]);
-			PofPhotonB_XnXn 	.push_back(lineData[1]);
-			PofHadronB_XnXn 	.push_back(lineData[2]);
-			PofB_XnXn 	 		.push_back(lineData[3]);
-		}
-	}
-	else cout << "ERROR!!! Unable to open PofB file!!!";	
-	/* code */
-
-	plotFlux();
-	plotPofB();
+	cout<<"loadPhotonFlux-------->DONE "<<endl;
 }
 
-void plotFlux()
+void plotFlux(std::map<TString, std::vector<double>> Map, TString Case)
 {	
-	nk2Ny();
 	TCanvas *c = new TCanvas();
 	c->SetLogy();
 
-	TH2D* htem2d = new TH2D("htem2d", ";y;dN/dy", 10,-4,4, 10, 1e-2, 1e3);
+	TH2D* htem2d = new TH2D("htem2d_"+Case, ";y;dN/dy", 10,-4,4, 10, 1e-2, 1e3);
 
-	TGraph* gr = new TGraph(yTable.size(), & yTable[0], & NyTable[0]);
+	TGraph* gr = new TGraph(PhotonFluxMap.at("Raps_Table_"+Case).size(), & PhotonFluxMap.at("Raps_Table_"+Case)[0], & PhotonFluxMap.at("dNdy_Table_"+Case)[0]);
 	TGraph* points = new TGraph();
 
-	for (int i = 0; i < PhotonEnergy_CMS2022.size(); ++i)
+	for (int i = 0; i < Map.at("Raps").size(); ++i)
 	{
-		PhotonFlux_CMS2022.push_back(	PhotonEnergy_CMS2022[i] * interpolateFlux(PhotonEnergy_CMS2022[i])	);
-		points->SetPoint(i,Raps_CMS2022[i],PhotonFlux_CMS2022[i]);
+		points->SetPoint(i,Map.at("Raps")[i],Map.at("dNdy_"+Case)[i]);
 	}
-
 	gr->SetLineColor(kBlack);
 	gr->SetLineWidth(3);
 	points->SetMarkerStyle(kFullCircle);
 	points->SetMarkerColor(kRed);
 
 	htem2d->Draw();
-	gr->Draw("SAME");
-	// points->Draw("SAME P");
+	gr->Draw("SAME p");
+	points->Draw("SAME P");
 
 	drawLatex(0.3, 0.85, "UPC Pb+Pb #sqrt{s_{NN}} = 5.02 TeV (" + Case +")",      42,       0.05,      1);
 	// drawLatex(0.3, 0.80, Form("Emin = %.0e GeV to Emax = %.f GeV (CM frame)", Emin, Emax),      42,       0.04,      1);
-	for (int i = 0; i < PhotonEnergy_CMS2022.size(); ++i)
+	for (int i = 0; i < Map.at("Raps").size(); ++i)
 	{
-		// drawLatex(0.15, 0.35-i*0.04, Form("y = %.2f, E = %.2f GeV, dN/dy = %.3f ",Raps_CMS2022[i],PhotonEnergy_CMS2022[i],PhotonFlux_CMS2022[i]),      42,       0.04,      1);
+		drawLatex(0.15, 0.35-i*0.04, Form("y = %.2f, E = %.2f GeV, dN/dy = %.3f ",Map.at("Raps")[i],Map.at("Energy")[i],Map.at("dNdy_"+Case)[i]),      42,       0.04,      1);
 	}
 
-	c->SaveAs( "out4Flux/" + Name + "_dNdy.png" );
-	c->SaveAs( "out4Flux/" + Name + "_dNdy.pdf" );
-	delete c;
-	delete gr;
-	delete points;
-	delete htem2d;
+	// c->SaveAs( "out4Flux/" + Name + "_dNdy.png" );
+	// c->SaveAs( "out4Flux/" + Name + "_dNdy.pdf" );
+	// delete c;
+	// delete gr;
+	// delete points;
+	// delete htem2d;
 }
 
 void plotPofB()
@@ -225,9 +138,9 @@ void plotPofB()
 	FluxNeuConfig->SetTickLength(0.04);
 	FluxNeuConfig->Draw();
 
-	TGraph* gr1 = new TGraph(biter_0n0n.size(), & biter_0n0n[0], & PofPhotonB_0n0n[0]);
-	TGraph* gr2 = new TGraph(biter_0nXnSum.size(), & biter_0nXnSum[0], & PofPhotonB_0nXnSum[0]);
-	TGraph* gr3 = new TGraph(biter_XnXn.size(), & biter_XnXn[0], & PofPhotonB_XnXn[0]);
+	TGraph* gr1 = new TGraph(PhotonFluxMap.at("biter_0n0n").size(), & PhotonFluxMap.at("biter_0n0n")[0], & PhotonFluxMap.at("PofPhotonB_0n0n")[0]);
+	TGraph* gr2 = new TGraph(PhotonFluxMap.at("biter_0nXnSum").size(), & PhotonFluxMap.at("biter_0nXnSum")[0], & PhotonFluxMap.at("PofPhotonB_0nXnSum")[0]);
+	TGraph* gr3 = new TGraph(PhotonFluxMap.at("biter_XnXn").size(), & PhotonFluxMap.at("biter_XnXn")[0], & PhotonFluxMap.at("PofPhotonB_XnXn")[0]);
 	gr1->SetTitle("0n0n");
 	gr1->SetLineColor(kBlue);
 	gr1->SetMarkerColor(kBlue);
@@ -252,27 +165,18 @@ void plotPofB()
 	legend->AddEntry(gr3);
 	legend->Draw();
 
-	c->SaveAs( "out4Flux/PofB.png" );
-	c->SaveAs( "out4Flux/PofB.pdf" );
+	// c->SaveAs( "out4Flux/PofB.png" );
+	// c->SaveAs( "out4Flux/PofB.pdf" );
 
-	delete c;
-	delete FluxNeuConfig;
-	delete gr1; delete gr2; delete gr3;
+	// delete c;
+	// delete FluxNeuConfig;
+	// delete gr1; delete gr2; delete gr3;
 }
 
-double Jpsi_rap2EgammCM(double rap)
+double Interpolate(const double Egamma, TString Case)
 {
-	double PbMass = 0.938 * 207.2;
-	double Ebeam = 2510*207.2;
-	double EgammLab = JpsiMass/2.0 * exp(rap);
-	double M2 = pow((EgammLab + Ebeam),2) + pow(( EgammLab - sqrt(Ebeam*Ebeam-PbMass*PbMass) ), 2);
-	double EgammaCM = ( M2-PbMass*PbMass ) / ( 2*sqrt(M2) );
-
-	return EgammaCM;
-}
-
-double interpolateFlux(const double Egamma)
-{
+	const int nstep = 100;
+	const double Emin = 1.000000e-05, Emax = 4.777493e+02;
 
 	double lnEmin=log(Emin);
 	double lnEmax=log(Emax);
@@ -284,28 +188,50 @@ double interpolateFlux(const double Egamma)
 	//       >> ln(Egamma) for first point 
 	double lnElt = lnEmin + Ilt*dlnE; 
 	//       >> Interpolate
-	double flux_r = fluxTable[Ilt] + ((lEgamma-lnElt)/dlnE)*(fluxTable[Ilt+1]- fluxTable[Ilt]);
+	double flux_r = PhotonFluxMap.at("dNdy_Table_" + Case)[Ilt-1] + ((lEgamma-lnElt)/dlnE)*(PhotonFluxMap.at("dNdy_Table_" + Case)[Ilt]- PhotonFluxMap.at("dNdy_Table_" + Case)[Ilt-1]);
 	flux_r = flux_r/Egamma;
 
 	return flux_r;
 }
 
-double Derivative(const double x)
+void InterpolateFlux(std::map<TString, std::vector<double>> &Map, TString inFileDir = "flux/")
 {
-	const double dx = 1e-6;
-	// return - (interpolateFlux(x + dx) - interpolateFlux(x)) / dx;
-	return -(-interpolateFlux(x + 2*dx) + 8*interpolateFlux(x + dx) - 8*interpolateFlux(x - dx) + interpolateFlux(x - 2*dx))/(12*dx);
-}
-
-void nk2Ny()
-{
-	cout<<flux.size()<<endl;
-	for (int i = 0; i < flux.size(); ++i)
+	cout<<"InterpolateFlux-------->Raps:	";
+	for (int i = 0; i < Map.at("Raps").size(); ++i)
 	{
-		yTable 		.push_back( log( 2 / JpsiMass * energy[i] )	);
-		NyTable 	.push_back(	energy[i] * interpolateFlux(energy[i])	);
+		cout<<Map.at("Raps")[i]<<"	";
 	}
+	cout<<endl;
+
+	const double JpsiMass = 3.096916;
+	std::vector<TString> CasesName = {"AnAn",	"0n0n", "0nXnSum", "XnXn"};
+
+	if (PhotonFluxMap.at("Energy_Table_AnAn").size() == 0){	loadPhotonFlux(inFileDir);	}
+
+	//Calculate photon energy from the rap
+	for (int i = 0; i < CasesName.size(); ++i)
+	{
+		TString Case = CasesName[i];
+		for (int j = 0; j < Map.at("Raps").size(); ++j)
+		{
+			double k = JpsiMass/2 * exp(Map.at("Raps")[j]);
+			Map["Energy"].push_back( k );
+			Map["dNdy_" + Case].push_back(	k * Interpolate(k, Case)	);
+		}
+	}
+
+	cout<<"InterpolateFlux-------->DONE"<<endl;
 }
 
+void getPhotonFlux()
+{
+	std::map<TString, std::vector<double>>	TestMap = 
+	{
+		{"Raps",	{ 1.75,	-1.75, 2.0, -2.0, 2.25, -2.25 }},
+		{"dNdy",	{}}
+	};
 
-
+	InterpolateFlux(TestMap);
+	plotFlux(TestMap,	"0n0n");
+	plotPofB();
+}

@@ -10,7 +10,7 @@ const double Jpsi2MuMuBR_Uncer = 0.033/5.961;
 //------------------------------------------------------------------------------------------------------------
 //-------------------------------------------Run2 ALICE MidRap------------------------------------------------
 const std::vector<double> ALICE_Run2_MidRap_W  				= 	{ 124.67672		},
-						ALICE_Run2_MidRap_Sigma	    		= 	{ 4.07/2/81.026 },
+						ALICE_Run2_MidRap_Sigma	    		= 	{ 4.07/2/86.483 },
 						ALICE_Run2_MidRap_Sigma_StatErr		=	{ ALICE_Run2_MidRap_Sigma[0] * 0.11/4.07 },
 						ALICE_Run2_MidRap_Sigma_SysErrLow	=	{ ALICE_Run2_MidRap_Sigma[0] * TMath::Hypot( 0.23/4.07,	 0.05)	}, // 5% error for flux
 						ALICE_Run2_MidRap_Sigma_SysErrHig	=	{ ALICE_Run2_MidRap_Sigma[0] * TMath::Hypot( 0.23/4.07,	 0.05)	}, // 5% error for flux
@@ -29,8 +29,8 @@ const std::vector<double> ALICE_Run2_FwdRap_y  				= 	{ -3.875,		-3.625 	},
 						ALICE_Run2_FwdRap_dSigmady_StatErr	=	{ 0.060,		0.0420 	},
 						ALICE_Run2_FwdRap_dSigmady_SysErrLow=	{ 0.147,		0.190 	},
 						ALICE_Run2_FwdRap_dSigmady_SysErrHig=	{ 0.135,		0.166 	},
-						ALICE_Run2_FwdRap_Flux 				=	{ 201.308,		193.547 },
-						ALICE_Run2_FwdRap_Flux_Err 			=	{ 201.308*0.05,	193.547*0.05}, // 5% error for flux
+						ALICE_Run2_FwdRap_Flux 				=	{ 206.795,		199.037 },
+						ALICE_Run2_FwdRap_Flux_Err 			=	{ 206.795*0.05,	199.037*0.05}, // 5% error for flux
 						ALICE_Run2_FwdRap_Sigma_IA 			=	{ 0.011413847,	0.01347654		},
 						ALICE_Run2_FwdRap_Sigma_IA_Err 		=	{ 0.00061634772,0.00072773330	};
 
@@ -76,9 +76,9 @@ std::vector<double> 	ALICE_Run2_FwdRap_W  				= 	{},
 // const std::vector<TVector2>  flux_0nXnSum = { { 18.294,		7.151 },	{ 18.279,	8.980	},	{ 18.257,	10.721	}	}; //N(y)
 // const std::vector<TVector2>  flux_XnXn    = { { 6.521,		3.716 },	{ 6.521,	4.367	},	{ 6.519,	4.911	}	}; //N(y)
 //----------------------------------------Rap:  1.75,	-1.75 		  2.0,		-2.0 		  2.25,		-2.25
-const std::vector<TVector2>  flux_0n0n    = { { 14.027,	110.526 },	{ 10.012,	118.272	},	{ 6.806,	126.025	}	}; //N(y)
-const std::vector<TVector2>  flux_0nXnSum = { { 10.721,	18.257 },	{ 8.980,	18.279	},	{ 7.151,	18.294	}	}; //N(y)
-const std::vector<TVector2>  flux_XnXn    = { { 4.911,	6.519 },	{ 4.367,	6.521	},	{ 3.716,	6.521	}	}; //N(y)
+// const std::vector<TVector2>  flux_0n0n    = { { 17.281,	116.004 },	{ 12.755,	123.755	},	{ 9.011,	131.512	}	}; //N(y)
+// const std::vector<TVector2>  flux_0nXnSum = { { 11.857,	18.274 },	{ 10.231,	18.290	},	{ 8.448,	18.301	}	}; //N(y)
+// const std::vector<TVector2>  flux_XnXn    = { { 5.234,	6.520 },	{ 4.766,	6.521	},	{ 4.184,	6.522	}	}; //N(y)
 
 
 //----------------CrystalBall:			  Rap: |-2.25|,	|-2.0|,	|-1.75| --------------------------------------
