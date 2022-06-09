@@ -53,17 +53,20 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 	// c->SetLogx();
 
 	//gPad->SetPad(0.0,0.25,1.0,0.96);
-	// gPad->SetTopMargin(0.05);
-	// gPad->SetBottomMargin(0.12);
-	// //gPad->SetLeftMargin(0.05);
-	// gPad->SetRightMargin(0.05);
+    gPad->SetTopMargin(0.08);
+    gPad->SetBottomMargin(0.12);
+    //gPad->SetLeftMargin(0.05);
+    gPad->SetRightMargin(0.05);
 	
 	TH2D* SigmaVsW;
+	auto X_AXIS_ERR 			= std::vector<double>(ShadowRatio_ParamsMap.at("Ws").size(), 3.8);
+	auto X_AXIS_ERR_ALICE_Fwd 	= std::vector<double>(ShadowRatio_ParamsMap.at("Ws").size(), 3.8);
+	auto X_AXIS_ERR_ALICE_Mid 	= std::vector<double>(ShadowRatio_ParamsMap.at("Ws").size(), 3.8);
 	
 	if(flag4Axis==0) //logY only
 	{
 		c->SetLogy();
-		SigmaVsW = new TH2D("SigmaVsW", ";W_{#gammaPb} (GeV);#sigma(#gamma A #rightarrow J/#psi A) (mb);", 10,0,420, 10, 0.005, 0.20);
+		SigmaVsW = new TH2D("SigmaVsW", ";W_{#gammaPb} (GeV);#sigma(#gamma Pb #rightarrow J/#psi Pb) (mb);", 10,0,420, 10, 0.005, 0.15);
 	}
 	else //logX and logY as default one
 	{
@@ -71,11 +74,15 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 		c->SetLogy();
 		//SigmaVsW = new TH2D("SigmaVsW", ";W_{#gammaPb} (GeV);#sigma(#gamma A #rightarrow J/#psi A) (mb)", 10,28,520, 10, 0.015, 0.11);
 		SigmaVsW = new TH2D("SigmaVsW", ";W_{#gammaPb} (GeV);#sigma(#gamma A #rightarrow J/#psi A) (mb);", 10,14,520, 10, 0.006, 0.10);
+		X_AXIS_ERR 			= {11,2,12,1.7,14,1.5};
+		X_AXIS_ERR_ALICE_Fwd= {0.7,0.8};
+		X_AXIS_ERR_ALICE_Mid= {5};
 	}
 
 	SigmaVsW->GetYaxis()->CenterTitle();
-	SigmaVsW->GetYaxis()->SetTitleSize(0.065);
-	SigmaVsW->GetYaxis()->SetTitleSize(0.065);
+    SigmaVsW->GetXaxis()->CenterTitle();
+	SigmaVsW->GetYaxis()->SetTitleSize(0.05);
+	SigmaVsW->GetYaxis()->SetTitleSize(0.05);
 	SigmaVsW->GetYaxis()->SetTitleOffset(0.85);
 	SigmaVsW->GetYaxis()->SetLabelSize(0.04);
 	SigmaVsW->GetXaxis()->SetTitleSize(0.05);
@@ -84,7 +91,6 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 	SigmaVsW->SetTickLength(0.04);
 	SigmaVsW->Draw("");
 
-	auto X_AXIS_ERR = std::vector<double>(ShadowRatio_ParamsMap.at("Ws").size(), 3);
 	auto Sigmas_TotalSysErr = TotalSysUncer_Map.at("Sigmas_TotalSysUncer");
 	for (int i = 0; i < Sigmas_TotalSysErr.size(); ++i)
 	{
@@ -102,12 +108,12 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 	TGraphAsymmErrors* gae_ALICE_Run2_MidRap 	= new TGraphAsymmErrors(
 												ALICE_Run2_MidRap_W.size(),
 												&ALICE_Run2_MidRap_W[0],        &ALICE_Run2_MidRap_Sigma[0],
-												&X_AXIS_ERR[0],  &X_AXIS_ERR[0],
+												&X_AXIS_ERR_ALICE_Mid[0],  &X_AXIS_ERR_ALICE_Mid[0],
 												&ALICE_Run2_MidRap_Sigma_SysErrLow[0], &ALICE_Run2_MidRap_Sigma_SysErrHig[0]);
 	TGraphAsymmErrors* gae_ALICE_Run2_FwdRap 	= new TGraphAsymmErrors(
 												ALICE_Run2_FwdRap_W.size(),
 												&ALICE_Run2_FwdRap_W[0],        &ALICE_Run2_FwdRap_Sigma[0],
-												&X_AXIS_ERR[0],  &X_AXIS_ERR[0],
+												&X_AXIS_ERR_ALICE_Fwd[0],  &X_AXIS_ERR_ALICE_Fwd[0],
 												&ALICE_Run2_FwdRap_Sigma_SysErrLow[0], &ALICE_Run2_FwdRap_Sigma_SysErrHig[0]);
 
 	TGraphErrors* ge_CGCnoFluct = new TGraphErrors(CGC_JpsiNoFluct_W.size(),	&CGC_JpsiNoFluct_W[0],	&CGC_JpsiNoFluct_CohXsec[0],	0,	0);
@@ -118,9 +124,9 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 	gae_CMS ->SetFillStyle(1001);
 	gae_CMS ->Draw("2same");
 	ge_CMS->SetMarkerStyle(20);
-	ge_CMS->SetMarkerSize(1.1);
-	ge_CMS->SetMarkerColor(1);
-	ge_CMS->SetLineColor(1);
+	ge_CMS->SetMarkerSize(1.6);
+	ge_CMS->SetMarkerColor(2);
+	ge_CMS->SetLineColor(2);
 	ge_CMS->SetLineWidth(2);
 	ge_CMS->Draw("pezsame");
 
@@ -130,6 +136,7 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 	gae_ALICE_Run2_MidRap ->Draw("2same");
 	ge_ALICE_Run2_MidRap->SetMarkerStyle(24);
 	ge_ALICE_Run2_MidRap->SetMarkerColor(4);
+    ge_ALICE_Run2_MidRap->SetMarkerSize(1.6);
 	ge_ALICE_Run2_MidRap->SetLineColor(4);
 	ge_ALICE_Run2_MidRap->SetLineWidth(2);
 	ge_ALICE_Run2_MidRap->Draw("pezsame");
@@ -140,6 +147,7 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 	gae_ALICE_Run2_FwdRap ->Draw("2same");
 	ge_ALICE_Run2_FwdRap->SetMarkerStyle(25);
 	ge_ALICE_Run2_FwdRap->SetMarkerColor(4);
+    ge_ALICE_Run2_FwdRap->SetMarkerSize(1.5);
 	ge_ALICE_Run2_FwdRap->SetLineColor(4);
 	ge_ALICE_Run2_FwdRap->SetLineWidth(2);
 	ge_ALICE_Run2_FwdRap->Draw("pezsame");
@@ -151,8 +159,8 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 	ge_CGCnoFluct->Draw("lsame");
 
 	ge_IA->SetMarkerColor(2);
-	ge_IA->SetLineStyle(5);
-	ge_IA->SetLineColor(2);
+	ge_IA->SetLineStyle(6);
+	ge_IA->SetLineColor(1);
 	ge_IA->SetLineWidth(2);
 	ge_IA->Draw("lsame");
 
@@ -160,9 +168,7 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 
 	if(flag4Axis == 1)
 	{
-		drawLatex(0.15, 0.87, "Pb+Pb UPC #sqrt{s_{NN}} = 5.02 TeV",  42,        0.05,      1 );
-		
-		TLegend  *legData =  new TLegend(0.10, 0.66, 0.35, 0.82);
+		TLegend  *legData =  new TLegend(0.14, 0.66, 0.37, 0.82);
 		legData->SetFillStyle(0);
 		legData->SetFillColor(0);
 		legData->SetTextSize(0.045);
@@ -171,12 +177,12 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 		legData->AddEntry(ge_ALICE_Run2_MidRap, "ALICE (|y| < 0.15)",  "p");
 		legData->Draw("same");
 
-		TLegend  *legTheory =  new TLegend(0.45, 0.15, 0.80, 0.40);
+		TLegend  *legTheory =  new TLegend(0.65, 0.15, 0.95, 0.40);
 		legTheory->SetFillStyle(0);
 		legTheory->SetFillColor(0);
 		legTheory->SetTextSize(0.045);
-		legTheory->AddEntry(ge_CGCnoFluct,        "CGC",                   "l");
-		legTheory->AddEntry(ge_IA,                "Impulse Approximation", "l");
+		legTheory->AddEntry(ge_IA,                "Impulse Approx.", "l");
+                legTheory->AddEntry(ge_CGCnoFluct,        "CGC IPsat",                   "l");
 		drawGG("Sigmas",legTheory);
 		drawLTA_Sigmas_R("Sigmas", legTheory);
 		legTheory->Draw("same");
@@ -196,14 +202,16 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 		// hAxis->GetYaxis()->SetTickSize(0.5);
 		// hAxis->Draw("Same X+");
 
+        drawLatex(0.15, 0.84, "Pb+Pb #rightarrow Pb+Pb+J/#psi",  42,        0.05,      1 );
+        drawLatex(0.58,0.94,"PbPb 1.52 nb^{-1} (5.02 TeV)",42, 0.05, 1);
+        drawLatex(0.15,0.94,"#bf{CMS}",42, 0.05, 1);
+
 		c->SaveAs("outplots/SigmaVsW_logXY.png");
 		c->SaveAs("outplots/SigmaVsW_logXY.pdf");
 	}
 	else
 	{
-		drawLatex(0.15, 0.85, "Pb+Pb UPC #sqrt{s_{NN}} = 5.02 TeV",  42,        0.06,      1 );
-
-		TLegend  *legData =  new TLegend(0.25, 0.20, 0.55, 0.35);
+		TLegend  *legData =  new TLegend(0.25, 0.15, 0.55, 0.3);
 		legData->SetFillStyle(0);
 		legData->SetFillColor(0);
 		legData->SetTextSize(0.045);
@@ -212,15 +220,19 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 		legData->AddEntry(ge_ALICE_Run2_MidRap, "ALICE (|y| < 0.15)",    "p");
 		legData->Draw("same");
 
-		TLegend  *legTheory =  new TLegend(0.60, 0.15, 0.95, 0.38);
+		TLegend  *legTheory =  new TLegend(0.65, 0.15, 0.95, 0.4);
 		legTheory->SetFillStyle(0);
 		legTheory->SetFillColor(0);
 		legTheory->SetTextSize(0.045);
-		legTheory->AddEntry(ge_CGCnoFluct,        "CGC",                   "l");
-		legTheory->AddEntry(ge_IA,                "IA", "l");
+                legTheory->AddEntry(ge_IA,                "Impulse Approx.", "l");
+		legTheory->AddEntry(ge_CGCnoFluct,        "CGC IPsat",                   "l");
 		drawGG("Sigmas",legTheory);
 		drawLTA_Sigmas_R("Sigmas", legTheory);
 		legTheory->Draw("same");
+
+        drawLatex(0.15, 0.84, "Pb+Pb #rightarrow Pb+Pb+J/#psi",  42,        0.05,      1 );
+        drawLatex(0.58,0.94,"PbPb 1.52 nb^{-1} (5.02 TeV)",42, 0.05, 1);
+        drawLatex(0.15,0.94,"#bf{CMS}",42, 0.05, 1);
 
 		c->SaveAs("outplots/SigmaVsW_logY.png");
 		c->SaveAs("outplots/SigmaVsW_logY.pdf");
@@ -233,7 +245,7 @@ void plotRvsX( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap, co
 {	
 	auto c = new TCanvas();
 
-	gPad->SetTopMargin(0.05);
+	gPad->SetTopMargin(0.08);
 	gPad->SetBottomMargin(0.12);
 	//gPad->SetLeftMargin(0.05);
 	gPad->SetRightMargin(0.05);
@@ -242,21 +254,23 @@ void plotRvsX( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap, co
 	c->SetLogx();
 
 	//TH2D* htem2d = new TH2D("htem2d", "", 10,3.0e-5,5.0e-2, 10, 0, 1);
-	TH2D* htem2d = new TH2D("htem2d", "", 10,4.0e-5,5e-2, 10, 0.2, 1.1);
+	TH2D* htem2d = new TH2D("htem2d", "", 10,1.0e-5,5e-2, 10, 0.2, 1.1);
 	htem2d->SetYTitle("R^{Pb}_{g}(x, #mu^{2}=2.4 GeV^{2})");
 	htem2d->SetXTitle("x");
 
 	htem2d->GetYaxis()->SetTitleSize(0.06);
 	htem2d->GetYaxis()->SetTitleOffset(0.85);
 	htem2d->GetYaxis()->SetLabelSize(0.04);
-	htem2d->GetXaxis()->CenterTitle();
+	htem2d->GetYaxis()->CenterTitle();
+    htem2d->GetXaxis()->CenterTitle();
 	htem2d->GetXaxis()->SetTitleSize(0.07);
 	htem2d->GetXaxis()->SetTitleOffset(0.69);
 	htem2d->GetXaxis()->SetLabelSize(0.04);
 	htem2d->SetTickLength(0.04);
 	htem2d->Draw();
 
-	std::vector<double> X_AXIS_ERR = {5e-6,1.5e-4,4e-6,2e-4,3e-6,2.5e-4};
+	// std::vector<double> X_AXIS_ERR = {5e-6,1.5e-4,4e-6,2e-4,3e-6,2.5e-4};
+	std::vector<double> X_AXIS_ERR = {8e-6,3e-4,7e-6,4e-4,5e-6,4.5e-4};
 	auto R_TotalSysErr = TotalSysUncer_Map.at("R_TotalSysUncer");
 	for (int i = 0; i < R_TotalSysErr.size(); ++i)
 	{
@@ -272,13 +286,13 @@ void plotRvsX( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap, co
 
 	TGraphErrors* ge_ALICE_Run2_MidRap	= new TGraphErrors(ALICE_Run2_MidRap_x.size(),	&ALICE_Run2_MidRap_x[0],	&ALICE_Run2_MidRap_R[0],	0,	&ALICE_Run2_MidRap_R_StatErr[0]	);
 	TGraphErrors* ge_ALICE_Run2_FwdRap	= new TGraphErrors(ALICE_Run2_FwdRap_x.size(),	&ALICE_Run2_FwdRap_x[0],	&ALICE_Run2_FwdRap_R[0],	0,	&ALICE_Run2_FwdRap_R_StatErr[0]	);
-	X_AXIS_ERR = {3e-5};
+	X_AXIS_ERR = {5e-5};
 	TGraphAsymmErrors* gae_ALICE_Run2_MidRap 	= new TGraphAsymmErrors(
 												ALICE_Run2_MidRap_x.size(),
 												&ALICE_Run2_MidRap_x[0],        &ALICE_Run2_MidRap_R[0],
 												&X_AXIS_ERR[0],  &X_AXIS_ERR[0],
 												&ALICE_Run2_MidRap_R_SysErrLow[0], &ALICE_Run2_MidRap_R_SysErrHig[0]);
-	X_AXIS_ERR = {1.6e-3,1.2e-3};
+	X_AXIS_ERR = {2.5e-3,2e-3};
 	TGraphAsymmErrors* gae_ALICE_Run2_FwdRap 	= new TGraphAsymmErrors(
 												ALICE_Run2_FwdRap_x.size(),
 												&ALICE_Run2_FwdRap_x[0],        &ALICE_Run2_FwdRap_R[0],
@@ -289,8 +303,9 @@ void plotRvsX( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap, co
 	gae_CMS ->SetFillStyle(1001);
 	gae_CMS ->Draw("2same");
 	ge_CMS->SetMarkerStyle(20);
-	ge_CMS->SetMarkerColor(1);
-	ge_CMS->SetLineColor(1);
+	ge_CMS->SetMarkerColor(2);
+    ge_CMS->SetLineColor(2);
+    ge_CMS->SetMarkerSize(1.6);
 	ge_CMS->SetLineWidth(2);
 	ge_CMS->Draw("pezsame");
 
@@ -300,6 +315,7 @@ void plotRvsX( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap, co
 	gae_ALICE_Run2_MidRap ->Draw("2same");
 	ge_ALICE_Run2_MidRap->SetMarkerStyle(24);
 	ge_ALICE_Run2_MidRap->SetMarkerColor(4);
+    ge_ALICE_Run2_MidRap->SetMarkerSize(1.6);
 	ge_ALICE_Run2_MidRap->SetLineColor(4);
 	ge_ALICE_Run2_MidRap->SetLineWidth(2);
 	ge_ALICE_Run2_MidRap->Draw("pezsame");
@@ -310,26 +326,37 @@ void plotRvsX( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap, co
 	gae_ALICE_Run2_FwdRap ->Draw("2same");
 	ge_ALICE_Run2_FwdRap->SetMarkerStyle(25);
 	ge_ALICE_Run2_FwdRap->SetMarkerColor(4);
+    ge_ALICE_Run2_FwdRap->SetMarkerSize(1.5);
 	ge_ALICE_Run2_FwdRap->SetLineColor(4);
 	ge_ALICE_Run2_FwdRap->SetLineWidth(2);
 	ge_ALICE_Run2_FwdRap->Draw("pezsame");
 
-	TLegend  *leg =  new TLegend(0.13, 0.50, 0.40, 0.80);
+	TLegend  *leg =  new TLegend(0.13, 0.62, 0.40, 0.8);
 	leg->SetFillStyle(0);
 	leg->SetFillColor(0);
-	leg->SetTextSize(0.050);
+	leg->SetTextSize(0.045);
 	leg->AddEntry(ge_CMS,               "CMS",                   "p");
 	leg->AddEntry(ge_ALICE_Run2_FwdRap, "ALICE (-4 < y < -3.5)", "p");
 	leg->AddEntry(ge_ALICE_Run2_MidRap, "ALICE (|y| < 0.15)",    "p");
-	drawGG("R",leg);
-	drawLTA_Sigmas_R("R", leg);
-	leg->Draw("same");
+    leg->Draw("same");
 
-	drawLatex(0.15, 0.86, "Pb+Pb UPC #sqrt{s_{NN}} = 5.02 TeV",  42,        0.05,      1 );
-	drawLatex(0.42, 0.22, "Nuclear suppression factor", 42, 0.06, 1);
+    TLegend  *leg1 =  new TLegend(0.7, 0.27, 0.97, 0.45);
+    leg1->SetFillStyle(0);
+    leg1->SetFillColor(0);
+    leg1->SetTextSize(0.045);
+	drawGG("R",leg1);
+	drawLTA_Sigmas_R("R", leg1);
+	leg1->Draw("same");
+
+	drawLatex(0.15, 0.84, "Pb+Pb #rightarrow Pb+Pb+J/#psi",  42,        0.05,      1 );
+	drawLatex(0.48, 0.17, "Nuclear suppression factor", 42, 0.055, 1);
+
+    drawLatex(0.58,0.94,"PbPb 1.52 nb^{-1} (5.02 TeV)",42, 0.05, 1);
+    drawLatex(0.15,0.94,"#bf{CMS}",42, 0.05, 1);
 
 	c->SaveAs("outplots/ShadowingRatiovsX.png");
 	c->SaveAs("outplots/ShadowingRatiovsX.pdf");
+
 	delete c;
 
 	return ShadowRatio_ParamsMap;
@@ -394,17 +421,17 @@ std::map<TString, std::vector<double>> getParamsMap(const TString infile = "../s
 void plotShadowingRatio()
 {
 	//---------------------------------Remake Map------------------------------------------
-	auto ShadowRatio_ParamsMap = getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins.appliedTnP.root");
-	auto TotalSysUncer_Map 		= readMap("rootfiles/TotalSysUncer_Map.root");
-	plotSigmaVsW(ShadowRatio_ParamsMap,TotalSysUncer_Map);
-	plotRvsX(ShadowRatio_ParamsMap,TotalSysUncer_Map);
+	// auto ShadowRatio_ParamsMap = getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins.appliedTnP.root");
+	// auto TotalSysUncer_Map 		= readMap("rootfiles/TotalSysUncer_Map.root");
+	// plotSigmaVsW(ShadowRatio_ParamsMap,TotalSysUncer_Map);
+	// plotRvsX(ShadowRatio_ParamsMap,TotalSysUncer_Map);
 	// saveMap(ShadowRatio_ParamsMap);
 	//-------------------------------------------------------------------------------------
 
 	//----------------------------Read Map From Root File----------------------------------
-	// auto ShadowRatio_ParamsMap 	= readMap("rootfiles/Results_Map.root");
-	// auto TotalSysUncer_Map 		= readMap("rootfiles/TotalSysUncer_Map.root");
-	// plotSigmaVsW(ShadowRatio_ParamsMap,TotalSysUncer_Map);
-	// plotRvsX(ShadowRatio_ParamsMap,TotalSysUncer_Map);
+	auto ShadowRatio_ParamsMap 	= readMap("rootfiles/Results_Map.root");
+	auto TotalSysUncer_Map 		= readMap("rootfiles/TotalSysUncer_Map.root");
+	plotSigmaVsW(ShadowRatio_ParamsMap,TotalSysUncer_Map);
+	plotRvsX(ShadowRatio_ParamsMap,TotalSysUncer_Map);
 	//-------------------------------------------------------------------------------------
 }

@@ -51,7 +51,7 @@ void loadPhotonFlux(TString inFileDir	= "flux/")
 				PhotonFluxMap.at("Raps_Table_" + CasesName[i])	.push_back( log( 2 / JpsiMass * lineData[0] )	);
 			}
 		}
-		else cout << "ERROR!!! Unable to open Flux file!!!";
+		else throw std::runtime_error( "ERROR!!! Unable to open Flux file!!!");
 
 		if (i == 0) continue;
 		ifstream myfile1(Form("%sPofB_%s.txt", inFileDir.Data(), CasesName[i].Data()));
@@ -104,7 +104,7 @@ void plotFlux(std::map<TString, std::vector<double>> Map, TString Case)
 	points->SetMarkerColor(kRed);
 
 	htem2d->Draw();
-	gr->Draw("SAME p");
+	gr->Draw("SAME l");
 	points->Draw("SAME P");
 
 	drawLatex(0.3, 0.85, "UPC Pb+Pb #sqrt{s_{NN}} = 5.02 TeV (" + Case +")",      42,       0.05,      1);
@@ -114,12 +114,12 @@ void plotFlux(std::map<TString, std::vector<double>> Map, TString Case)
 		drawLatex(0.15, 0.35-i*0.04, Form("y = %.2f, E = %.2f GeV, dN/dy = %.3f ",Map.at("Raps")[i],Map.at("Energy")[i],Map.at("dNdy_"+Case)[i]),      42,       0.04,      1);
 	}
 
-	// c->SaveAs( "out4Flux/" + Name + "_dNdy.png" );
-	// c->SaveAs( "out4Flux/" + Name + "_dNdy.pdf" );
-	// delete c;
-	// delete gr;
-	// delete points;
-	// delete htem2d;
+	c->SaveAs( "out4Flux/Flux_" + Case + "_dNdy.png" );
+	c->SaveAs( "out4Flux/Flux_" + Case + "_dNdy.pdf" );
+	delete c;
+	delete gr;
+	delete points;
+	delete htem2d;
 }
 
 void plotPofB()
@@ -176,7 +176,7 @@ void plotPofB()
 double Interpolate(const double Egamma, TString Case)
 {
 	const int nstep = 100;
-	const double Emin = 1.000000e-05, Emax = 4.777493e+02;
+	const double Emin = 1.000000e-05, Emax = 4.777493e+02; //Emax = 2.627452e+02 for 2.76TeV
 
 	double lnEmin=log(Emin);
 	double lnEmax=log(Emax);
@@ -233,5 +233,8 @@ void getPhotonFlux()
 
 	InterpolateFlux(TestMap);
 	plotFlux(TestMap,	"0n0n");
+	plotFlux(TestMap,	"0nXnSum");
+	plotFlux(TestMap,	"XnXn");
+	plotFlux(TestMap,	"AnAn");
 	plotPofB();
 }

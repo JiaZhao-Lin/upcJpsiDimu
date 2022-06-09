@@ -134,19 +134,19 @@ void drawCMSvsAlice()
 
 	htem2d->Draw();
 
-	gae_XsecVsY_Alice2019  ->SetMarkerStyle(20);
+	gae_XsecVsY_Alice2019  ->SetMarkerStyle(21);
 	gae_XsecVsY_Alice2019 ->SetFillColor(8);
 	gae_XsecVsY_Alice2019 ->SetFillStyle(3001);
 	gae_XsecVsY_Alice2019 ->Draw("2same");
-	ge_XsecVsY_Alice2019  ->SetMarkerStyle(20);
+	ge_XsecVsY_Alice2019  ->SetMarkerStyle(21);
 	ge_XsecVsY_Alice2019  ->SetMarkerSize(0.5);
 	ge_XsecVsY_Alice2019  ->Draw("pezsame");
 	
-	gae_XsecVsY_Alice2021  ->SetMarkerStyle(20);
+	gae_XsecVsY_Alice2021  ->SetMarkerStyle(21);
 	gae_XsecVsY_Alice2021 ->SetFillColor(kGreen);
 	gae_XsecVsY_Alice2021 ->SetFillStyle(3001);
 	gae_XsecVsY_Alice2021 ->Draw("2same");
-	ge_XsecVsY_Alice2021  ->SetMarkerStyle(20);
+	ge_XsecVsY_Alice2021  ->SetMarkerStyle(21);
 	ge_XsecVsY_Alice2021  ->SetMarkerSize(0.5);
 	ge_XsecVsY_Alice2021  ->Draw("pezsame");
 
@@ -158,15 +158,16 @@ void drawCMSvsAlice()
 	ge_XsecVsY_LHCb2021  ->SetMarkerSize(0.5);
 	ge_XsecVsY_LHCb2021  ->Draw("pezsame");
 
-	gae_XsecVsY_CMS2022 ->SetMarkerStyle(21);
-	gae_XsecVsY_CMS2022 ->SetMarkerColor(4);
+	gae_XsecVsY_CMS2022 ->SetMarkerStyle(20);
+	gae_XsecVsY_CMS2022 ->SetMarkerColor(2);
+	gae_XsecVsY_CMS2022 ->SetLineColor(2);
 	gae_XsecVsY_CMS2022 ->SetFillColorAlpha(16, 0.5);
 	gae_XsecVsY_CMS2022 ->SetFillStyle(1001);
 	gae_XsecVsY_CMS2022 ->Draw("2same");
-    ge_XsecVsY_CMS2022  ->SetMarkerStyle(21);
-	ge_XsecVsY_CMS2022  ->SetMarkerSize(0.5);
-    ge_XsecVsY_CMS2022  ->SetMarkerColor(4);
-    ge_XsecVsY_CMS2022  ->SetLineColor(4);
+    ge_XsecVsY_CMS2022  ->SetMarkerStyle(20);
+	ge_XsecVsY_CMS2022  ->SetMarkerSize(1.);
+    ge_XsecVsY_CMS2022  ->SetMarkerColor(2);
+    ge_XsecVsY_CMS2022  ->SetLineColor(2);
     ge_XsecVsY_CMS2022  ->SetLineWidth(2);
 	ge_XsecVsY_CMS2022  ->Draw("pezsame");
 
@@ -176,8 +177,6 @@ void drawCMSvsAlice()
 	leg->SetFillStyle(0);
 	leg->SetFillColor(0);
 	leg->SetTextSize(0.050);
-
-	drawDDP("DDP",	leg);
 	leg->AddEntry(gae_XsecVsY_CMS2022,              "CMS",               "lpf" );
 	leg->AddEntry(gae_XsecVsY_Alice2019,            "ALICE 2019",        "lpf");
 	leg->AddEntry(gae_XsecVsY_Alice2021,            "ALICE 2021",        "lpf");
@@ -196,25 +195,35 @@ void drawCMS_NeuConfig()
 	setPad(0.12, 0.08, 0.07, 0.13);
 
 	c2->cd(1);
-	TH2D* htem2d_0n0n = new TH2D("htem2d_0n0n", "htem2d_0n0n;y;d#sigma_{J/#psi}/dy (mb)", 10, -4.1, 0, 10, 0, 7.0);
+    c2->GetPad(1)->SetRightMargin(0.01);
+	TH2D* htem2d_0n0n = new TH2D("htem2d_0n0n", "htem2d_0n0n;y;d#sigma_{J/#psi}/dy (mb)", 10, -4.1, 0, 10, 0.0, 7.0);
 	htem2d_0n0n ->GetYaxis()->CenterTitle();
-	//htem2d_0n0n ->GetYaxis()->SetNdivisions(6);
-	htem2d_0n0n ->GetYaxis()->SetTitleSize(0.07);
+	htem2d_0n0n ->GetYaxis()->SetNdivisions(6);
+	htem2d_0n0n ->GetXaxis()->SetNdivisions(6);
+	htem2d_0n0n ->GetYaxis()->SetTitleSize(0.065);
 	htem2d_0n0n ->GetYaxis()->SetTitleOffset(0.8);
-	htem2d_0n0n ->GetYaxis()->SetLabelSize(0.06);
+	htem2d_0n0n ->GetYaxis()->SetLabelSize(0.05);
 	htem2d_0n0n ->GetXaxis()->CenterTitle();
-	htem2d_0n0n ->GetXaxis()->SetTitleSize(0.07);
+	htem2d_0n0n ->GetXaxis()->SetTitleSize(0.065);
 	htem2d_0n0n ->GetXaxis()->SetTitleOffset(0.75);
-	htem2d_0n0n ->GetXaxis()->SetLabelSize(0.06);
+	htem2d_0n0n ->GetXaxis()->SetLabelSize(0.05);
 	//htem2d_0n0n ->SetTickLength(0.08);
 	htem2d_0n0n->Draw();
-	drawLatex(0.15, 0.85, "Pb+Pb #rightarrow Pb+Pb+J/#psi #sqrt{s_{NN}} = 5.02 TeV (0n0n)",      42,       0.053,      1);
+	drawLatex(0.15, 0.85, "Pb+Pb #rightarrow Pb+Pb+J/#psi",      42,       0.053,      1);
+    drawLatex(0.8, 0.8, "#bf{0n0n}",      42,       0.075,      1);
+    drawLatex(0.58,0.94,"PbPb 1.52 nb^{-1} (5.02 TeV)",42, 0.05, 1);
+    drawLatex(0.15,0.94,"#bf{CMS}",42, 0.05, 1);
+
 	gae_XsecVsY_0n0n_CMS2022 ->SetMarkerStyle(20);
+    gae_XsecVsY_0n0n_CMS2022 ->SetMarkerColor(2);
+    gae_XsecVsY_0n0n_CMS2022 ->SetLineColor(2);
 	gae_XsecVsY_0n0n_CMS2022 ->SetFillColorAlpha(16, 0.5);
 	gae_XsecVsY_0n0n_CMS2022 ->SetFillStyle(1001);
 	gae_XsecVsY_0n0n_CMS2022 ->Draw("2same");
 	ge_XsecVsY_0n0n_CMS2022  ->SetMarkerStyle(20);
-	ge_XsecVsY_0n0n_CMS2022  ->SetMarkerSize(0.5);
+	ge_XsecVsY_0n0n_CMS2022  ->SetMarkerSize(1.5);
+    ge_XsecVsY_0n0n_CMS2022  ->SetMarkerColor(2);
+    ge_XsecVsY_0n0n_CMS2022  ->SetLineColor(2);
 	ge_XsecVsY_0n0n_CMS2022  ->Draw("pezsame");
 
 	TLegend  *leg_0n0n =  new TLegend(0.14, 0.60, 0.55, 0.82);
@@ -226,25 +235,35 @@ void drawCMS_NeuConfig()
 	leg_0n0n->Draw("same");
 	
 	c2->cd(2);
-	TH2D* htem2d_0nXnSum = new TH2D("htem2d_0nXnSum", "htem2d_0nXnSum;y;d#sigma_{J/#psi}/dy (mb)", 10, -4.1, 0, 10, 0, 2.0);
+    c2->GetPad(2)->SetRightMargin(0.01);
+	TH2D* htem2d_0nXnSum = new TH2D("htem2d_0nXnSum", "htem2d_0nXnSum;y;d#sigma_{J/#psi}/dy (mb)", 10, -4.1, 0, 10, 0.0, 2.0);
 	htem2d_0nXnSum ->GetYaxis()->CenterTitle();
-	//htem2d_0nXnSum ->GetYaxis()->SetNdivisions(6);
-	htem2d_0nXnSum ->GetYaxis()->SetTitleSize(0.07);
+	htem2d_0nXnSum ->GetYaxis()->SetNdivisions(6);
+    htem2d_0nXnSum ->GetXaxis()->SetNdivisions(6);
+	htem2d_0nXnSum ->GetYaxis()->SetTitleSize(0.065);
 	htem2d_0nXnSum ->GetYaxis()->SetTitleOffset(0.8);
-	htem2d_0nXnSum ->GetYaxis()->SetLabelSize(0.06);
+	htem2d_0nXnSum ->GetYaxis()->SetLabelSize(0.05);
 	htem2d_0nXnSum ->GetXaxis()->CenterTitle();
-	htem2d_0nXnSum ->GetXaxis()->SetTitleSize(0.07);
+	htem2d_0nXnSum ->GetXaxis()->SetTitleSize(0.065);
 	htem2d_0nXnSum ->GetXaxis()->SetTitleOffset(0.75);
-	htem2d_0nXnSum ->GetXaxis()->SetLabelSize(0.06);
+	htem2d_0nXnSum ->GetXaxis()->SetLabelSize(0.05);
 	//htem2d_0nXnSum ->SetTickLength(0.08);
 	htem2d_0nXnSum->Draw();
-	drawLatex(0.15, 0.85, "Pb+Pb #rightarrow Pb+Pb+J/#psi #sqrt{s_{NN}} = 5.02 TeV (0nXn)",      42,       0.053,      1);
+    drawLatex(0.15, 0.85, "Pb+Pb #rightarrow Pb+Pb'+J/#psi",      42,       0.053,      1);
+    drawLatex(0.8, 0.8, "#bf{0nXn}",      42,       0.075,      1);
+    drawLatex(0.58,0.94,"PbPb 1.52 nb^{-1} (5.02 TeV)",42, 0.05, 1);
+    drawLatex(0.15,0.94,"#bf{CMS}",42, 0.05, 1);
+
 	gae_XsecVsY_0nXnSum_CMS2022 ->SetMarkerStyle(20);
+    gae_XsecVsY_0nXnSum_CMS2022 ->SetMarkerColor(2);
+    gae_XsecVsY_0nXnSum_CMS2022 ->SetLineColor(2);
 	gae_XsecVsY_0nXnSum_CMS2022 ->SetFillColorAlpha(16, 0.5);
 	gae_XsecVsY_0nXnSum_CMS2022 ->SetFillStyle(1001);
 	gae_XsecVsY_0nXnSum_CMS2022 ->Draw("2same");
 	ge_XsecVsY_0nXnSum_CMS2022  ->SetMarkerStyle(20);
-	ge_XsecVsY_0nXnSum_CMS2022  ->SetMarkerSize(0.5);
+	ge_XsecVsY_0nXnSum_CMS2022  ->SetMarkerSize(1.5);
+    ge_XsecVsY_0nXnSum_CMS2022  ->SetMarkerColor(2);
+    ge_XsecVsY_0nXnSum_CMS2022  ->SetLineColor(2);
 	ge_XsecVsY_0nXnSum_CMS2022  ->Draw("pezsame");
 
 	TLegend  *leg_0nXnSum =  new TLegend(0.14, 0.60, 0.55, 0.82);
@@ -256,25 +275,35 @@ void drawCMS_NeuConfig()
 	leg_0nXnSum->Draw("same");
 
 	c2->cd(3);
-	TH2D* htem2d_XnXn = new TH2D("htem2d_XnXn", "htem2d_XnXn;y;d#sigma_{J/#psi}/dy (mb)", 10, -4.1, 0, 10, 0, 0.5);
+    c2->GetPad(3)->SetRightMargin(0.01);
+	TH2D* htem2d_XnXn = new TH2D("htem2d_XnXn", "htem2d_XnXn;y;d#sigma_{J/#psi}/dy (mb)", 10, -4.1, 0, 10, 0.0, 0.5);
 	htem2d_XnXn ->GetYaxis()->CenterTitle();
-	//htem2d_XnXn ->GetYaxis()->SetNdivisions(6);
-	htem2d_XnXn ->GetYaxis()->SetTitleSize(0.07);
+	htem2d_XnXn ->GetYaxis()->SetNdivisions(6);
+    htem2d_XnXn ->GetXaxis()->SetNdivisions(6);
+	htem2d_XnXn ->GetYaxis()->SetTitleSize(0.065);
 	htem2d_XnXn ->GetYaxis()->SetTitleOffset(0.9);
-	htem2d_XnXn ->GetYaxis()->SetLabelSize(0.06);
+	htem2d_XnXn ->GetYaxis()->SetLabelSize(0.05);
 	htem2d_XnXn ->GetXaxis()->CenterTitle();
-	htem2d_XnXn ->GetXaxis()->SetTitleSize(0.07);
+	htem2d_XnXn ->GetXaxis()->SetTitleSize(0.065);
 	htem2d_XnXn ->GetXaxis()->SetTitleOffset(0.75);
-	htem2d_XnXn ->GetXaxis()->SetLabelSize(0.06);
+	htem2d_XnXn ->GetXaxis()->SetLabelSize(0.05);
 	//htem2d_XnXn ->SetTickLength(0.08);
 	htem2d_XnXn->Draw();
-	drawLatex(0.15, 0.85, "Pb+Pb #rightarrow Pb+Pb+J/#psi #sqrt{s_{NN}} = 5.02 TeV (XnXn)",      42,       0.053,      1);
+    drawLatex(0.15, 0.85, "Pb+Pb #rightarrow Pb'+Pb'+J/#psi",      42,       0.053,      1);
+    drawLatex(0.8, 0.8, "#bf{XnXn}",      42,       0.075,      1);
+    drawLatex(0.58,0.94,"PbPb 1.52 nb^{-1} (5.02 TeV)",42, 0.05, 1);
+    drawLatex(0.15,0.94,"#bf{CMS}",42, 0.05, 1);
+
 	gae_XsecVsY_XnXn_CMS2022 ->SetMarkerStyle(20);
+    gae_XsecVsY_XnXn_CMS2022 ->SetMarkerColor(2);
+    gae_XsecVsY_XnXn_CMS2022 ->SetLineColor(2);
 	gae_XsecVsY_XnXn_CMS2022 ->SetFillColorAlpha(16, 0.5);
 	gae_XsecVsY_XnXn_CMS2022 ->SetFillStyle(1001);
 	gae_XsecVsY_XnXn_CMS2022 ->Draw("2same");
 	ge_XsecVsY_XnXn_CMS2022  ->SetMarkerStyle(20);
-	ge_XsecVsY_XnXn_CMS2022  ->SetMarkerSize(0.5);
+	ge_XsecVsY_XnXn_CMS2022  ->SetMarkerSize(1.5);
+    ge_XsecVsY_XnXn_CMS2022  ->SetMarkerColor(2);
+    ge_XsecVsY_XnXn_CMS2022  ->SetLineColor(2);
 	ge_XsecVsY_XnXn_CMS2022  ->Draw("pezsame");
 
 	TLegend  *leg_XnXn =  new TLegend(0.14, 0.60, 0.55, 0.82);
@@ -286,58 +315,71 @@ void drawCMS_NeuConfig()
 	leg_XnXn->Draw("same");
 
 	c2->cd(4);
+    c2->GetPad(4)->SetRightMargin(0.01);
 	TH2D* htem2d_AnAn = new TH2D("htem2d_AnAn", "htem2d_AnAn;y;d#sigma_{J/#psi}/dy (mb);", 10, -4.1, 0, 10, 0, 8.0);
 	htem2d_AnAn ->GetYaxis()->CenterTitle();
-	//htem2d_AnAn ->GetYaxis()->SetNdivisions(6);
-	htem2d_AnAn ->GetYaxis()->SetTitleSize(0.07);
+	htem2d_AnAn ->GetYaxis()->SetNdivisions(6);
+    htem2d_AnAn ->GetXaxis()->SetNdivisions(6);
+	htem2d_AnAn ->GetYaxis()->SetTitleSize(0.065);
 	htem2d_AnAn ->GetYaxis()->SetTitleOffset(0.63);
-	htem2d_AnAn ->GetYaxis()->SetLabelSize(0.06);
+	htem2d_AnAn ->GetYaxis()->SetLabelSize(0.05);
 	htem2d_AnAn ->GetXaxis()->CenterTitle();
-	htem2d_AnAn ->GetXaxis()->SetTitleSize(0.07);
+	htem2d_AnAn ->GetXaxis()->SetTitleSize(0.065);
 	htem2d_AnAn ->GetXaxis()->SetTitleOffset(0.75);
-	htem2d_AnAn ->GetXaxis()->SetLabelSize(0.06);
+	htem2d_AnAn ->GetXaxis()->SetLabelSize(0.05);
 	//htem2d_AnAn ->SetTickLength(0.08);
 	htem2d_AnAn->Draw();
-	drawLatex(0.15, 0.85, "Pb+Pb #rightarrow Pb+Pb+J/#psi #sqrt{s_{NN}} = 5.02 TeV (AnAn)",      42,       0.053,      1);
+    drawLatex(0.15, 0.85, "Pb+Pb #rightarrow Pb'+Pb'+J/#psi",      42,       0.053,      1);
+    drawLatex(0.75, 0.8, "#bf{Inclusive}",      42,       0.065,      1);
+    drawLatex(0.58,0.94,"PbPb 1.52 nb^{-1} (5.02 TeV)",42, 0.05, 1);
+    drawLatex(0.15,0.94,"#bf{CMS}",42, 0.05, 1);
 
-	gae_XsecVsY_Alice2019  ->SetMarkerStyle(20);
-	gae_XsecVsY_Alice2019 ->SetFillColor(8);
+	gae_XsecVsY_Alice2019 ->SetMarkerStyle(25);
+	gae_XsecVsY_Alice2019 ->SetMarkerColor(4);
+	gae_XsecVsY_Alice2019 ->SetLineColor(4);
+	gae_XsecVsY_Alice2019 ->SetFillColor(kGray);
 	gae_XsecVsY_Alice2019 ->SetFillStyle(3001);
 	gae_XsecVsY_Alice2019 ->Draw("2same");
-	ge_XsecVsY_Alice2019  ->SetMarkerStyle(20);
-	ge_XsecVsY_Alice2019  ->SetMarkerSize(0.5);
+	ge_XsecVsY_Alice2019  ->SetMarkerStyle(25);
+	ge_XsecVsY_Alice2019  ->SetMarkerSize(1.5);
+    ge_XsecVsY_Alice2019  ->SetMarkerColor(4);
+    ge_XsecVsY_Alice2019  ->SetLineColor(4);
 	ge_XsecVsY_Alice2019  ->Draw("pezsame");
 	
-	gae_XsecVsY_Alice2021  ->SetMarkerStyle(20);
-	gae_XsecVsY_Alice2021 ->SetFillColor(kGreen);
+	gae_XsecVsY_Alice2021 ->SetMarkerStyle(24);
+	gae_XsecVsY_Alice2021 ->SetMarkerColor(4);
+	gae_XsecVsY_Alice2021 ->SetLineColor(4);
+	gae_XsecVsY_Alice2021 ->SetFillColor(kGray);
 	gae_XsecVsY_Alice2021 ->SetFillStyle(3001);
 	gae_XsecVsY_Alice2021 ->Draw("2same");
-	ge_XsecVsY_Alice2021  ->SetMarkerStyle(20);
-	ge_XsecVsY_Alice2021  ->SetMarkerSize(0.5);
+	ge_XsecVsY_Alice2021  ->SetMarkerStyle(24);
+	ge_XsecVsY_Alice2021  ->SetMarkerSize(1.6);
+    ge_XsecVsY_Alice2021  ->SetMarkerColor(4);
+    ge_XsecVsY_Alice2021  ->SetLineColor(4);
 	ge_XsecVsY_Alice2021  ->Draw("pezsame");
 
-	gae_XsecVsY_LHCb2021  ->SetMarkerStyle(24);
+	gae_XsecVsY_LHCb2021  ->SetMarkerStyle(28);
 	gae_XsecVsY_LHCb2021 ->SetFillColor(kGray);
 	gae_XsecVsY_LHCb2021 ->SetFillStyle(3001);
 	gae_XsecVsY_LHCb2021 ->Draw("2same");
-	ge_XsecVsY_LHCb2021  ->SetMarkerStyle(24);
-	ge_XsecVsY_LHCb2021  ->SetMarkerSize(0.5);
+	ge_XsecVsY_LHCb2021  ->SetMarkerStyle(28);
+	ge_XsecVsY_LHCb2021  ->SetMarkerSize(1.5);
 	ge_XsecVsY_LHCb2021  ->Draw("pezsame");
 
-	gae_XsecVsY_CMS2022 ->SetMarkerStyle(21);
+	gae_XsecVsY_CMS2022 ->SetMarkerStyle(20);
+	gae_XsecVsY_CMS2022 ->SetMarkerColor(2);
 	gae_XsecVsY_CMS2022 ->SetFillColorAlpha(16, 0.5);
 	gae_XsecVsY_CMS2022 ->SetFillStyle(1001);
-	gae_XsecVsY_CMS2022  ->SetMarkerColor(4);
 	gae_XsecVsY_CMS2022 ->Draw("2same");
-    ge_XsecVsY_CMS2022  ->SetMarkerStyle(21);
-	ge_XsecVsY_CMS2022  ->SetMarkerSize(0.5);
-    ge_XsecVsY_CMS2022  ->SetMarkerColor(4);
-    ge_XsecVsY_CMS2022  ->SetLineColor(4);
+    ge_XsecVsY_CMS2022  ->SetMarkerStyle(20);
+	ge_XsecVsY_CMS2022  ->SetMarkerSize(1.5);
+    ge_XsecVsY_CMS2022  ->SetMarkerColor(2);
+    ge_XsecVsY_CMS2022  ->SetLineColor(2);
     ge_XsecVsY_CMS2022  ->SetLineWidth(2);
 	ge_XsecVsY_CMS2022  ->Draw("pezsame");
 
 	TLegend  *leg_AnAn =  new TLegend(0.14, 0.60, 0.55, 0.82);
-	TLegend  *leg_Theory =  new TLegend(0.45, 0.65, 0.8, 0.82);
+	TLegend  *leg_Theory =  new TLegend(0.55, 0.15, 0.85, 0.3);
 	leg_AnAn->SetFillStyle(0);
 	leg_AnAn->SetFillColor(0);
 	leg_AnAn->SetTextSize(0.050);

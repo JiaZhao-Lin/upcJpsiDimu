@@ -49,7 +49,7 @@ void drawLTA(TString Case, TLegend * leg)
 	std::vector<int> colors = {2,8,4};
 	auto LTAs = readLTAtheory();
 
-	for (int i = 0; i < LTAs.size(); ++i)
+	for (int i = 0; i < LTAs.size()-1; ++i)
 	{
 		auto Map = LTAs[i];
 		auto gr_AnAn = new TGraph(Map.at("Rap").size(),	Map.at("Rap").data(),	Map.at("Xsec_AnAn").data());
@@ -58,23 +58,32 @@ void drawLTA(TString Case, TLegend * leg)
 		auto gr_XnXn = new TGraph(Map.at("Rap").size(),	Map.at("Rap").data(),	Map.at("Xsec_XnXn").data());
 	
 		if (Case == "AnAn"){
-			gr_AnAn->Draw("same");
 			gr_AnAn->SetLineColor(colors[i]);
+            gr_AnAn->SetLineStyle(9);
+            gr_AnAn->SetLineWidth(3);
+            gr_AnAn->Draw("same");
 			leg->AddEntry(gr_AnAn,	Name[i].Data(),		"l" );
 		}
 		else if (Case == "0n0n"){
-			gr_0n0n->Draw("same");
 			gr_0n0n->SetLineColor(colors[i]);
+            gr_0n0n->SetLineStyle(9);
+            gr_0n0n->SetLineWidth(3);
+            gr_0n0n->Draw("same");
 			leg->AddEntry(gr_0n0n,	Name[i].Data(),		"l" );
 		}
 		else if (Case == "0nXnSum"){
-			gr_0nXnSum->Draw("same");
 			gr_0nXnSum->SetLineColor(colors[i]);
+            gr_0nXnSum->SetLineStyle(9);
+            gr_0nXnSum->SetLineWidth(3);
+            gr_0nXnSum->Draw("same");
 			leg->AddEntry(gr_0nXnSum,	Name[i].Data(),	"l" );
 		}
 		else if (Case == "XnXn"){
 			gr_XnXn->Draw("same");
 			gr_XnXn->SetLineColor(colors[i]);
+            gr_XnXn->SetLineStyle(9);
+            gr_XnXn->SetLineWidth(3);
+            gr_XnXn->Draw("same");
 			leg->AddEntry(gr_XnXn,	Name[i].Data(),		"l" );
 		}
 	}
@@ -177,7 +186,7 @@ void drawLTA_Sigmas_R(TString Case, TLegend * leg)
 		// gr_SigmasVsW_StrSuppr->SetFillColor(colors[0]);
    		// gr_SigmasVsW_StrSuppr->SetFillStyle(3005);
    		gr_SigmasVsW_StrSuppr->SetLineColor(colors[0]);
-   		gr_SigmasVsW_StrSuppr->SetLineStyle(3);
+   		gr_SigmasVsW_StrSuppr->SetLineStyle(9);
    		gr_SigmasVsW_StrSuppr->SetLineWidth(3);
    		gr_SigmasVsW_StrSuppr->Draw("lsame");
 		leg->AddEntry(gr_SigmasVsW_StrSuppr,	Name[0].Data(),		"l" );
@@ -185,7 +194,7 @@ void drawLTA_Sigmas_R(TString Case, TLegend * leg)
 		// gr_SigmasVsW_WeakSuppr->SetFillColor(colors[1]);
    		// gr_SigmasVsW_WeakSuppr->SetFillStyle(3005);
    		gr_SigmasVsW_WeakSuppr->SetLineColor(colors[1]);
-   		gr_SigmasVsW_WeakSuppr->SetLineStyle(3);
+   		gr_SigmasVsW_WeakSuppr->SetLineStyle(9);
    		gr_SigmasVsW_WeakSuppr->SetLineWidth(3);
    		gr_SigmasVsW_WeakSuppr->Draw("lsame");
 		leg->AddEntry(gr_SigmasVsW_WeakSuppr,	Name[1].Data(),		"l" );
@@ -195,7 +204,7 @@ void drawLTA_Sigmas_R(TString Case, TLegend * leg)
 		// gr_RvsX_StrSuppr->SetFillColor(colors[0]);
    		// gr_RvsX_StrSuppr->SetFillStyle(3005);
 		gr_RvsX_StrSuppr->SetLineColor(colors[0]);
-		gr_RvsX_StrSuppr->SetLineStyle(3);
+		gr_RvsX_StrSuppr->SetLineStyle(9);
 		gr_RvsX_StrSuppr->SetLineWidth(3);
    		gr_RvsX_StrSuppr->Draw("lsame");
 		leg->AddEntry(gr_RvsX_StrSuppr,	Name[0].Data(),		"l" );
@@ -203,7 +212,7 @@ void drawLTA_Sigmas_R(TString Case, TLegend * leg)
 		// gr_RvsX_WeakSuppr->SetFillColor(colors[1]);
    		// gr_RvsX_WeakSuppr->SetFillStyle(3005);
    		gr_RvsX_WeakSuppr->SetLineColor(colors[1]);
-   		gr_RvsX_WeakSuppr->SetLineStyle(3);
+   		gr_RvsX_WeakSuppr->SetLineStyle(9);
    		gr_RvsX_WeakSuppr->SetLineWidth(3);
    		gr_RvsX_WeakSuppr->Draw("lsame");
 		leg->AddEntry(gr_RvsX_WeakSuppr,	Name[1].Data(),		"l" );
@@ -254,7 +263,7 @@ std::map<TString, std::vector<double>> readGGtheory()
 void drawGG(TString Case, TLegend * leg)
 {
 	std::vector<TString> Name = {"GG-hs"};
-	std::vector<int> colors = {2,8,4};
+	std::vector<int> colors = {2,8,37};
 	auto LTAs = readGGtheory();
 
 	auto Map = LTAs;
@@ -267,9 +276,9 @@ void drawGG(TString Case, TLegend * leg)
 	{
 		// gr_SigmasVsW->SetFillColor(colors[0]);
    		// gr_SigmasVsW->SetFillStyle(3005);
-   		gr_SigmasVsW->SetLineColor(colors[1]);
-   		gr_SigmasVsW->SetLineStyle(2);
-   		gr_SigmasVsW->SetLineWidth(2);
+   		gr_SigmasVsW->SetLineColor(colors[2]);
+   		gr_SigmasVsW->SetLineStyle(5);
+   		gr_SigmasVsW->SetLineWidth(3);
    		gr_SigmasVsW->Draw("lsame");
 		leg->AddEntry(gr_SigmasVsW,	Name[0].Data(),		"l" );
 
@@ -278,9 +287,9 @@ void drawGG(TString Case, TLegend * leg)
 	{
 		// gr_RvsW->SetFillColor(colors[0]);
    		// gr_RvsW->SetFillStyle(3005);
-		gr_RvsW->SetLineColor(colors[1]);
-		gr_RvsW->SetLineStyle(2);
-		gr_RvsW->SetLineWidth(2);
+		gr_RvsW->SetLineColor(colors[2]);
+		gr_RvsW->SetLineStyle(5);
+		gr_RvsW->SetLineWidth(3);
    		gr_RvsW->Draw("lsame");
 		leg->AddEntry(gr_RvsW,	Name[0].Data(),		"l" );
 	}
