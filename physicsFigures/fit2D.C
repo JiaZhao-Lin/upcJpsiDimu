@@ -59,7 +59,9 @@ std::vector<std::vector<double>> fit2D(std::map<TString, std::vector<double>> Ma
       f->SetParameters(0.001,0.5);
 
       auto c = new TCanvas();
-      gr->Fit(f);
+      auto fitResults = gr->Fit(f,  "S");
+      fitResults->Print();
+
       gr->SetTitle("TGraph2D TF2 Fit; dN_{1}/dy; dN_{2}/dy; d#sigma/dy");
       gr->SetMarkerColor(kBlue);
       gr->SetMarkerSize(1.5);
@@ -67,10 +69,10 @@ std::vector<std::vector<double>> fit2D(std::map<TString, std::vector<double>> Ma
       gr->Draw("pez");
       // f->SetMarkerColor(kBlue);
       f->Draw("same surf");
+      drawLatex(0.1, 0.95, Form("(#sigma(y = %.2f), #sigma(y = %.2f)) = (%.4f #pm %.4f, %.4f #pm %.4f)", Rap[i], -Rap[i],
+                              f->GetParameter(0), f->GetParError(0), f->GetParameter(1), f->GetParError(1)),      42,       0.04,      1);
+      drawLatex(0.1, 0.90, Form("#chi^{2}/ndf: %.2f/1", fitResults->Chi2()),      42,       0.04,      1);
 
-      drawLatex(0.05, 0.95, Form("(#sigma(y = %.2f), #sigma(y = %.2f)) = (%.4f #pm %.4f, %.4f #pm %.4f)", Rap[i], -Rap[i],
-                              f->GetParameter(0), f->GetParError(0), f->GetParameter(1), f->GetParError(1)),      42,       0.05,      1);
-      
       c->SaveAs(Form("outplots/fit2D_%d.pdf",i));
       cout<<endl;
       

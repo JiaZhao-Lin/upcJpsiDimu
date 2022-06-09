@@ -56,7 +56,7 @@ TF1 * fitSigmas(const int data_option = 3, const int func_option = 0)
 			funcSigmas = new TF1("SigmasPrediction","[0] + ([1]-[0])/( 1+exp( [2]*(log(x)-log([3])) ) )");
 			funcSigmas->SetParameters(0.01, 0.01,-1,10);
 			break;
-		default:
+		default: // Err Funcion
 			funcSigmas = new TF1("SigmasPrediction","[0]*TMath::Erf((x-[1])/[2])");
 			funcSigmas->SetParameters(0.1,10,10);
 	}

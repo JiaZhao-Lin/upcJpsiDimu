@@ -394,17 +394,17 @@ std::map<TString, std::vector<double>> getParamsMap(const TString infile = "../s
 void plotShadowingRatio()
 {
 	//---------------------------------Remake Map------------------------------------------
-	// auto ShadowRatio_ParamsMap = getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins.appliedTnP.root");
-	// auto TotalSysUncer_Map 		= readMap("rootfiles/TotalSysUncer_Map.root");
-	// plotSigmaVsW(ShadowRatio_ParamsMap,TotalSysUncer_Map);
-	// plotRvsX(ShadowRatio_ParamsMap,TotalSysUncer_Map);
+	auto ShadowRatio_ParamsMap = getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins.appliedTnP.root");
+	auto TotalSysUncer_Map 		= readMap("rootfiles/TotalSysUncer_Map.root");
+	plotSigmaVsW(ShadowRatio_ParamsMap,TotalSysUncer_Map);
+	plotRvsX(ShadowRatio_ParamsMap,TotalSysUncer_Map);
 	// saveMap(ShadowRatio_ParamsMap);
 	//-------------------------------------------------------------------------------------
 
 	//----------------------------Read Map From Root File----------------------------------
-	auto ShadowRatio_ParamsMap 	= readMap("rootfiles/Results_Map.root");
-	auto TotalSysUncer_Map 		= readMap("rootfiles/TotalSysUncer_Map.root");
-	plotSigmaVsW(ShadowRatio_ParamsMap,TotalSysUncer_Map);
-	plotRvsX(ShadowRatio_ParamsMap,TotalSysUncer_Map);
+	// auto ShadowRatio_ParamsMap 	= readMap("rootfiles/Results_Map.root");
+	// auto TotalSysUncer_Map 		= readMap("rootfiles/TotalSysUncer_Map.root");
+	// plotSigmaVsW(ShadowRatio_ParamsMap,TotalSysUncer_Map);
+	// plotRvsX(ShadowRatio_ParamsMap,TotalSysUncer_Map);
 	//-------------------------------------------------------------------------------------
 }
