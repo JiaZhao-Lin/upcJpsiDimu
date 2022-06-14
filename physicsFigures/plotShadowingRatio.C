@@ -62,7 +62,10 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 	auto X_AXIS_ERR 			= std::vector<double>(ShadowRatio_ParamsMap.at("Ws").size(), 3.8);
 	auto X_AXIS_ERR_ALICE_Fwd 	= std::vector<double>(ShadowRatio_ParamsMap.at("Ws").size(), 3.8);
 	auto X_AXIS_ERR_ALICE_Mid 	= std::vector<double>(ShadowRatio_ParamsMap.at("Ws").size(), 3.8);
-	
+	std::map<TString, std::vector<double>> IA_Map = {{"Ws",		{}}};	// For plotting IA
+	for (int i = 5; i < 500; ++i){	IA_Map.at("Ws").push_back(i);	}
+	getImpulseApprox(IA_Map);
+
 	if(flag4Axis==0) //logY only
 	{
 		c->SetLogy();
@@ -117,7 +120,7 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 												&ALICE_Run2_FwdRap_Sigma_SysErrLow[0], &ALICE_Run2_FwdRap_Sigma_SysErrHig[0]);
 
 	TGraphErrors* ge_CGCnoFluct = new TGraphErrors(CGC_JpsiNoFluct_W.size(),	&CGC_JpsiNoFluct_W[0],	&CGC_JpsiNoFluct_CohXsec[0],	0,	0);
-	TGraphErrors* ge_IA        	= new TGraphErrors(ShadowRatio_ParamsMap.at("Ws_FitIA").size(),	&ShadowRatio_ParamsMap.at("Ws_FitIA")[0],	&ShadowRatio_ParamsMap["Sigmas_FitIA"][0],	0,	0);
+	TGraphErrors* ge_IA        	= new TGraphErrors(IA_Map.at("Ws").size(),	&IA_Map.at("Ws")[0],	&IA_Map["Sigmas_IA"][0],	0,	0);
 
 	gae_CMS ->SetMarkerStyle(24);
 	gae_CMS ->SetFillColorAlpha(16, 0.7);
@@ -185,6 +188,7 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
                 legTheory->AddEntry(ge_CGCnoFluct,        "CGC IPsat",                   "l");
 		drawGG("Sigmas",legTheory);
 		drawLTA_Sigmas_R("Sigmas", legTheory);
+		// drawbBK("Sigmas",legTheory);
 		legTheory->Draw("same");
 
 		// TF1 *f1 	= new TF1("f1","log10(x)",3.5469263e-5,0.048933106);
@@ -228,6 +232,8 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 		legTheory->AddEntry(ge_CGCnoFluct,        "CGC IPsat",                   "l");
 		drawGG("Sigmas",legTheory);
 		drawLTA_Sigmas_R("Sigmas", legTheory);
+		// drawbBK("Sigmas",legTheory);
+		drawCD("Sigmas",legTheory);
 		legTheory->Draw("same");
 
         drawLatex(0.15, 0.84, "Pb+Pb #rightarrow Pb+Pb+J/#psi",  42,        0.05,      1 );
@@ -346,6 +352,8 @@ void plotRvsX( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap, co
     leg1->SetTextSize(0.045);
 	drawGG("R",leg1);
 	drawLTA_Sigmas_R("R", leg1);
+	// drawbBK("R", leg1);
+	// drawCD("R", leg1);
 	leg1->Draw("same");
 
 	drawLatex(0.15, 0.84, "Pb+Pb #rightarrow Pb+Pb+J/#psi",  42,        0.05,      1 );
@@ -377,9 +385,6 @@ std::map<TString, std::vector<double>> getParamsMap(const TString infile = "../s
 		// {"Xsec_0n0n",	{}},	{"XsecErr_0n0n",		{}},
 		// {"Xsec_0nXnSum",{}},	{"XsecErr_0nXnSum",		{}},
 		// {"Xsec_XnXn",	{}},	{"XsecErr_XnXn",		{}},
-
-		{"Ws_FitIA",		{}},
-		{"Sigmas_FitIA",	{}},	{"Sigmas_FitIA_Err",	{}}
 	};
 
 	LoadJpsiXsec loadJpsiXsec(infile);
@@ -406,7 +411,7 @@ std::map<TString, std::vector<double>> getParamsMap(const TString infile = "../s
 		cout<<"x from W: "<<pow(JpsiMass,2)/pow(ShadowRatio_ParamsMap.at("Ws")[i],2)<<endl;
 	}
 	
-	{Interpolate_IA(ShadowRatio_ParamsMap);}
+	{getImpulseApprox(ShadowRatio_ParamsMap);}
 
 	for (int i = 0; i < ShadowRatio_ParamsMap.at("Raps").size(); ++i)
 	{

@@ -379,7 +379,7 @@ void drawCMS_NeuConfig()
 	ge_XsecVsY_CMS2022  ->Draw("pezsame");
 
 	TLegend  *leg_AnAn =  new TLegend(0.14, 0.60, 0.55, 0.82);
-	TLegend  *leg_Theory =  new TLegend(0.55, 0.15, 0.85, 0.3);
+	TLegend  *leg_Theory =  new TLegend(0.55, 0.13, 0.85, 0.3);
 	leg_AnAn->SetFillStyle(0);
 	leg_AnAn->SetFillColor(0);
 	leg_AnAn->SetTextSize(0.050);
@@ -388,6 +388,8 @@ void drawCMS_NeuConfig()
 	leg_AnAn->AddEntry(gae_XsecVsY_Alice2021,		"ALICE 2021",        "lpf");
 	leg_AnAn->AddEntry(gae_XsecVsY_LHCb2021,		"LHCb  2021",        "lpf");
 	drawLTA("AnAn",leg_Theory);
+	// drawbBK("Xsec",leg_Theory);
+	drawCD("Xsec",leg_Theory);
 	leg_Theory->Draw("same");
 	leg_AnAn->Draw("same");
 

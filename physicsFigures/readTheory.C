@@ -1,4 +1,4 @@
-#include "./ImpulseApproximation/runUPC_AAModel.C"
+#include "./ImpulseApproximation/ImpulseApprox.C"
 
 std::vector< std::map<TString, std::vector<double>> > readLTAtheory() 
 {
@@ -8,7 +8,7 @@ std::vector< std::map<TString, std::vector<double>> > readLTAtheory()
 	for (int i = 0; i < fileName.size(); ++i)
 	{
 		std::map<TString, std::vector<double>> Map ={
-			{"Rap",			{}},
+			{"Raps",			{}},
 			{"Xsec_AnAn",	{}},
 			{"Xsec_0n0n",	{}},
 			{"Xsec_0nXnSum",{}},
@@ -18,9 +18,9 @@ std::vector< std::map<TString, std::vector<double>> > readLTAtheory()
 		TTree *tree = new TTree(); 
 		tree->ReadFile(Form("./inputfiles/%s.dat",fileName[i].Data()), "y:AnAn:0n0n:0nXnSum:XnXn");
 
-		float fRap,fXsec_AnAn,fXsec_0n0n,fXsec_0nXnSum,fXsec_XnXn;
+		float fRaps,fXsec_AnAn,fXsec_0n0n,fXsec_0nXnSum,fXsec_XnXn;
 
-		tree->SetBranchAddress("y", 		&fRap);
+		tree->SetBranchAddress("y", 		&fRaps);
 		tree->SetBranchAddress("AnAn",		&fXsec_AnAn);
 		tree->SetBranchAddress("0n0n",		&fXsec_0n0n);
 		tree->SetBranchAddress("0nXnSum",	&fXsec_0nXnSum);
@@ -31,7 +31,7 @@ std::vector< std::map<TString, std::vector<double>> > readLTAtheory()
 		for(int j=0; j<N; j++ )
 		{
 			tree->GetEntry(j);
-			Map.at("Rap")			.push_back(double(fRap));
+			Map.at("Raps")			.push_back(double(fRaps));
 			Map.at("Xsec_AnAn")		.push_back(double(fXsec_AnAn));
 			Map.at("Xsec_0n0n")		.push_back(double(fXsec_0n0n));
 			Map.at("Xsec_0nXnSum")	.push_back(double(fXsec_0nXnSum));
@@ -45,17 +45,17 @@ std::vector< std::map<TString, std::vector<double>> > readLTAtheory()
 
 void drawLTA(TString Case, TLegend * leg)
 {
-	std::vector<TString> Name = {"LTA weak shadowing", "LTA strong shadowing", "EPS09 central"};
+	std::vector<TString> Name = {"LTA WS", "LTA SS", "EPS09 central"};
 	std::vector<int> colors = {2,8,4};
 	auto LTAs = readLTAtheory();
 
 	for (int i = 0; i < LTAs.size()-1; ++i)
 	{
 		auto Map = LTAs[i];
-		auto gr_AnAn = new TGraph(Map.at("Rap").size(),	Map.at("Rap").data(),	Map.at("Xsec_AnAn").data());
-		auto gr_0n0n = new TGraph(Map.at("Rap").size(),	Map.at("Rap").data(),	Map.at("Xsec_0n0n").data());
-		auto gr_0nXnSum = new TGraph(Map.at("Rap").size(),	Map.at("Rap").data(),	Map.at("Xsec_0nXnSum").data());
-		auto gr_XnXn = new TGraph(Map.at("Rap").size(),	Map.at("Rap").data(),	Map.at("Xsec_XnXn").data());
+		auto gr_AnAn = new TGraph(Map.at("Raps").size(),	Map.at("Raps").data(),	Map.at("Xsec_AnAn").data());
+		auto gr_0n0n = new TGraph(Map.at("Raps").size(),	Map.at("Raps").data(),	Map.at("Xsec_0n0n").data());
+		auto gr_0nXnSum = new TGraph(Map.at("Raps").size(),	Map.at("Raps").data(),	Map.at("Xsec_0nXnSum").data());
+		auto gr_XnXn = new TGraph(Map.at("Raps").size(),	Map.at("Raps").data(),	Map.at("Xsec_XnXn").data());
 	
 		if (Case == "AnAn"){
 			gr_AnAn->SetLineColor(colors[i]);
@@ -79,7 +79,6 @@ void drawLTA(TString Case, TLegend * leg)
 			leg->AddEntry(gr_0nXnSum,	Name[i].Data(),	"l" );
 		}
 		else if (Case == "XnXn"){
-			gr_XnXn->Draw("same");
 			gr_XnXn->SetLineColor(colors[i]);
             gr_XnXn->SetLineStyle(9);
             gr_XnXn->SetLineWidth(3);
@@ -251,7 +250,7 @@ std::map<TString, std::vector<double>> readGGtheory()
 	}
 
 	std::map<TString, std::vector<double>> Temp_Map;
-	Interpolate_IA(Map);
+	getImpulseApprox(Map);
 	for (int i = 0; i < N; ++i)
 	{
 		Map.at("R")		.push_back(sqrt(Map.at("Sigmas")[i]/Map.at("Sigmas_IA")[i]));
@@ -292,5 +291,203 @@ void drawGG(TString Case, TLegend * leg)
 		gr_RvsW->SetLineWidth(3);
    		gr_RvsW->Draw("lsame");
 		leg->AddEntry(gr_RvsW,	Name[0].Data(),		"l" );
+	}
+}
+
+std::vector< std::map<TString, std::vector<double>> > readbBKtheory() 
+{
+	std::vector<TString> fileName_Sigma	 = {"bBK_GG_Jpsi_Sigma",	"bBK_A_Jpsi_Sigma"};
+	std::vector<TString> fileName_Xsec	 = {"bBK_GG_Jpsi_Xsec",		"bBK_A_Jpsi_Xsec"};
+
+	std::vector< std::map<TString, std::vector<double>> > Maps;
+	
+	for (int i = 0; i < fileName_Sigma.size(); ++i)
+	{
+		std::map<TString, std::vector<double>> Map ={
+			{"Raps",			{}},
+			{"Xsec_AnAn",	{}},
+			{"Xs",			{}},
+			{"Ws",			{}},
+			{"Sigmas",		{}},
+			{"R",			{}}
+		};
+
+		TTree *tree = new TTree(); 
+		tree->ReadFile(Form("./inputfiles/%s.txt",fileName_Sigma[i].Data()), "X:W:Sigma");
+
+		TTree *tree1 = new TTree(); 
+		tree1->ReadFile(Form("./inputfiles/%s.txt",fileName_Xsec[i].Data()), "Raps:Xsec");
+
+		float fXs,fWs,fSigmas,fRaps,fXsec;
+
+		tree->SetBranchAddress("X", 		&fXs);
+		tree->SetBranchAddress("W",			&fWs);
+		tree->SetBranchAddress("Sigma",		&fSigmas);
+
+		tree1->SetBranchAddress("Raps", 	&fRaps);
+		tree1->SetBranchAddress("Xsec",		&fXsec);
+
+		int N = tree->GetEntries();
+		for(int j=0; j<N; j++ )
+		{
+			tree->GetEntry(j);
+			Map.at("Xs")			.push_back(double(fXs));
+			Map.at("Ws")			.push_back(double(fWs));
+			Map.at("Sigmas")		.push_back(double(fSigmas)*0.001);
+		}
+
+		getImpulseApprox(Map);
+		for (int i = 0; i < N; ++i)
+		{
+			Map.at("R")		.push_back(sqrt(Map.at("Sigmas")[i]/Map.at("Sigmas_IA")[i]));
+		}
+
+		N = tree1->GetEntries();
+		for(int j=0; j<N; j++ )
+		{
+			tree1->GetEntry(j);
+			Map.at("Raps")			.push_back(double(fRaps));
+			Map.at("Xsec_AnAn")		.push_back(double(fXsec));
+		}
+
+		Maps.push_back(Map);
+	}
+	return Maps;
+}
+
+void drawbBK(TString Case, TLegend * leg)
+{
+	std::vector<TString> Name	 = {"bBK_GG",	"bBK_A"};
+
+	std::vector<int> colors = {2,8,4};
+	auto bBKs = readbBKtheory();
+
+	for (int i = 0; i < bBKs.size(); ++i)
+	{
+		auto Map = bBKs[i];
+		auto gr_AnAn = new TGraph(Map.at("Raps").size(),	Map.at("Raps").data(),	Map.at("Xsec_AnAn").data());
+		auto gr_Simgas = new TGraph(Map.at("Ws").size(),	Map.at("Ws").data(),	Map.at("Sigmas").data());
+		auto gr_R = new TGraph(Map.at("Xs").size(),	Map.at("Xs").data(),	Map.at("R").data());
+	
+		if (Case == "Xsec"){
+			gr_AnAn->SetLineColor(colors[i]);
+            gr_AnAn->SetLineStyle(5);
+            gr_AnAn->SetLineWidth(3);
+            gr_AnAn->Draw("same");
+			leg->AddEntry(gr_AnAn,	Name[i].Data(),		"l" );
+		}
+		else if (Case == "Sigmas"){
+			gr_Simgas->SetLineColor(colors[i]);
+            gr_Simgas->SetLineStyle(5);
+            gr_Simgas->SetLineWidth(3);
+            gr_Simgas->Draw("same");
+			leg->AddEntry(gr_Simgas,	Name[i].Data(),		"l" );
+		}
+		else if (Case == "R"){
+			gr_R->SetLineColor(colors[i]);
+            gr_R->SetLineStyle(5);
+            gr_R->SetLineWidth(3);
+            gr_R->Draw("same");
+			leg->AddEntry(gr_R,	Name[i].Data(),		"l" );
+		}
+	}
+}
+
+std::vector< std::map<TString, std::vector<double>> > readCDtheory() 
+{
+	const double JpsiMass   = 3.096916;
+	std::vector<TString> fileName_Sigma	 = {"CD_BGK_Jpsi_Sigma",	"CD_GBW_Jpsi_Sigma",	"CD_IIM_Jpsi_Sigma"};
+	std::vector<TString> fileName_Xsec	 = {"CD_BGK_Jpsi_Xsec",		"CD_GBW_Jpsi_Xsec",		"CD_IIM_Jpsi_Xsec"};
+
+	std::vector< std::map<TString, std::vector<double>> > Maps;
+	
+	for (int i = 0; i < fileName_Sigma.size(); ++i)
+	{
+		std::map<TString, std::vector<double>> Map ={
+			{"Raps",			{}},
+			{"Xsec_AnAn",	{}},
+			{"Xs",			{}},
+			{"Ws",			{}},
+			{"Sigmas",		{}},
+			{"R",			{}}
+		};
+
+		TTree *tree = new TTree(); 
+		tree->ReadFile(Form("./inputfiles/%s.dat",fileName_Sigma[i].Data()), "W:Sigma");
+
+		TTree *tree1 = new TTree(); 
+		tree1->ReadFile(Form("./inputfiles/%s.dat",fileName_Xsec[i].Data()), "Raps:Xsec");
+
+		float fWs,fSigmas,fRaps,fXsec;
+
+		tree->SetBranchAddress("W",			&fWs);
+		tree->SetBranchAddress("Sigma",		&fSigmas);
+
+		tree1->SetBranchAddress("Raps", 	&fRaps);
+		tree1->SetBranchAddress("Xsec",		&fXsec);
+
+		int N = tree->GetEntries();
+		for(int j=0; j<N; j++ )
+		{
+			tree->GetEntry(j);
+			Map.at("Ws")			.push_back(double(fWs));
+			Map.at("Xs")			.push_back(pow(JpsiMass,2)/pow(Map.at("Ws")[j],2));
+			Map.at("Sigmas")		.push_back(double(fSigmas)*0.001);
+		}
+
+		getImpulseApprox(Map);
+		for (int i = 0; i < N; ++i)
+		{
+			Map.at("R")		.push_back(sqrt(Map.at("Sigmas")[i]/Map.at("Sigmas_IA")[i]));
+		}
+
+		N = tree1->GetEntries();
+		for(int j=0; j<N; j++ )
+		{
+			tree1->GetEntry(j);
+			Map.at("Raps")			.push_back(double(fRaps));
+			Map.at("Xsec_AnAn")		.push_back(double(fXsec)*0.001);
+		}
+
+		Maps.push_back(Map);
+	}
+	return Maps;
+}
+
+void drawCD(TString Case, TLegend * leg)
+{
+	std::vector<TString> Name	 = {"CD_BGK",	"CD_GBW",	"CD_IIM"};
+
+	std::vector<int> colors = {2,8,4};
+	auto CDs = readCDtheory();
+
+	for (int i = 0; i < CDs.size(); ++i)
+	{
+		auto Map = CDs[i];
+		auto gr_AnAn = new TGraph(Map.at("Raps").size(),	Map.at("Raps").data(),	Map.at("Xsec_AnAn").data());
+		auto gr_Simgas = new TGraph(Map.at("Ws").size(),	Map.at("Ws").data(),	Map.at("Sigmas").data());
+		auto gr_R = new TGraph(Map.at("Xs").size(),	Map.at("Xs").data(),	Map.at("R").data());
+	
+		if (Case == "Xsec"){
+			gr_AnAn->SetLineColor(colors[i]);
+            gr_AnAn->SetLineStyle(6);
+            gr_AnAn->SetLineWidth(3);
+            gr_AnAn->Draw("same");
+			leg->AddEntry(gr_AnAn,	Name[i].Data(),		"l" );
+		}
+		else if (Case == "Sigmas"){
+			gr_Simgas->SetLineColor(colors[i]);
+            gr_Simgas->SetLineStyle(6);
+            gr_Simgas->SetLineWidth(3);
+            gr_Simgas->Draw("same");
+			leg->AddEntry(gr_Simgas,	Name[i].Data(),		"l" );
+		}
+		else if (Case == "R"){
+			gr_R->SetLineColor(colors[i]);
+            gr_R->SetLineStyle(6);
+            gr_R->SetLineWidth(3);
+            gr_R->Draw("same");
+			leg->AddEntry(gr_R,	Name[i].Data(),		"l" );
+		}
 	}
 }

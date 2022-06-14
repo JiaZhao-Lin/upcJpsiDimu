@@ -48,7 +48,7 @@ double formFactor(Double_t *t, Double_t *par)
   return ff*ff;
         
 }
-void runUPC_AAModel(TString nucleus="Pb"){
+void runUPC_AAModel(TString nucleus="Pb", bool draw = false){
 
   //constants
   double Mvm=3.09;//mass jpsi
@@ -56,17 +56,16 @@ void runUPC_AAModel(TString nucleus="Pb"){
 
   //coherent (elastic) proton d\sigma/dt | t=0 
   //as a function of W
-  TF1* giveGammaP = new TF1("giveGammaP","[0]*TMath::Power(1-TMath::Power(([1]+[2])/x,2),1.5)*TMath::Power((x*x)/(100*100),[3])",4,506.);
+  TF1* giveGammaP = new TF1("giveGammaP","[0]*TMath::Power(1-TMath::Power(([1]+[2])/x,2),1.5)*TMath::Power((x*x)/(100*100),[3])",4,4000); //original:4,506.
   giveGammaP->SetTitle("#frac{d#sigma}{dt}(W_{#gamma p}, t=0)");
   giveGammaP->SetParameter(0, 342.);
   giveGammaP->SetParameter(1, Mvm);
   giveGammaP->SetParameter(2, M_N);
   giveGammaP->SetParameter(3, 0.4);
 
-  TCanvas* c1 = new TCanvas();
   giveGammaP->GetYaxis()->SetTitle("#frac{d#sigma}{dt}(W_{#gamma p}, t=0) (nb/GeV^{2})");
   giveGammaP->GetXaxis()->SetTitle("W_{#gamma p} (GeV)");
-  giveGammaP->Draw();
+  
 
   //nuclear Form Factor squared 
   TF1* nuclearFF = new TF1("nuclearFF", formFactor, 1e-8, 0.2, 2);
@@ -85,7 +84,7 @@ void runUPC_AAModel(TString nucleus="Pb"){
   }
   
   //IA histogram as a function of W
-  h_IA = new TH1D("h_IA",";W_{#gamma p} (GeV); #sigma^{#gamma+A #rightarrow VM+A} (W_{#gamma p}) [nb]",500,4.5,505.5);
+  h_IA = new TH1D("h_IA",";W_{#gamma p} (GeV); #sigma^{#gamma+A #rightarrow VM+A} (W_{#gamma p}) [nb]",4000,4.5,4000); //original:500,4.5,505.5
   for(int ibin=0;ibin<h_IA->GetNbinsX();ibin++){
     double w = h_IA->GetBinCenter(ibin+1);
     double gammaP_xs = giveGammaP->Eval(w);
@@ -97,69 +96,75 @@ void runUPC_AAModel(TString nucleus="Pb"){
     h_IA->SetBinContent(ibin+1, IA);
     h_IA->SetBinError(ibin+1, IA*0.054);//5% error for now
 
-    W_IA.push_back(w); Sigma_IA.push_back(IA/1e6); Sigma_IA_Err.push_back(IA/1e6*0.02);
+    W_IA.push_back(w); Sigma_IA.push_back(IA/1e6); Sigma_IA_Err.push_back(IA/1e6*0.054);
   }
 
-  TCanvas* c2 = new TCanvas();
-  h_IA->SetStats(kFALSE);
-  h_IA->SetTitle("Impulse Approximation");
-  h_IA->SetMarkerStyle(24);
-  h_IA->Draw("PE");
+  if(draw)
+  {
+    TCanvas* c1 = new TCanvas();
+    giveGammaP->Draw();
 
-  if(nucleus=="Au"){
-    TBox* box1 = new TBox(17,10e3,36,30e3);
-    box1->SetFillColorAlpha(kRed+2,0.2);
-    box1->SetFillStyle(1001);
-    box1->SetLineWidth(0);
-    box1->Draw("same");
-    box1->Draw("same");
+    TCanvas* c2 = new TCanvas();
+    h_IA->SetStats(kFALSE);
+    h_IA->SetTitle("Impulse Approximation");
+    h_IA->SetMarkerStyle(24);
+    h_IA->Draw("PE");
 
-    TLatex *latex1 = new TLatex(0.16, 0.15, "STAR (2016)");
-    latex1->SetNDC();
-    latex1->SetTextSize(23);
-    latex1->SetTextFont(43);
-    latex1->SetTextColor(kBlack);
-    latex1->Draw("same");
+    if(nucleus=="Au"){
+      TBox* box1 = new TBox(17,10e3,36,30e3);
+      box1->SetFillColorAlpha(kRed+2,0.2);
+      box1->SetFillStyle(1001);
+      box1->SetLineWidth(0);
+      box1->Draw("same");
+      box1->Draw("same");
 
-    TBox* box2 = new TBox(86,43e3,183,95e3);
-    box2->SetFillColorAlpha(kBlue+2,0.2);
-    box2->SetFillStyle(1001);
-    box2->SetLineWidth(0);
-    box2->Draw("same");
-    box2->Draw("same");
+      TLatex *latex1 = new TLatex(0.16, 0.15, "STAR (2016)");
+      latex1->SetNDC();
+      latex1->SetTextSize(23);
+      latex1->SetTextFont(43);
+      latex1->SetTextColor(kBlack);
+      latex1->Draw("same");
 
-    TLatex *latex2 = new TLatex(0.4, 0.3, "STAR (2022+)");
-    latex2->SetNDC();
-    latex2->SetTextSize(23);
-    latex2->SetTextFont(43);
-    latex2->SetTextColor(kBlack);
-    latex2->Draw("same");
+      TBox* box2 = new TBox(86,43e3,183,95e3);
+      box2->SetFillColorAlpha(kBlue+2,0.2);
+      box2->SetFillStyle(1001);
+      box2->SetLineWidth(0);
+      box2->Draw("same");
+      box2->Draw("same");
+
+      TLatex *latex2 = new TLatex(0.4, 0.3, "STAR (2022+)");
+      latex2->SetNDC();
+      latex2->SetTextSize(23);
+      latex2->SetTextFont(43);
+      latex2->SetTextColor(kBlack);
+      latex2->Draw("same");
+    }
+    else if(nucleus=="Pb"){
+      TBox* box1 = new TBox(37,20e3,414,180e3);
+      box1->SetFillColorAlpha(kRed+2,0.2);
+      box1->SetFillStyle(1001);
+      box1->SetLineWidth(0);
+      box1->Draw("same");
+      box1->Draw("same");
+
+      TLatex *latex1 = new TLatex(0.16, 0.75, "CMS |y_{VM}| < 2.4 (Run 2 & 3)");
+      latex1->SetNDC();
+      latex1->SetTextSize(23);
+      latex1->SetTextFont(43);
+      latex1->SetTextColor(kBlack);
+      latex1->Draw("same");
+    }
+
+    c1->SaveAs("./ImpulseApproximation/runUPC_AAModel_0.png");
+    c2->SaveAs("./ImpulseApproximation/runUPC_AAModel_1.png");
+    delete c1;
+    delete c2;
   }
-  else if(nucleus=="Pb"){
-    TBox* box1 = new TBox(37,20e3,414,180e3);
-    box1->SetFillColorAlpha(kRed+2,0.2);
-    box1->SetFillStyle(1001);
-    box1->SetLineWidth(0);
-    box1->Draw("same");
-    box1->Draw("same");
-
-    TLatex *latex1 = new TLatex(0.16, 0.75, "CMS |y_{VM}| < 2.4 (Run 2 & 3)");
-    latex1->SetNDC();
-    latex1->SetTextSize(23);
-    latex1->SetTextFont(43);
-    latex1->SetTextColor(kBlack);
-    latex1->Draw("same");
-  }
-
-  // c1->SaveAs("./ImpulseApproximation/runUPC_AAModel_0.png");
-  // c2->SaveAs("./ImpulseApproximation/runUPC_AAModel_1.png");
-  delete c1;
-  delete c2;
 }
 
 void Interpolate_IA(std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap, bool draw = false, TString nucleus="Pb")
 {
-  if (!h_IA) runUPC_AAModel(nucleus);
+  if (!h_IA) runUPC_AAModel(nucleus, draw);
 
   TH1D* h_IA_= new TH1D(*h_IA);
   std::vector<double> IAs = {}, IAs_Err={};
