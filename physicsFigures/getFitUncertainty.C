@@ -183,6 +183,10 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &Map, const double shi
 																									ALICE_Run2_FwdRap_Sigma_IA_Err[i]/ALICE_Run2_FwdRap_Sigma_IA[i])	);
 		}
 
+		std::map<TString, std::vector<double>> IA_Map = {{"Ws",		{}}};	// For plotting IA
+		for (int i = 5; i < 500; ++i){	IA_Map.at("Ws").push_back(i);	}
+		getImpulseApprox(IA_Map);
+
 		SigmaVsW->GetYaxis()->CenterTitle();
 		SigmaVsW->GetYaxis()->SetTitleSize(0.065);
 		SigmaVsW->GetYaxis()->SetTitleSize(0.065);
@@ -210,7 +214,7 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &Map, const double shi
 													&ALICE_Run2_FwdRap_Sigma_SysErrLow[0], &ALICE_Run2_FwdRap_Sigma_SysErrHig[0]);
 
 		TGraphErrors* ge_CGCnoFluct = new TGraphErrors(CGC_JpsiNoFluct_W.size(),	&CGC_JpsiNoFluct_W[0],	&CGC_JpsiNoFluct_CohXsec[0],	0,	0);
-		TGraphErrors* ge_IA        	= new TGraphErrors(Map.at("Ws_FitIA").size(),	&Map.at("Ws_FitIA")[0],	&Map.at("Sigmas_FitIA")[0],	0,	0);
+		TGraphErrors* ge_IA        	= new TGraphErrors(IA_Map.at("Ws").size(),	&IA_Map.at("Ws")[0],	&IA_Map.at("Sigmas_IA")[0],	0,	0);
 
 		gae_ALICE_Run2_MidRap ->SetMarkerStyle(24);
 		gae_ALICE_Run2_MidRap ->SetFillColorAlpha(16, 0.7);

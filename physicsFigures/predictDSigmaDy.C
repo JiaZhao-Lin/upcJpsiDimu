@@ -12,7 +12,7 @@ double y2W(const double y)
 }
 
 
-TF1 * fitSigmas(const int data_option = 3, const int func_option = 0)
+TF1 * fitSigmas(const int data_option = 3, const int func_option = 6)
 {
 	auto ShadowRatio_ParamsMap 	= readMap("rootfiles/Results_Map.root");
 	auto TotalSysUncer_Map 		= readMap("rootfiles/TotalSysUncer_Map.root");
@@ -76,17 +76,17 @@ TF1 * fitSigmas(const int data_option = 3, const int func_option = 0)
 
 
 	switch(data_option) {
-		case 1:
+		case 1:	// use ALICE Fwd Data points Only
 			Ws_ToFit.insert(Ws_ToFit.end(),	ALICE_Run2_FwdRap_W.begin(),	ALICE_Run2_FwdRap_W.end());
 			Sigmas_ToFit.insert(Sigmas_ToFit.end(),	ALICE_Run2_FwdRap_Sigma.begin(),	ALICE_Run2_FwdRap_Sigma.end());
 			Sigmas_Err_ToFit.insert(Sigmas_Err_ToFit.end(),	ALICE_Run2_FwdRap_Sigma_StatErr.begin(),	ALICE_Run2_FwdRap_Sigma_StatErr.end());
 			break;
-		case 2:
+		case 2:	// use ALICE Fwd and Mid Data points
 			Ws_ToFit.insert(Ws_ToFit.end(),	ALICE_Run2_MidRap_W.begin(),	ALICE_Run2_MidRap_W.end());
 			Sigmas_ToFit.insert(Sigmas_ToFit.end(),	ALICE_Run2_MidRap_Sigma.begin(),	ALICE_Run2_MidRap_Sigma.end());
 			Sigmas_Err_ToFit.insert(Sigmas_Err_ToFit.end(),	ALICE_Run2_MidRap_Sigma_StatErr.begin(),	ALICE_Run2_MidRap_Sigma_StatErr.end());
 			break;
-		case 3:
+		case 3:	// use ALICE Fwd, Mid and CMS Data points
 			Ws_ToFit.insert(Ws_ToFit.end(),	ALICE_Run2_FwdRap_W.begin(),	ALICE_Run2_FwdRap_W.end());
 			Ws_ToFit.insert(Ws_ToFit.end(),	ALICE_Run2_MidRap_W.begin(),	ALICE_Run2_MidRap_W.end());
 			Sigmas_ToFit.insert(Sigmas_ToFit.end(),	ALICE_Run2_FwdRap_Sigma.begin(),	ALICE_Run2_FwdRap_Sigma.end());
@@ -111,47 +111,21 @@ TF1 * fitSigmas(const int data_option = 3, const int func_option = 0)
 	SigmaVsW->GetXaxis()->SetLabelSize(0.04);
 	SigmaVsW->SetTickLength(0.04);
 	SigmaVsW->Draw();
-	drawLatex(0.15, 0.85, "UPC Pb+Pb #sqrt{s_{NN}} = 5.02 TeV ()",      42,       0.05,      1);
+	drawLatex(0.15, 0.85, "UPC Pb+Pb #sqrt{s_{NN}} = 5.02 TeV",      42,       0.05,      1);
 	drawLatex(0.15, 0.78, Form("Fit Func: %s",funcSigmas->GetFormula()->GetExpFormula().Data()),      42,       0.03,      1);
 
 	cout<<"fitSigmas----------------->Proceessing<----------------"<<endl;
 	TGraphErrors* gr = new TGraphErrors(Ws_ToFit.size(), &Ws_ToFit[0], &Sigmas_ToFit[0],0, &Sigmas_Err_ToFit[0]);
 	
-
-
-
 	gr->Fit(funcSigmas);
 	gr->SetTitle("TGraph1D TF1 Fit; dN_{1}/dy; dN_{2}/dy; d#sigma/dy");
 	gr->SetMarkerColor(kBlue);
 	// gr->SetMarkerSize(0.8);
 	gr->SetLineWidth(5);
 	gr->Draw("same pez");
-
-	// ge_ALICE_Run2_MidRap->SetMarkerStyle(24);
-	// ge_ALICE_Run2_MidRap->SetMarkerColor(4);
-	// ge_ALICE_Run2_MidRap->SetLineColor(4);
-	// ge_ALICE_Run2_MidRap->SetLineWidth(2);
-	// ge_ALICE_Run2_MidRap->Draw("pezsame");
-
-	// ge_ALICE_Run2_FwdRap->SetMarkerStyle(25);
-	// ge_ALICE_Run2_FwdRap->SetMarkerColor(4);
-	// ge_ALICE_Run2_FwdRap->SetLineColor(4);
-	// ge_ALICE_Run2_FwdRap->SetLineWidth(2);
-	// ge_ALICE_Run2_FwdRap->Draw("pezsame");
-
-	// funcSigmas->SetMarkerColor(kBlue);
-	// funcSigmas->Draw("same surf");
-
-	// drawLatex(0.05, 0.95, Form("(#sigma(y = %.2f), #sigma(y = %.2f)) = (%.4f #pm %.4f, %.4f #pm %.4f)", Rap, -Rap,
-	//                       f->GetParameter(0), f->GetParError(0), f->GetParameter(1), f->GetParError(1)),      42,       0.05,      1);
-
-	// c->SaveAs(Form("outplots/fit2D_%d.png",i));
 	cout<<endl;
 
-	// Sigmas      .push_back(f->GetParameter(0));  Sigmas      .push_back(f->GetParameter(1));
-	// Sigmas_Err  .push_back(f->GetParError(0));   Sigmas_Err  .push_back(f->GetParError(1));
-
-	// delete gr; delete c; delete f;
+	c->SaveAs("outplots/SigmasVsW_Fit.pdf");
 	cout<<"fitSigmas----------------->DONE<----------------"<<endl;
 
 	return funcSigmas;
@@ -206,24 +180,6 @@ void predictDSigmaDy()
 		Xsec_AnAn_Prediction.push_back(Xsec);
 	}
 	Temp_Map["Xsec_AnAn_Prediction"] = Xsec_AnAn_Prediction;
-
-	// auto c1 = new TCanvas();
-	// TH2D* htem2d = new TH2D("AnAn", "AnAn;y;d#sigma_{J/#psi}/dy (mb);", 10, -4.1, 0, 10, 0, 8.0);
-	// htem2d ->GetYaxis()->CenterTitle();
-	// //htem2d ->GetYaxis()->SetNdivisions(6);
-	// htem2d ->GetYaxis()->SetTitleSize(0.07);
-	// htem2d ->GetYaxis()->SetTitleOffset(0.63);
-	// htem2d ->GetYaxis()->SetLabelSize(0.06);
-	// htem2d ->GetXaxis()->CenterTitle();
-	// htem2d ->GetXaxis()->SetTitleSize(0.07);
-	// htem2d ->GetXaxis()->SetTitleOffset(0.75);
-	// htem2d ->GetXaxis()->SetLabelSize(0.06);
-	// //htem2d ->SetTickLength(0.08);
-
-	// htem2d->Draw();
-
-	// auto gr = new TGraph(Xsec_AnAn_Prediction.size(),Raps_Prediction.data(),Xsec_AnAn_Prediction.data());
-	// gr->Draw("Same");
 
 	cout<<"predictDSigmaDy----------------->DSigmaDy<----------------"<<endl;
 	saveMap(Temp_Map,	"rootfiles/DataDrivenPrediction.root");

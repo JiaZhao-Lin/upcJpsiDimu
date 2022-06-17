@@ -69,14 +69,14 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 	if(flag4Axis==0) //logY only
 	{
 		c->SetLogy();
-		SigmaVsW = new TH2D("SigmaVsW", ";W_{#gammaPb} (GeV);#sigma(#gamma Pb #rightarrow J/#psi Pb) (mb);", 10,0,420, 10, 0.005, 0.15);
+		SigmaVsW = new TH2D("SigmaVsW", ";W_{#gammaPb} (GeV);#sigma(#gamma Pb #rightarrow J/#psi Pb) (mb);", 10,0,420, 10, 0.005, 0.13);
 	}
 	else //logX and logY as default one
 	{
 		c->SetLogx();
 		c->SetLogy();
 		//SigmaVsW = new TH2D("SigmaVsW", ";W_{#gammaPb} (GeV);#sigma(#gamma A #rightarrow J/#psi A) (mb)", 10,28,520, 10, 0.015, 0.11);
-		SigmaVsW = new TH2D("SigmaVsW", ";W_{#gammaPb} (GeV);#sigma(#gamma A #rightarrow J/#psi A) (mb);", 10,14,520, 10, 0.006, 0.10);
+		SigmaVsW = new TH2D("SigmaVsW", ";W_{#gammaPb} (GeV);#sigma(#gamma A #rightarrow J/#psi A) (mb);", 10,14,520, 10, 0.005, 0.13);
 		X_AXIS_ERR 			= {11,2,12,1.7,14,1.5};
 		X_AXIS_ERR_ALICE_Fwd= {0.7,0.8};
 		X_AXIS_ERR_ALICE_Mid= {5};
@@ -174,21 +174,22 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 		TLegend  *legData =  new TLegend(0.14, 0.66, 0.37, 0.82);
 		legData->SetFillStyle(0);
 		legData->SetFillColor(0);
-		legData->SetTextSize(0.045);
+		legData->SetTextSize(0.04);
 		legData->AddEntry(ge_CMS,               "CMS",               "p");
 		legData->AddEntry(ge_ALICE_Run2_FwdRap, "ALICE (-4 < y < -3.5)", "p");
 		legData->AddEntry(ge_ALICE_Run2_MidRap, "ALICE (|y| < 0.15)",  "p");
 		legData->Draw("same");
 
-		TLegend  *legTheory =  new TLegend(0.65, 0.15, 0.95, 0.40);
+		TLegend  *legTheory =  new TLegend(0.68, 0.15, 0.98, 0.50);
 		legTheory->SetFillStyle(0);
 		legTheory->SetFillColor(0);
-		legTheory->SetTextSize(0.045);
+		legTheory->SetTextSize(0.035);
 		legTheory->AddEntry(ge_IA,                "Impulse Approx.", "l");
                 legTheory->AddEntry(ge_CGCnoFluct,        "CGC IPsat",                   "l");
 		drawGG("Sigmas",legTheory);
 		drawLTA_Sigmas_R("Sigmas", legTheory);
-		// drawbBK("Sigmas",legTheory);
+		drawbBK("Sigmas",legTheory);
+		drawCD("Sigmas",legTheory);
 		legTheory->Draw("same");
 
 		// TF1 *f1 	= new TF1("f1","log10(x)",3.5469263e-5,0.048933106);
@@ -218,21 +219,21 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 		TLegend  *legData =  new TLegend(0.25, 0.15, 0.55, 0.3);
 		legData->SetFillStyle(0);
 		legData->SetFillColor(0);
-		legData->SetTextSize(0.045);
+		legData->SetTextSize(0.04);
 		legData->AddEntry(ge_CMS,               "CMS",                   "p");
 		legData->AddEntry(ge_ALICE_Run2_FwdRap, "ALICE (-4 < y < -3.5)", "p");
 		legData->AddEntry(ge_ALICE_Run2_MidRap, "ALICE (|y| < 0.15)",    "p");
 		legData->Draw("same");
 
-		TLegend  *legTheory =  new TLegend(0.65, 0.15, 0.95, 0.4);
+		TLegend  *legTheory =  new TLegend(0.68, 0.15, 0.98, 0.5);
 		legTheory->SetFillStyle(0);
 		legTheory->SetFillColor(0);
-		legTheory->SetTextSize(0.045);
+		legTheory->SetTextSize(0.035);
                 legTheory->AddEntry(ge_IA,                "Impulse Approx.", "l");
 		legTheory->AddEntry(ge_CGCnoFluct,        "CGC IPsat",                   "l");
 		drawGG("Sigmas",legTheory);
 		drawLTA_Sigmas_R("Sigmas", legTheory);
-		// drawbBK("Sigmas",legTheory);
+		drawbBK("Sigmas",legTheory);
 		drawCD("Sigmas",legTheory);
 		legTheory->Draw("same");
 
@@ -244,7 +245,7 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 		c->SaveAs("outplots/SigmaVsW_logY.pdf");
 	}
 
-	delete c;
+//	delete c;
 }
 
 void plotRvsX( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap, const std::map<TString, std::vector<double>> &TotalSysUncer_Map )
@@ -260,7 +261,7 @@ void plotRvsX( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap, co
 	c->SetLogx();
 
 	//TH2D* htem2d = new TH2D("htem2d", "", 10,3.0e-5,5.0e-2, 10, 0, 1);
-	TH2D* htem2d = new TH2D("htem2d", "", 10,1.0e-5,5e-2, 10, 0.2, 1.1);
+	TH2D* htem2d = new TH2D("htem2d", "", 10,1.0e-5,5e-2, 10, 0.2, 1.05);
 	htem2d->SetYTitle("R^{Pb}_{g}(x, #mu^{2}=2.4 GeV^{2})");
 	htem2d->SetXTitle("x");
 
@@ -340,20 +341,20 @@ void plotRvsX( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap, co
 	TLegend  *leg =  new TLegend(0.13, 0.62, 0.40, 0.8);
 	leg->SetFillStyle(0);
 	leg->SetFillColor(0);
-	leg->SetTextSize(0.045);
+	leg->SetTextSize(0.04);
 	leg->AddEntry(ge_CMS,               "CMS",                   "p");
 	leg->AddEntry(ge_ALICE_Run2_FwdRap, "ALICE (-4 < y < -3.5)", "p");
 	leg->AddEntry(ge_ALICE_Run2_MidRap, "ALICE (|y| < 0.15)",    "p");
     leg->Draw("same");
 
-    TLegend  *leg1 =  new TLegend(0.7, 0.27, 0.97, 0.45);
+    TLegend  *leg1 =  new TLegend(0.74, 0.24, 0.99, 0.55);
     leg1->SetFillStyle(0);
     leg1->SetFillColor(0);
-    leg1->SetTextSize(0.045);
+    leg1->SetTextSize(0.035);
 	drawGG("R",leg1);
 	drawLTA_Sigmas_R("R", leg1);
-	// drawbBK("R", leg1);
-	// drawCD("R", leg1);
+	drawbBK("R", leg1);
+	drawCD("R", leg1);
 	leg1->Draw("same");
 
 	drawLatex(0.15, 0.84, "Pb+Pb #rightarrow Pb+Pb+J/#psi",  42,        0.05,      1 );
@@ -365,7 +366,7 @@ void plotRvsX( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap, co
 	c->SaveAs("outplots/ShadowingRatiovsX.png");
 	c->SaveAs("outplots/ShadowingRatiovsX.pdf");
 
-	delete c;
+//	delete c;
 
 	return ShadowRatio_ParamsMap;
 }

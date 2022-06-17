@@ -73,7 +73,7 @@ std::vector<std::vector<double>> fit2D(std::map<TString, std::vector<double>> Ma
                               f->GetParameter(0), f->GetParError(0), f->GetParameter(1), f->GetParError(1)),      42,       0.04,      1);
       drawLatex(0.1, 0.90, Form("#chi^{2}/ndf: %.2f/1", fitResults->Chi2()),      42,       0.04,      1);
 
-      c->SaveAs(Form("outplots/fit2D_%d.pdf",i));
+      // c->SaveAs(Form("outplots/fit2D_%d.pdf",i));
       cout<<endl;
       
       Sigmas      .push_back(f->GetParameter(0));  Sigmas      .push_back(f->GetParameter(1));
