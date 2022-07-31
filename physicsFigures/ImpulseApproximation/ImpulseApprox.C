@@ -68,7 +68,7 @@ void ImpulseApprox()
   //testing
   std::map<TString, std::vector<double>> TestMap = 
   {
-    {"Ws",    {17.961384, 20.352915,124.67672,  200,300,400,500}}
+    {"Ws",    {14.890511, 19.119794, 17.961384, 20.352915,124.67672,  200,300,400,500}}
   };
 
   getImpulseApprox(TestMap);

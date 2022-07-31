@@ -10,6 +10,8 @@ TGraphErrors*       ge_XsecVsY_Alice2021;
 TGraphAsymmErrors* gae_XsecVsY_Alice2021;
 TGraphErrors*       ge_XsecVsY_LHCb2021;
 TGraphAsymmErrors* gae_XsecVsY_LHCb2021;
+TGraphErrors*       ge_XsecVsY_LHCb2022;
+TGraphAsymmErrors* gae_XsecVsY_LHCb2022;
 TGraphErrors*       ge_XsecVsY_CMS2022;
 TGraphAsymmErrors* gae_XsecVsY_CMS2022;
 TGraphErrors*       ge_XsecVsY_0n0n_CMS2022;
@@ -112,6 +114,25 @@ void getAliceData()
 			Rap_LHCb2021,        Xsec_LHCb2021,
 			RapErrLow_LHCb2021,  RapErrHig_LHCb2021,
 			XsecErrLow_LHCb2021, XsecErrHig_LHCb2021);
+
+	const int     nPots_LHCb2022  = 5;
+	const double  Rap_LHCb2022[nPots_LHCb2022]        = {-4.25, -3.75, -3.25, -2.75, -2.25 };
+	const double  Xsec_LHCb2022[nPots_LHCb2022]       = { 1.181,  1.922,  2.395,  2.896,  3.392 };
+	const double  RapErrLow_LHCb2022[nPots_LHCb2022]  = { 0.25,  0.25,  0.25,  0.25,  0.25 };
+	const double  RapErrHig_LHCb2022[nPots_LHCb2022]  = { 0.25,  0.25,  0.25,  0.25,  0.25 };
+	const double  XsecErrLow_LHCb2022[nPots_LHCb2022] = { TMath::Hypot(0.049, 0.052),	TMath::Hypot(0.072, 0.084),  TMath::Hypot(0.089, 0.105),  TMath::Hypot(0.117, 0.127),  TMath::Hypot(0.165, 0.147) };
+	const double  XsecErrHig_LHCb2022[nPots_LHCb2022] = { TMath::Hypot(0.049, 0.052),	TMath::Hypot(0.072, 0.084),  TMath::Hypot(0.089, 0.105),  TMath::Hypot(0.117, 0.127),  TMath::Hypot(0.165, 0.147) };
+	const double  XsecErr_LHCb2022[nPots_LHCb2022]    = { 0.054,  0.039,  0.040,  0.053,  0.108 };
+
+	ge_XsecVsY_LHCb2022  = new TGraphErrors(
+			nPots_LHCb2022,
+			Rap_LHCb2022,       Xsec_LHCb2022,
+			RapErrLow_LHCb2022, XsecErr_LHCb2022);
+	gae_XsecVsY_LHCb2022 = new TGraphAsymmErrors(
+			nPots_LHCb2022,
+			Rap_LHCb2022,        Xsec_LHCb2022,
+			RapErrLow_LHCb2022,  RapErrHig_LHCb2022,
+			XsecErrLow_LHCb2022, XsecErrHig_LHCb2022);
 }
 
 void drawCMSvsAlice()
@@ -120,7 +141,7 @@ void drawCMSvsAlice()
 	setPad(0.12, 0.08, 0.07, 0.13);
 
 	//TH2D* htem2d = new TH2D("htem2d", "", 10, -4.1, 1.0, 10, 0, 14.0);
-	TH2D* htem2d = new TH2D("AnAn", "AnAn;y;d#sigma_{J/#psi}/dy (mb);", 10, -4.1, 0, 10, 0, 8.0);
+	TH2D* htem2d = new TH2D("AnAn", "AnAn;y;d#sigma_{J/#psi}/dy (mb);", 10, -4.5, 0, 10, 0, 8.0);
 	htem2d ->GetYaxis()->CenterTitle();
 	//htem2d ->GetYaxis()->SetNdivisions(6);
 	htem2d ->GetYaxis()->SetTitleSize(0.07);
@@ -139,7 +160,7 @@ void drawCMSvsAlice()
 	gae_XsecVsY_Alice2019 ->SetFillStyle(3001);
 	gae_XsecVsY_Alice2019 ->Draw("2same");
 	ge_XsecVsY_Alice2019  ->SetMarkerStyle(21);
-	ge_XsecVsY_Alice2019  ->SetMarkerSize(0.5);
+	ge_XsecVsY_Alice2019  ->SetMarkerSize(1.);
 	ge_XsecVsY_Alice2019  ->Draw("pezsame");
 	
 	gae_XsecVsY_Alice2021  ->SetMarkerStyle(21);
@@ -147,16 +168,16 @@ void drawCMSvsAlice()
 	gae_XsecVsY_Alice2021 ->SetFillStyle(3001);
 	gae_XsecVsY_Alice2021 ->Draw("2same");
 	ge_XsecVsY_Alice2021  ->SetMarkerStyle(21);
-	ge_XsecVsY_Alice2021  ->SetMarkerSize(0.5);
+	ge_XsecVsY_Alice2021  ->SetMarkerSize(1.);
 	ge_XsecVsY_Alice2021  ->Draw("pezsame");
 
-	gae_XsecVsY_LHCb2021  ->SetMarkerStyle(24);
-	gae_XsecVsY_LHCb2021 ->SetFillColor(kGray);
-	gae_XsecVsY_LHCb2021 ->SetFillStyle(3001);
-	gae_XsecVsY_LHCb2021 ->Draw("2same");
-	ge_XsecVsY_LHCb2021  ->SetMarkerStyle(24);
-	ge_XsecVsY_LHCb2021  ->SetMarkerSize(0.5);
-	ge_XsecVsY_LHCb2021  ->Draw("pezsame");
+	gae_XsecVsY_LHCb2022  ->SetMarkerStyle(24);
+	gae_XsecVsY_LHCb2022 ->SetFillColor(kGray);
+	gae_XsecVsY_LHCb2022 ->SetFillStyle(3001);
+	gae_XsecVsY_LHCb2022 ->Draw("2same");
+	ge_XsecVsY_LHCb2022  ->SetMarkerStyle(26);
+	ge_XsecVsY_LHCb2022  ->SetMarkerSize(1.);
+	ge_XsecVsY_LHCb2022  ->Draw("pezsame");
 
 	gae_XsecVsY_CMS2022 ->SetMarkerStyle(20);
 	gae_XsecVsY_CMS2022 ->SetMarkerColor(2);
@@ -180,7 +201,7 @@ void drawCMSvsAlice()
 	leg->AddEntry(gae_XsecVsY_CMS2022,              "CMS",               "lpf" );
 	leg->AddEntry(gae_XsecVsY_Alice2019,            "ALICE 2019",        "lpf");
 	leg->AddEntry(gae_XsecVsY_Alice2021,            "ALICE 2021",        "lpf");
-	leg->AddEntry(gae_XsecVsY_LHCb2021,             "LHCb  2021",        "lpf");
+	leg->AddEntry(gae_XsecVsY_LHCb2022,             "LHCb  2022",        "lpf");
 	// drawDDP("DDP",	leg);
 	leg->Draw("same");
 
@@ -359,13 +380,13 @@ void drawCMS_NeuConfig()
     ge_XsecVsY_Alice2021  ->SetLineColor(4);
 	ge_XsecVsY_Alice2021  ->Draw("pezsame");
 
-	gae_XsecVsY_LHCb2021  ->SetMarkerStyle(28);
-	gae_XsecVsY_LHCb2021 ->SetFillColor(kGray);
-	gae_XsecVsY_LHCb2021 ->SetFillStyle(3001);
-	gae_XsecVsY_LHCb2021 ->Draw("2same");
-	ge_XsecVsY_LHCb2021  ->SetMarkerStyle(28);
-	ge_XsecVsY_LHCb2021  ->SetMarkerSize(1.5);
-	ge_XsecVsY_LHCb2021  ->Draw("pezsame");
+	gae_XsecVsY_LHCb2022  ->SetMarkerStyle(26);
+	gae_XsecVsY_LHCb2022 ->SetFillColor(kGray);
+	gae_XsecVsY_LHCb2022 ->SetFillStyle(3001);
+	gae_XsecVsY_LHCb2022 ->Draw("2same");
+	ge_XsecVsY_LHCb2022  ->SetMarkerStyle(26);
+	ge_XsecVsY_LHCb2022  ->SetMarkerSize(1.5);
+	ge_XsecVsY_LHCb2022  ->Draw("pezsame");
 
 	gae_XsecVsY_CMS2022 ->SetMarkerStyle(20);
 	gae_XsecVsY_CMS2022 ->SetMarkerColor(2);
@@ -387,7 +408,7 @@ void drawCMS_NeuConfig()
 	leg_AnAn->AddEntry(gae_XsecVsY_CMS2022,			"CMS",               "lpf" );
 	leg_AnAn->AddEntry(gae_XsecVsY_Alice2019,		"ALICE 2019",        "lpf");
 	leg_AnAn->AddEntry(gae_XsecVsY_Alice2021,		"ALICE 2021",        "lpf");
-	leg_AnAn->AddEntry(gae_XsecVsY_LHCb2021,		"LHCb  2021",        "lpf");
+	leg_AnAn->AddEntry(gae_XsecVsY_LHCb2022,		"LHCb  2022",        "lpf");
 	drawLTA("AnAn",leg_Theory);
 	// drawbBK("Xsec",leg_Theory);
 	drawCD("Xsec",leg_Theory);

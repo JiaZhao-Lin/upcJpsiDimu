@@ -151,7 +151,7 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &Map, const double shi
 {
 	static bool FirstCall = true;
 	static auto c1 = new TCanvas();
-	static TH2D* SigmaVsW = new TH2D("SigmaVsW", ";W_{#gammaPb} (GeV);#sigma(#gamma A #rightarrow J/#psi A) (mb);", 10,0,420, 10, 0.005, 0.20);
+	static TH2D* SigmaVsW = new TH2D("SigmaVsW", ";W_{#gammaPb} (GeV);#sigma(#gamma A #rightarrow J/#psi A) Uncer.(%);", 10,0,420, 10, 0.005, 0.20);
 	static TLegend  *legData =  new TLegend(0.25, 0.15, 0.4, 0.40);
 
 	if ( FirstCall )
@@ -411,8 +411,8 @@ void getFitUncertainty()
 	std::map<TString, std::vector<double>> CB_Poly3_WideMass_Map= getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_WideMass_6RapBins.appliedTnP.root");
 	std::map<TString, std::vector<double>> CB_Poly3_looseHF_Map = getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins.looseHF.root");
 	// std::map<TString, std::vector<double>> CB_Poly3_tightHF_Map = getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins.tightHF.root");
-	std::map<TString, std::vector<double>> CB_Poly3_fluxP_Map 	= getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins.appliedTnP.root", 1.05);
-	std::map<TString, std::vector<double>> CB_Poly3_fluxM_Map 	= getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins.appliedTnP.root", 0.95);
+	std::map<TString, std::vector<double>> CB_Poly3_fluxP_Map 	= getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins.appliedTnP.root", 1.0, "_Rplus0p5");
+	std::map<TString, std::vector<double>> CB_Poly3_fluxM_Map 	= getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins.appliedTnP.root", 1.0, "_Rminus0p5");
 	std::map<TString, std::vector<double>> CB_Poly3_TnP_Low_Map = getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins.appliedTnP_Low.root");
 	std::map<TString, std::vector<double>> CB_Poly3_TnP_Hig_Map	= getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins.appliedTnP_Hig.root");
 	std::map<TString, std::vector<double>> CB_Poly3_PU_Map 		= getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUATLAS_6RapBins.appliedTnP.root");
@@ -499,6 +499,22 @@ void getFitUncertainty()
 
 	c2->SaveAs("outplots/Uncertainty_SigmaVsW.png");
 	c2->SaveAs("outplots/Uncertainty_SigmaVsW.pdf");
+
+	auto c21 = new TCanvas();
+	c21->SetLogx();
+	TLegend  *legendW1 =  new TLegend(0.35, 0.60, 0.50, 0.90);
+	legendW1->SetFillStyle(0);
+	legendW1->SetTextSize(0.035);
+	auto Sigma_FitUncer1	= new TH2D("Sigma_FitUncertainty1", ";W_{#gammaPb} (GeV);#sigma Uncer.(%);", 10,30,520, 10,0,15);
+	Sigma_FitUncer1->Draw();
+	plot_Uncer(SigmasMassFitRangeUncer_Map,	JpsiXsec_Default,	"Ws",	"Sigmas",	24,	1,	legendW1,	"FitRange");
+	plot_Uncer(CB_Poly4_Map,			JpsiXsec_Default,	"Ws",	"Sigmas",	24,	2,	legendW1,	"QED Bkg");
+	plot_Uncer(CB_FixCBAN_Poly3_Map,	JpsiXsec_Default,	"Ws",	"Sigmas",	24,	4,	legendW1,	"FixCBAN");
+	plot_Uncer(CBG_Poly3_Map,			JpsiXsec_Default,	"Ws",	"Sigmas",	24,	6,	legendW1,	"CB+Gaus");
+	plot_Uncer(CB_Poly3_SdB_Map,		JpsiXsec_Default,	"Ws",	"Sigmas",	24,	8,	legendW1,	"Sd Band");
+	legendW1->Draw("same");
+	c21->SaveAs("outplots/Uncertainty_SigmaVsWFitUncer.png");
+	c21->SaveAs("outplots/Uncertainty_SigmaVsWFitUncer.pdf");
 	//-----------------------------------------------------------------------------------
 
 	//-----------------------------------------------------------------------------------
@@ -530,12 +546,28 @@ void getFitUncertainty()
 
 	c3->SaveAs("outplots/Uncertainty_RVsX.png");
 	c3->SaveAs("outplots/Uncertainty_RVsX.pdf");
+
+	auto c31 = new TCanvas();
+	c31->SetLogx();
+	TLegend  *legendR1 =  new TLegend(0.35, 0.60, 0.50, 0.90);
+	legendR1->SetFillStyle(0);
+	legendR1->SetTextSize(0.035);
+	auto R_FitUncer1	= new TH2D("R_FitUncertainty1", ";x;R^{Pb}_{g} Uncer.(%);", 10,4.0e-5,1.1e-2, 10, 0, 15);
+	R_FitUncer1->Draw();
+	plot_Uncer(RMassFitRangeUncer_Map,	JpsiXsec_Default,	"Xs",	"R",	24,	1,	legendR1,	"FitRange");
+	plot_Uncer(CB_Poly4_Map,			JpsiXsec_Default,	"Xs",	"R",	24,	2,	legendR1,	"QED Bkg");
+	plot_Uncer(CB_FixCBAN_Poly3_Map,	JpsiXsec_Default,	"Xs",	"R",	24,	4,	legendR1,	"FixCBAN");
+	plot_Uncer(CBG_Poly3_Map,			JpsiXsec_Default,	"Xs",	"R",	24,	6,	legendR1,	"CB+Gaus");
+	plot_Uncer(CB_Poly3_SdB_Map,		JpsiXsec_Default,	"Xs",	"R",	24,	8,	legendR1,	"Sd Band");
+	legendR1->Draw("same");
+	c31->SaveAs("outplots/Uncertainty_RVsXFitUncer.png");
+	c31->SaveAs("outplots/Uncertainty_RVsXFitUncer.pdf");
 	//-----------------------------------------------------------------------------------
 
 	//-----------------------------------------------------------------------------------
 	//-----------------------------------Xsec_AnAn Unicertainty--------------------------
 	auto c4 = new TCanvas();
-	auto hXsec_AnAn_Uncer	= new TH2D("hXsec_AnAn_Uncer", "hXsec_AnAn_Uncer;y;d#sigma_{J/#psi}/dy (mb);", 10, -3, -1, 10, 0, 20);
+	auto hXsec_AnAn_Uncer	= new TH2D("hXsec_AnAn_Uncer", "hXsec_AnAn_Uncer;y;d#sigma_{J/#psi}/dy Uncer.(%);", 10, -3, -1, 10, 0, 20);
 	hXsec_AnAn_Uncer->Draw();
 
 	TLegend  *legend_AnAn =  new TLegend(0.35, 0.60, 0.50, 0.90);
@@ -557,12 +589,27 @@ void getFitUncertainty()
 
 	c4->SaveAs("outplots/Uncertainty_Xsec_AnAn.png");
 	c4->SaveAs("outplots/Uncertainty_Xsec_AnAn.pdf");
+
+	auto c41 = new TCanvas();
+	TLegend  *legend_AnAn1 =  new TLegend(0.35, 0.60, 0.50, 0.90);
+	legend_AnAn1->SetFillStyle(0);
+	legend_AnAn1->SetTextSize(0.035);
+	auto hXsec_AnAn_Uncer1	= new TH2D("hXsec_AnAn_Uncer1", "hXsec_AnAn_Uncer;y;d#sigma_{J/#psi}/dy Uncer.(%);", 10, -3, -1, 10, 0, 20);
+	hXsec_AnAn_Uncer1->Draw();
+	plot_Uncer(Xsec_AnAnMassFitRangeUncer_Map,	JpsiXsec_Default,	"Rap",	"Xsec_AnAn",	24,	1,	legend_AnAn1,	"FitRange");
+	plot_Uncer(CB_Poly4_Map,			JpsiXsec_Default,	"Rap",	"Xsec_AnAn",	24,	2,	legend_AnAn1,	"QED Bkg");
+	plot_Uncer(CB_FixCBAN_Poly3_Map,	JpsiXsec_Default,	"Rap",	"Xsec_AnAn",	24,	4,	legend_AnAn1,	"FixCBAN");
+	plot_Uncer(CBG_Poly3_Map,			JpsiXsec_Default,	"Rap",	"Xsec_AnAn",	24,	6,	legend_AnAn1,	"CB+Gaus");
+	plot_Uncer(CB_Poly3_SdB_Map,		JpsiXsec_Default,	"Rap",	"Xsec_AnAn",	24,	8,	legend_AnAn1,	"Sd Band");
+	legend_AnAn1->Draw("same");
+	c41->SaveAs("outplots/Uncertainty_Xsec_AnAnFitUncer.png");
+	c41->SaveAs("outplots/Uncertainty_Xsec_AnAnFitUncer.pdf");
 	//-----------------------------------------------------------------------------------
 
 	//-----------------------------------------------------------------------------------
 	//-----------------------------------Xsec_0n0n Unicertainty--------------------------
 	auto c5 = new TCanvas();
-	auto hXsec_0n0n_Uncer	= new TH2D("hXsec_0n0n_Uncer", "hXsec_0n0n_Uncer;y;d#sigma_{J/#psi}/dy (mb);", 10, -3, -1, 10, 0, 20);
+	auto hXsec_0n0n_Uncer	= new TH2D("hXsec_0n0n_Uncer", "hXsec_0n0n_Uncer;y;d#sigma_{J/#psi}/dy Uncer.(%);", 10, -3, -1, 10, 0, 20);
 	hXsec_0n0n_Uncer->Draw();
 
 	TLegend  *legend_0n0n =  new TLegend(0.35, 0.60, 0.50, 0.90);
@@ -589,7 +636,7 @@ void getFitUncertainty()
 	//-----------------------------------------------------------------------------------
 	//-----------------------------------Xsec_0nXnSum Unicertainty-----------------------
 	auto c6 = new TCanvas();
-	auto hXsec_0nXnSum_Uncer	= new TH2D("hXsec_0nXnSum_Uncer", "hXsec_0nXnSum_Uncer;y;d#sigma_{J/#psi}/dy (mb);", 10, -3, -1, 10, 0, 20);
+	auto hXsec_0nXnSum_Uncer	= new TH2D("hXsec_0nXnSum_Uncer", "hXsec_0nXnSum_Uncer;y;d#sigma_{J/#psi}/dy Uncer.(%);", 10, -3, -1, 10, 0, 20);
 	hXsec_0nXnSum_Uncer->Draw();
 
 	TLegend  *legend_0nXnSum =  new TLegend(0.35, 0.60, 0.50, 0.90);
@@ -616,7 +663,7 @@ void getFitUncertainty()
 	//-----------------------------------------------------------------------------------
 	//-----------------------------------Xsec_XnXn Unicertainty-----------------------
 	auto c7 = new TCanvas();
-	auto hXsec_XnXn_Uncer	= new TH2D("hXsec_XnXn_Uncer", "hXsec_XnXn_Uncer;y;d#sigma_{J/#psi}/dy (mb);", 10, -3, -1, 10, 0, 20);
+	auto hXsec_XnXn_Uncer	= new TH2D("hXsec_XnXn_Uncer", "hXsec_XnXn_Uncer;y;d#sigma_{J/#psi}/dy Uncer.(%);", 10, -3, -1, 10, 0, 20);
 	hXsec_XnXn_Uncer->Draw();
 
 	TLegend  *legend_XnXn =  new TLegend(0.35, 0.60, 0.50, 0.90);
@@ -659,5 +706,5 @@ void getFitUncertainty()
 		cout<<Form("Rap:%f,	0nXnSum dSigmady:%f,	dSigmady_Uncer:%f", TotalSysUncer_Map.at("Rap")[i],	JpsiXsec_Default.at("Xsec_0nXnSum")[i],	TotalSysUncer_Map.at("Xsec_0nXnSum_TotalSysUncer")[i])<<endl;
 	}
 
-	saveMap(TotalSysUncer_Map,	"rootfiles/TotalSysUncer_Map.root");
+	// saveMap(TotalSysUncer_Map,	"rootfiles/TotalSysUncer_Map.root");
 }

@@ -155,10 +155,10 @@ struct LoadJpsiXsec : public LoadSignal
 		for (int iy = nDiffRapBins/2 + 2 ; iy < nDiffRapBins + 2 ; ++iy)
 		{
 			Rap.push_back(	V_JpsiXsec[5]->GetBinCenter(iy)	); 				RapErr.push_back(		V_JpsiXsec[5]->GetBinWidth(iy)/2	);
-			Xsec_AnAn.push_back(	V_JpsiXsec[0]->GetBinContent(iy)*1570.6796/1520	);	XsecErr_AnAn.push_back(		V_JpsiXsec[0]->GetBinError(iy)*1570.6796/1520	);
-			Xsec_0n0n.push_back(	V_JpsiXsec[1]->GetBinContent(iy)*1570.6796/1520	);	XsecErr_0n0n.push_back(		V_JpsiXsec[1]->GetBinError(iy)*1570.6796/1520	);
-			Xsec_0nXnSum.push_back(	V_JpsiXsec[4]->GetBinContent(iy)*1570.6796/1520	);	XsecErr_0nXnSum.push_back(	V_JpsiXsec[4]->GetBinError(iy)*1570.6796/1520	);
-			Xsec_XnXn.push_back(	V_JpsiXsec[5]->GetBinContent(iy)*1570.6796/1520	);	XsecErr_XnXn.push_back(		V_JpsiXsec[5]->GetBinError(iy)*1570.6796/1520	);
+			Xsec_AnAn.push_back(	V_JpsiXsec[0]->GetBinContent(iy)	);	XsecErr_AnAn.push_back(		V_JpsiXsec[0]->GetBinError(iy)	);
+			Xsec_0n0n.push_back(	V_JpsiXsec[1]->GetBinContent(iy)	);	XsecErr_0n0n.push_back(		V_JpsiXsec[1]->GetBinError(iy)	);
+			Xsec_0nXnSum.push_back(	V_JpsiXsec[4]->GetBinContent(iy)	);	XsecErr_0nXnSum.push_back(	V_JpsiXsec[4]->GetBinError(iy)	);
+			Xsec_XnXn.push_back(	V_JpsiXsec[5]->GetBinContent(iy)	);	XsecErr_XnXn.push_back(		V_JpsiXsec[5]->GetBinError(iy)	);
 		}
 		Map_Xsec["Rap"] = Rap; 						Map_Xsec["RapErr"] = RapErr;
 		Map_Xsec["Xsec_0n0n"] = Xsec_0n0n; 			Map_Xsec["XsecErr_0n0n"] = XsecErr_0n0n;

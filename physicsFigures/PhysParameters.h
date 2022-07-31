@@ -45,6 +45,29 @@ std::vector<double> 	ALICE_Run2_FwdRap_W  				= 	{},
 						ALICE_Run2_FwdRap_R_SysErrLow 		=	{},
 						ALICE_Run2_FwdRap_R_SysErrHig 		=	{};
 //------------------------------------------------------------------------------------------------------------
+//-------------------------------------------Run2 LHCb2022------------------------------------------------
+const std::vector<double> LHCb_Run2_FwdRap_y  				= 	{ -4.25,		-3.75 	},
+						LHCb_Run2_FwdRap_dSigmady			=	{ 1.181,		1.922 	},
+						LHCb_Run2_FwdRap_dSigmady_StatErr	=	{ 0.054,		0.0420 	},
+						LHCb_Run2_FwdRap_dSigmady_SysErrLow=	{ TMath::Hypot(0.049, 0.052),		TMath::Hypot(0.072, 0.084) 	},
+						LHCb_Run2_FwdRap_dSigmady_SysErrHig=	{ TMath::Hypot(0.049, 0.052),		TMath::Hypot(0.072, 0.084) 	},
+						LHCb_Run2_FwdRap_Flux 				=	{ 218.430,		202.916 },
+						LHCb_Run2_FwdRap_Flux_Err 			=	{ 218.430*0.05,	202.916*0.05}, // 5% error for flux
+						LHCb_Run2_FwdRap_Sigma_IA 			=	{ 0.0068337,	0.0116598		},
+						LHCb_Run2_FwdRap_Sigma_IA_Err 		=	{ 0.00036902,	0.000629627	};
+
+std::vector<double> 	LHCb_Run2_FwdRap_W  				= 	{},	
+						LHCb_Run2_FwdRap_Sigma				=	{},	
+						LHCb_Run2_FwdRap_Sigma_StatErr		=	{},
+						LHCb_Run2_FwdRap_Sigma_SysErrLow	=	{},
+						LHCb_Run2_FwdRap_Sigma_SysErrHig	=	{},
+						LHCb_Run2_FwdRap_x 				=	{},
+						LHCb_Run2_FwdRap_R 				=	{},
+						LHCb_Run2_FwdRap_R_StatErr 		=	{},
+						LHCb_Run2_FwdRap_R_SysErrLow 		=	{},
+						LHCb_Run2_FwdRap_R_SysErrHig 		=	{};
+//------------------------------------------------------------------------------------------------------------
+
 //------------------------------------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------------------------------------

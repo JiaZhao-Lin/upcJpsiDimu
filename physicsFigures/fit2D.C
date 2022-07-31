@@ -2,7 +2,7 @@
 #include "../simulation/getPhotonFlux.C"
 
 
-std::vector<std::vector<double>> fit2D(std::map<TString, std::vector<double>> Map_Xsec, const double flux_uncer = 1.0)
+std::vector<std::vector<double>> fit2D(std::map<TString, std::vector<double>> Map_Xsec, const double flux_uncer = 1.0, const TString fluxSubCase = "")
 {
    std::vector<std::vector<double>> X_RapBin, Y_RapBin, Z_RapBin, Z_Err_RapBin;
    std::vector<double> Raps,   Raps_Err;
@@ -22,7 +22,7 @@ std::vector<std::vector<double>> fit2D(std::map<TString, std::vector<double>> Ma
 
    //Getting flux from getPhotonFlux.C
    std::map<TString, std::vector<double>> Temp_Map = {{"Raps",Raps}};
-   InterpolateFlux(Temp_Map,"../simulation/flux/");
+   InterpolateFlux(Temp_Map, "../simulation/flux/", fluxSubCase);
    std::vector<TVector2> flux_0n0n;
    std::vector<TVector2> flux_0nXnSum;
    std::vector<TVector2> flux_XnXn;

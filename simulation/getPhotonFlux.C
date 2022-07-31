@@ -11,20 +11,26 @@ std::map<TString, std::vector<double>> PhotonFluxMap	=
 	{"biter_XnXn",	{}},	{"PofPhotonB_XnXn",	{}},	{"PofHadronB_XnXn",	{}},	{"PofB_XnXn",	{}}
 };
 
+auto PhotonFluxMapTemp = PhotonFluxMap;
+
+std::vector<TString> subCases{	"",	"Rplus0p5",	"Rminus0p5"	};
+
 double Interpolate(const double Egamma, TString Case);
 void plotFlux(std::map<TString, std::vector<double>> Map, TString Case);
 void plotPofB();
 
-void loadPhotonFlux(TString inFileDir	= "flux/")
+void loadPhotonFlux(TString inFileDir	= "flux/",	TString subCase = "")
 {
-	cout<<"loadPhotonFlux-------->Loading Photon Flux From Flux_*.txt in the Dir:"<<inFileDir<<endl;
-
 	std::vector<TString> CasesName = {"AnAn", "0n0n", "0nXnSum", "XnXn"};
 	const double JpsiMass = 3.096916;
 
 	for (int i = 0; i < CasesName.size(); ++i)
 	{
-		ifstream myfile(Form("%sFlux_%s.txt", inFileDir.Data(), CasesName[i].Data()));
+		TString FluxFileName  = Form("Flux_%s%s.txt", CasesName[i].Data(), subCase.Data());
+		TString PofBFileName  = Form("PofB_%s%s.txt", CasesName[i].Data(), subCase.Data());
+		cout<<"loadPhotonFlux-------->Loading Photon Flux From " + FluxFileName + " in the Dir:"<<inFileDir<<endl;
+
+		ifstream myfile(Form("%s%s", inFileDir.Data(), FluxFileName.Data()));
 
 		if (myfile.is_open())
 		{
@@ -54,7 +60,7 @@ void loadPhotonFlux(TString inFileDir	= "flux/")
 		else throw std::runtime_error( "ERROR!!! Unable to open Flux file!!!");
 
 		if (i == 0) continue;
-		ifstream myfile1(Form("%sPofB_%s.txt", inFileDir.Data(), CasesName[i].Data()));
+		ifstream myfile1(Form("%s%s", inFileDir.Data(), PofBFileName.Data()));
 		if (myfile1.is_open())
 		{
 			std::string line;
@@ -114,8 +120,8 @@ void plotFlux(std::map<TString, std::vector<double>> Map, TString Case)
 		drawLatex(0.15, 0.35-i*0.04, Form("y = %.2f, E = %.2f GeV, dN/dy = %.3f ",Map.at("Raps")[i],Map.at("Energy")[i],Map.at("dNdy_"+Case)[i]),      42,       0.04,      1);
 	}
 
-	c->SaveAs( "out4Flux/Flux_" + Case + "_dNdy.png" );
-	c->SaveAs( "out4Flux/Flux_" + Case + "_dNdy.pdf" );
+	// c->SaveAs( "out4Flux/Flux_" + Case + "_dNdy.png" );
+	// c->SaveAs( "out4Flux/Flux_" + Case + "_dNdy.pdf" );
 	delete c;
 	delete gr;
 	delete points;
@@ -194,7 +200,7 @@ double Interpolate(const double Egamma, TString Case)
 	return flux_r;
 }
 
-void InterpolateFlux(std::map<TString, std::vector<double>> &Map, TString inFileDir = "flux/")
+void InterpolateFlux(std::map<TString, std::vector<double>> &Map, TString inFileDir = "flux/", TString subCase = "")
 {
 	cout<<"InterpolateFlux-------->Raps:	";
 	for (int i = 0; i < Map.at("Raps").size(); ++i)
@@ -206,7 +212,9 @@ void InterpolateFlux(std::map<TString, std::vector<double>> &Map, TString inFile
 	const double JpsiMass = 3.096916;
 	std::vector<TString> CasesName = {"AnAn",	"0n0n", "0nXnSum", "XnXn"};
 
-	if (PhotonFluxMap.at("Energy_Table_AnAn").size() == 0){	loadPhotonFlux(inFileDir);	}
+	// if (PhotonFluxMap.at("Energy_Table_AnAn").size() == 0){	loadPhotonFlux(inFileDir, subCase);	}
+	PhotonFluxMap = PhotonFluxMapTemp;
+	loadPhotonFlux(inFileDir, subCase);
 
 	//Calculate photon energy from the rap
 	for (int i = 0; i < CasesName.size(); ++i)
@@ -223,18 +231,80 @@ void InterpolateFlux(std::map<TString, std::vector<double>> &Map, TString inFile
 	cout<<"InterpolateFlux-------->DONE"<<endl;
 }
 
+std::vector<double> getFluxUncer(std::vector<double> Default, std::vector<double> Diff)
+{
+	std::vector<double> Uncer{};
+	for (int i = 0; i < Default.size(); ++i)
+	{
+		Uncer.push_back( abs( Default[i]-Diff[i] ) / Default[i] * 100);
+	}
+	return Uncer;
+}
+
+void CompareFlux(TString Case,	TString inFileDir = "flux/")
+{
+	auto Temp = PhotonFluxMap;
+	loadPhotonFlux(inFileDir);
+	auto PhotonFluxMap_Default = PhotonFluxMap;
+	PhotonFluxMap = Temp;
+	loadPhotonFlux(inFileDir, "_Rplus0p5");
+	auto PhotonFluxMap_Rplus0p5 = PhotonFluxMap;
+	PhotonFluxMap = Temp;
+	loadPhotonFlux(inFileDir, "_Rminus0p5");
+	auto PhotonFluxMap_Rminus0p5 = PhotonFluxMap;
+	PhotonFluxMap = Temp;
+
+	TCanvas *c = new TCanvas();
+	// c->SetLogy();
+
+	TH2D* htem2d = new TH2D("htem2d_"+Case, "_Uncer;y;dN/dy Uncer. (%)", 10,-4,4, 10, 0, 20);
+
+	auto Uncer_Rplus0p5  = getFluxUncer(PhotonFluxMap_Default.at("dNdy_Table_"+Case),	PhotonFluxMap_Rplus0p5.at("dNdy_Table_"+Case));
+	auto Uncer_Rminus0p5 = getFluxUncer(PhotonFluxMap_Default.at("dNdy_Table_"+Case),	PhotonFluxMap_Rminus0p5.at("dNdy_Table_"+Case));
+
+	TGraph* gr_Rplus0p5 = new TGraph(PhotonFluxMap_Rplus0p5.at("Raps_Table_"+Case).size(), & PhotonFluxMap_Rplus0p5.at("Raps_Table_"+Case)[0], & Uncer_Rplus0p5[0]);
+	TGraph* gr_Rminus0p5 = new TGraph(PhotonFluxMap_Rminus0p5.at("Raps_Table_"+Case).size(), & PhotonFluxMap_Rminus0p5.at("Raps_Table_"+Case)[0], & Uncer_Rminus0p5[0]);
+
+	gr_Rplus0p5->SetLineColor(kRed);
+	gr_Rplus0p5->SetLineWidth(3);
+
+	gr_Rminus0p5->SetLineColor(kBlue);
+	gr_Rminus0p5->SetLineWidth(3);
+
+	htem2d->Draw();
+	gr_Rplus0p5->Draw("SAME l");
+	gr_Rminus0p5->Draw("SAME l");
+
+	drawLatex(0.3, 0.85, "UPC Pb+Pb #sqrt{s_{NN}} = 5.02 TeV (" + Case +")",      42,       0.05,      1);
+
+	auto legend = new TLegend(0.2, 0.6, 0.5, 0.8);
+	legend->AddEntry(gr_Rplus0p5, 	"Rplus0p5",		"l");
+	legend->AddEntry(gr_Rminus0p5, 	"Rminus0p5",	"l");
+	legend->Draw();
+
+	// c->SaveAs( "out4Flux/Flux_" + Case + "_dNdy.png" );
+	// c->SaveAs( "out4Flux/Flux_" + Case + "_dNdy.pdf" );
+	// delete c;
+	// delete htem2d; delete gr_Rplus0p5; delete gr_Rminus0p5;
+}
+
 void getPhotonFlux()
 {
-	std::map<TString, std::vector<double>>	TestMap = 
-	{
-		{"Raps",	{ 1.75,	-1.75, 2.0, -2.0, 2.25, -2.25 }},
-		{"dNdy",	{}}
-	};
+	// std::map<TString, std::vector<double>>	TestMap = 
+	// {
+	// 	{"Raps",	{ 1.75,	-1.75, 2.0, -2.0, 2.25, -2.25 }},
+	// 	{"dNdy",	{}}
+	// };
 
-	InterpolateFlux(TestMap);
-	plotFlux(TestMap,	"0n0n");
-	plotFlux(TestMap,	"0nXnSum");
-	plotFlux(TestMap,	"XnXn");
-	plotFlux(TestMap,	"AnAn");
-	plotPofB();
+	// InterpolateFlux(TestMap);
+	// plotFlux(TestMap,	"0n0n");
+	// plotFlux(TestMap,	"0nXnSum");
+	// plotFlux(TestMap,	"XnXn");
+	// plotFlux(TestMap,	"AnAn");
+	// plotPofB();
+
+	CompareFlux("AnAn");
+	CompareFlux("0n0n");
+	CompareFlux("0nXnSum");
+	CompareFlux("XnXn");
 }
