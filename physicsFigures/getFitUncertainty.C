@@ -151,7 +151,7 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &Map, const double shi
 {
 	static bool FirstCall = true;
 	static auto c1 = new TCanvas();
-	static TH2D* SigmaVsW = new TH2D("SigmaVsW", ";W_{#gammaPb} (GeV);#sigma(#gamma A #rightarrow J/#psi A) Uncer.(%);", 10,0,420, 10, 0.005, 0.20);
+	static TH2D* SigmaVsW = new TH2D("SigmaVsW", ";W_{#gammaN}^{Pb} (GeV);#sigma(#gamma A #rightarrow J/#psi A) Uncer.(%);", 10,0,420, 10, 0.005, 0.20);
 	static TLegend  *legData =  new TLegend(0.25, 0.15, 0.4, 0.40);
 
 	if ( FirstCall )
@@ -409,10 +409,10 @@ void getFitUncertainty()
 	std::map<TString, std::vector<double>> CB_Poly3_SdB_Map 	= getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_SdB_PUShuai_6RapBins.appliedTnP.root");
 	std::map<TString, std::vector<double>> CB_Poly3_NarrMass_Map= getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_NarrowMass_6RapBins.appliedTnP.root");
 	std::map<TString, std::vector<double>> CB_Poly3_WideMass_Map= getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_WideMass_6RapBins.appliedTnP.root");
-	std::map<TString, std::vector<double>> CB_Poly3_looseHF_Map = getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins.looseHF.root");
+	std::map<TString, std::vector<double>> CB_Poly3_looseHF_Map = getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins.appliedTnP.looseHF.root");
 	// std::map<TString, std::vector<double>> CB_Poly3_tightHF_Map = getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins.tightHF.root");
-	std::map<TString, std::vector<double>> CB_Poly3_fluxP_Map 	= getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins.appliedTnP.root", 1.0, "_Rplus0p5");
-	std::map<TString, std::vector<double>> CB_Poly3_fluxM_Map 	= getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins.appliedTnP.root", 1.0, "_Rminus0p5");
+	std::map<TString, std::vector<double>> CB_Poly3_fluxP_Map 	= getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins.appliedTnP.root", 1.0, "_SigNN68p3R6p70a0p59");
+	std::map<TString, std::vector<double>> CB_Poly3_fluxM_Map 	= getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins.appliedTnP.root", 1.0, "_SigNN68p3R6p64a0p53");
 	std::map<TString, std::vector<double>> CB_Poly3_TnP_Low_Map = getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins.appliedTnP_Low.root");
 	std::map<TString, std::vector<double>> CB_Poly3_TnP_Hig_Map	= getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins.appliedTnP_Hig.root");
 	std::map<TString, std::vector<double>> CB_Poly3_PU_Map 		= getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUATLAS_6RapBins.appliedTnP.root");
@@ -448,7 +448,7 @@ void getFitUncertainty()
 	plotSigmaVsW(CB_Poly3_WideMass_Map,	-5,	24,	30,	"WideMass"				);
 
 	plotSigmaVsW(CB_Poly3_looseHF_Map,	5,	26,	1,	"HFveto"		);
-	// plotSigmaVsW(CB_Poly3_fluxP_Map,	10,	26,	1,	"CB_Poly3_fluxP"		);
+	// plotSigmaVsW(CB_Poly3_fluxP_Map,	5,	26,	2,	"PhotonFlux"		);
 	plotSigmaVsW(CB_Poly3_fluxM_Map,	5,	26,	2,	"PhotonFlux" 			);
 	plotSigmaVsW(CB_Poly3_PU_Map,		5,	26,	4,	"n-PileUp"				);
 	plotSigmaVsW(CB_Poly3_TnP_Low_Map,	5,	26,	6,	"TnP", 				true);
@@ -465,7 +465,7 @@ void getFitUncertainty()
 	plotRvsX(CB_Poly3_WideMass_Map,	-4e-4,	24,	30,	"WideMass"				);
 
 	plotRvsX(CB_Poly3_looseHF_Map,	4e-4,	26,	1,	"HFveto"			);
-	// plotRvsX(CB_Poly3_fluxP_Map,	0,	26,	1,	"CB_Poly3_fluxP"		);
+	// plotRvsX(CB_Poly3_fluxP_Map,	4e-4,	26,	2,	"PhotonFlux"		);
 	plotRvsX(CB_Poly3_fluxM_Map,	4e-4,	26,	2,	"PhotonFlux"		);
 	plotRvsX(CB_Poly3_PU_Map,		4e-4,	26,	4,	"n-PileUp"			);
 	plotRvsX(CB_Poly3_TnP_Low_Map,	4e-4,	26,	6,	"TnP", 			true);
@@ -475,7 +475,7 @@ void getFitUncertainty()
 	//-----------------------------------W Unicertainty----------------------------------
 	auto c2 = new TCanvas();
 	c2->SetLogx();
-	auto Sigma_FitUncer	= new TH2D("Sigma_FitUncertainty", ";W_{#gammaPb} (GeV);#sigma Uncer.(%);", 10,30,520, 10,0,15);
+	auto Sigma_FitUncer	= new TH2D("Sigma_FitUncertainty", ";W_{#gammaN}^{Pb} (GeV);#sigma Uncer.(%);", 10,30,520, 10,0,20);
 	Sigma_FitUncer->Draw();
 
 	TLegend  *legendW =  new TLegend(0.35, 0.60, 0.50, 0.90);
@@ -505,7 +505,7 @@ void getFitUncertainty()
 	TLegend  *legendW1 =  new TLegend(0.35, 0.60, 0.50, 0.90);
 	legendW1->SetFillStyle(0);
 	legendW1->SetTextSize(0.035);
-	auto Sigma_FitUncer1	= new TH2D("Sigma_FitUncertainty1", ";W_{#gammaPb} (GeV);#sigma Uncer.(%);", 10,30,520, 10,0,15);
+	auto Sigma_FitUncer1	= new TH2D("Sigma_FitUncertainty1", ";W_{#gammaN}^{Pb} (GeV);#sigma Uncer.(%);", 10,30,520, 10,0,15);
 	Sigma_FitUncer1->Draw();
 	plot_Uncer(SigmasMassFitRangeUncer_Map,	JpsiXsec_Default,	"Ws",	"Sigmas",	24,	1,	legendW1,	"FitRange");
 	plot_Uncer(CB_Poly4_Map,			JpsiXsec_Default,	"Ws",	"Sigmas",	24,	2,	legendW1,	"QED Bkg");

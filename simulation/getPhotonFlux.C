@@ -13,8 +13,6 @@ std::map<TString, std::vector<double>> PhotonFluxMap	=
 
 auto PhotonFluxMapTemp = PhotonFluxMap;
 
-std::vector<TString> subCases{	"",	"Rplus0p5",	"Rminus0p5"	};
-
 double Interpolate(const double Egamma, TString Case);
 void plotFlux(std::map<TString, std::vector<double>> Map, TString Case);
 void plotPofB();
@@ -171,12 +169,19 @@ void plotPofB()
 	legend->AddEntry(gr3);
 	legend->Draw();
 
+	// double min = 6.67*1, max = 10000;
+	// TF1 f2("f2",[&](double*x, double*){ return gr2->Eval(x[0]); }, 0, max, 0); 
+	// TF1 f3("f3",[&](double*x, double*){ return gr3->Eval(x[0]); }, 0, max, 0); 
+	// auto n2 = f2.Integral(min, max, 1e-5);
+	// auto n3 = f3.Integral(min, max, 1e-5);
+	// cout<<"Ratio 0nXnSum/XnXn:	"<< n2/n3 <<endl;
+
 	// c->SaveAs( "out4Flux/PofB.png" );
 	// c->SaveAs( "out4Flux/PofB.pdf" );
 
-	// delete c;
-	// delete FluxNeuConfig;
-	// delete gr1; delete gr2; delete gr3;
+	delete c;
+	delete FluxNeuConfig;
+	delete gr1; delete gr2; delete gr3;
 }
 
 double Interpolate(const double Egamma, TString Case)
@@ -241,70 +246,91 @@ std::vector<double> getFluxUncer(std::vector<double> Default, std::vector<double
 	return Uncer;
 }
 
-void CompareFlux(TString Case,	TString inFileDir = "flux/")
+void CompareFlux(TString Case,	std::vector<TString> subCases, std::vector<TString> legendName, TString inFileDir = "flux/")
 {
-	auto Temp = PhotonFluxMap;
-	loadPhotonFlux(inFileDir);
+	loadPhotonFlux(inFileDir, "_SigNN68p3R6p67a0p56");
 	auto PhotonFluxMap_Default = PhotonFluxMap;
-	PhotonFluxMap = Temp;
-	loadPhotonFlux(inFileDir, "_Rplus0p5");
-	auto PhotonFluxMap_Rplus0p5 = PhotonFluxMap;
-	PhotonFluxMap = Temp;
-	loadPhotonFlux(inFileDir, "_Rminus0p5");
-	auto PhotonFluxMap_Rminus0p5 = PhotonFluxMap;
-	PhotonFluxMap = Temp;
+	PhotonFluxMap = PhotonFluxMapTemp;
+
+	std::vector<int> colors{1,2,3,4};
 
 	TCanvas *c = new TCanvas();
 	// c->SetLogy();
-
 	TH2D* htem2d = new TH2D("htem2d_"+Case, "_Uncer;y;dN/dy Uncer. (%)", 10,-4,4, 10, 0, 20);
-
-	auto Uncer_Rplus0p5  = getFluxUncer(PhotonFluxMap_Default.at("dNdy_Table_"+Case),	PhotonFluxMap_Rplus0p5.at("dNdy_Table_"+Case));
-	auto Uncer_Rminus0p5 = getFluxUncer(PhotonFluxMap_Default.at("dNdy_Table_"+Case),	PhotonFluxMap_Rminus0p5.at("dNdy_Table_"+Case));
-
-	TGraph* gr_Rplus0p5 = new TGraph(PhotonFluxMap_Rplus0p5.at("Raps_Table_"+Case).size(), & PhotonFluxMap_Rplus0p5.at("Raps_Table_"+Case)[0], & Uncer_Rplus0p5[0]);
-	TGraph* gr_Rminus0p5 = new TGraph(PhotonFluxMap_Rminus0p5.at("Raps_Table_"+Case).size(), & PhotonFluxMap_Rminus0p5.at("Raps_Table_"+Case)[0], & Uncer_Rminus0p5[0]);
-
-	gr_Rplus0p5->SetLineColor(kRed);
-	gr_Rplus0p5->SetLineWidth(3);
-
-	gr_Rminus0p5->SetLineColor(kBlue);
-	gr_Rminus0p5->SetLineWidth(3);
-
 	htem2d->Draw();
-	gr_Rplus0p5->Draw("SAME l");
-	gr_Rminus0p5->Draw("SAME l");
+	auto legend = new TLegend(0.2, 0.6, 0.5, 0.8);
+
+	for (int i = 0; i < subCases.size(); ++i)
+	{
+		auto subCase = subCases[i];
+		loadPhotonFlux(inFileDir, subCase);
+		auto PhotonFluxMap_subCase = PhotonFluxMap;
+		PhotonFluxMap = PhotonFluxMapTemp;
+
+		auto Uncer_subCase = getFluxUncer(PhotonFluxMap_Default.at("dNdy_Table_"+Case),	PhotonFluxMap_subCase.at("dNdy_Table_"+Case));
+		TGraph* gr_subCase = new TGraph(PhotonFluxMap_subCase.at("Raps_Table_"+Case).size(), & PhotonFluxMap_subCase.at("Raps_Table_"+Case)[0], & Uncer_subCase[0]);
+		
+		gr_subCase->SetLineColor(colors[i]);
+		gr_subCase->SetLineWidth(3);
+
+		gr_subCase->Draw("SAME l");
+		legend->AddEntry(gr_subCase, 	legendName[i],	"l");
+	}
 
 	drawLatex(0.3, 0.85, "UPC Pb+Pb #sqrt{s_{NN}} = 5.02 TeV (" + Case +")",      42,       0.05,      1);
-
-	auto legend = new TLegend(0.2, 0.6, 0.5, 0.8);
-	legend->AddEntry(gr_Rplus0p5, 	"Rplus0p5",		"l");
-	legend->AddEntry(gr_Rminus0p5, 	"Rminus0p5",	"l");
 	legend->Draw();
 
 	// c->SaveAs( "out4Flux/Flux_" + Case + "_dNdy.png" );
 	// c->SaveAs( "out4Flux/Flux_" + Case + "_dNdy.pdf" );
-	// delete c;
-	// delete htem2d; delete gr_Rplus0p5; delete gr_Rminus0p5;
+	delete c;
+	delete htem2d;
 }
 
 void getPhotonFlux()
 {
+	//------------------Standard Test-------------------------------------------
+	std::map<TString, std::vector<double>>	TestMap = 
+	{
+		{"Raps",	{ 1.75, -1.75, 2, -2, 2.25, -2.25 }},
+		{"dNdy",	{}}
+	};
+	InterpolateFlux(TestMap, "flux/", "_SigNN68p3R6p67a0p56");
+	plotFlux(TestMap,	"0n0n");
+	plotFlux(TestMap,	"0nXnSum");
+	plotFlux(TestMap,	"XnXn");
+	plotFlux(TestMap,	"AnAn");
+	plotPofB();
+	//--------------------------------------------------------------------------
+
+	//--------------------------------------------------------------------------
+	//------------------Flux For Drawing ALICE and LHCb values------------------
 	// std::map<TString, std::vector<double>>	TestMap = 
 	// {
-	// 	{"Raps",	{ 1.75,	-1.75, 2.0, -2.0, 2.25, -2.25 }},
+	// 	{"Raps",	{ 0, -3.875, -3.625, -4.25, -3.75 }},
 	// 	{"dNdy",	{}}
 	// };
 
-	// InterpolateFlux(TestMap);
+	// auto TestMap1 = TestMap;
+	// auto TestMap2 = TestMap;
+	// InterpolateFlux(TestMap, "flux/", "_SigNN68p3R6p67a0p56");
+	// InterpolateFlux(TestMap1, "flux/", "_SigNN68p3R6p64a0p53");
+	// InterpolateFlux(TestMap2, "flux/", "_SigNN68p3R6p70a0p59");
 	// plotFlux(TestMap,	"0n0n");
 	// plotFlux(TestMap,	"0nXnSum");
 	// plotFlux(TestMap,	"XnXn");
 	// plotFlux(TestMap,	"AnAn");
-	// plotPofB();
+	// auto v1 = getFluxUncer(TestMap.at("dNdy_AnAn"),	TestMap1.at("dNdy_AnAn"));
+	// auto v2 = getFluxUncer(TestMap.at("dNdy_AnAn"),	TestMap2.at("dNdy_AnAn"));
+	// for (int i = 0; i < v1.size(); ++i)
+	// {
+	// 	auto uncer = (v1[i] > v2[i]) ? v1[i]: v2[i];
+	// 	cout << "Raps:" << TestMap.at("Raps")[i] << "	Flux:" << TestMap.at("dNdy_AnAn")[i]; cout<< "	Uncer:" << uncer <<endl;
+	// }
 
-	CompareFlux("AnAn");
-	CompareFlux("0n0n");
-	CompareFlux("0nXnSum");
-	CompareFlux("XnXn");
+	// CompareFlux("AnAn",		{"_SigNN68p3R6p64a0p53", "_SigNN68p3R6p70a0p59"},	{"SigNN68p3R6p64a0p53", "SigNN68p3R6p70a0p59"});
+	// CompareFlux("0n0n",		{"_SigNN68p3R6p64a0p53", "_SigNN68p3R6p70a0p59"},	{"SigNN68p3R6p64a0p53", "SigNN68p3R6p70a0p59"});
+	// CompareFlux("0nXnSum",	{"_SigNN68p3R6p64a0p53", "_SigNN68p3R6p70a0p59"},	{"SigNN68p3R6p64a0p53", "SigNN68p3R6p70a0p59"});
+	// CompareFlux("XnXn",		{"_SigNN68p3R6p64a0p53", "_SigNN68p3R6p70a0p59"},	{"SigNN68p3R6p64a0p53", "SigNN68p3R6p70a0p59"});
+
+	//--------------------------------------------------------------------------
 }

@@ -106,11 +106,11 @@ void getJpsiPsi_nsns()
 
 	loadAcc();
 	
-	fitCohMass_4RNRfD(2.6, 4.2);
+	fitCohMass_4RNRfD(2.61, 4.2);
 
 	PileUp_Corr(NJpsi_inMFit, NerrJpsi_inMFit, nDiffRapBins+1);
 	
-	fitFullMassAndPt_4Decouple(2.6,4.2, -0.01,3.0);
+	fitFullMassAndPt_4Decouple(2.61,4.2, -0.01,3.0);
 
 	saveFile("CB_Poly3_PUShuai");
 }
@@ -257,7 +257,7 @@ void prepareData()
 //------------------------------------------------------------------------------------------------------------
 void loadEff()
 {
-	LoadEfficiency Efficiency(Form("../simulation/out4effAndTemp/Efficiency_AllSpecs_%dRapBins%s%s.root", nDiffRapBins, TnPcases[RunTnPcase].Data(), HFcases[RunHFcase].Data()), SymmetricRapBin);
+	LoadEfficiency Efficiency(Form("../simulation/out4effAndTemp/Efficiency_AllSpecs_%dRapBins%s.root", nDiffRapBins, TnPcases[RunTnPcase].Data()), SymmetricRapBin);
 	H_EffVsY_CohJpsi 		= (TH1D*)	Efficiency.GetCohJpsi()	 	->Clone();
 	H_EffVsY_CohPsi 		= (TH1D*)	Efficiency.GetCohPsi()	 	->Clone();
 	H_EffVsY_CohPsi2Jpsi 	= (TH1D*)	Efficiency.GetCohPsi2Jpsi()	->Clone();
@@ -281,7 +281,7 @@ void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4
 	c1->SetLogy(0);
 	RooRealVar  mMass("mMass", "m_{#mu#mu} (GeV)", massLow4Fit, massHig4Fit);
 
-	TFile *inf_Temps = TFile::Open(Form("../simulation/out4effAndTemp/MassPtTemp_AllSpecs_massWindow_2.95_3.25_%dRapBins%s%s.root", nDiffRapBins, TnPcases[RunTnPcase].Data(), HFcases[RunHFcase].Data()));
+	TFile *inf_Temps = TFile::Open(Form("../simulation/out4effAndTemp/MassPtTemp_AllSpecs_massWindow_2.95_3.25_%dRapBins%s.root", nDiffRapBins, TnPcases[RunTnPcase].Data()));
 	TF1 *fQED;
 	fQED = new TF1("fQED", fReject4QED, massLow4Fit, massHig4Fit, 4);
 	TF1 *fCohJpsiTemp;
@@ -338,8 +338,9 @@ void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4
 			TH1D* hCohMass = (TH1D*) hCohMass_in_ny[i_ncase][iy]->Clone("hMass");
 			
 			if( i_ncase==0               ) hCohMass->Rebin(1);
-			if( i_ncase==1 || i_ncase==2 ) hCohMass->Rebin(2);
-			if( i_ncase==3 || i_ncase==4 ) hCohMass->Rebin(2);
+			if( i_ncase==1 				 ) hCohMass->Rebin(2);
+			if( i_ncase==2 || i_ncase==3 ) hCohMass->Rebin(2);
+			if( i_ncase==4 				 ) hCohMass->Rebin(2);
 			if( i_ncase==5               ) hCohMass->Rebin(3);
 			//------------------------------------------------------------------------------------------------------------
 			//------------------------------------------------------------------------------------------------------------
@@ -353,10 +354,17 @@ void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4
 			const double Init_cbNL        = 7.82;
 			const double Init_cbNR        = 13.;
 
-			RooRealVar  cbAlpha 	( "cbAlpha",     	"cbAlpha",		Init_cbAlpha,	0, 20   );
-			RooRealVar  cbN 		( "cbN",         	"cbN",			Init_cbN,		0, 20   );
+			//--------------TEMP! For Initializing CBAN with CB to Jpsi Peak---------------
+			// auto fJpsiPeak = new TF1("fJpsiPeak", JpsiPdf::fReject4Jpsi,massLow4Fit, massHig4Fit,5);
+			// hCohMass ->Fit(fJpsiPeak, "", "",  massLow4Fit, massHig4Fit);
+			// cout<<fJpsiPeak->GetParameter(1)<<"!!!!!!!!!!!!!!!!!!!!!!"<<endl;;
+			// fJpsiPeak->GetParameter(2);
+			//--------------TEMP! For Initializing CBAN with CB to Jpsi Peak---------------
+
+			RooRealVar  cbAlpha 	( "cbAlpha",     	"cbAlpha",		Init_cbAlpha,	0, 10   );
+			RooRealVar  cbN 		( "cbN",         	"cbN",			Init_cbN,		0, 10   );
 			RooRealVar  jpsiMu		( "jpsiMu",      	"jpsiMu",		3.096,	2.90,	3.2 	);
-			RooRealVar  jpsiSigma	( "jpsiSigma",   	"jpsiSigma",	0.045,	0.01,	0.2 	);
+			RooRealVar  jpsiSigma	( "jpsiSigma",   	"jpsiSigma",	0.045,	0.01,	0.1 	);
 
 			// RooRealVar  gausN		( "gausN",       	"gausN",		3.5,	0.00,	20 		);
 			// RooConstVar  sigmaRatio 	( "sigmaRatio",   "sigmaRatio",  	Init_sigmaRatio );
@@ -650,10 +658,10 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			const double Init_cbNR        = 13.;
 
 			//------------------------------------------------------------------------------------------------------------
-			RooRealVar  cbAlpha 	( "cbAlpha",     	"cbAlpha",		Init_cbAlpha,	0, 20   );
-			RooRealVar  cbN 		( "cbN",         	"cbN",			Init_cbN,		0, 20   );
+			RooRealVar  cbAlpha 	( "cbAlpha",     	"cbAlpha",		Init_cbAlpha,	0, 10   );
+			RooRealVar  cbN 		( "cbN",         	"cbN",			Init_cbN,		0, 10   );
 			RooRealVar  jpsiMu		( "jpsiMu",      	"jpsiMu",		3.096,	2.90,	3.2 	);
-			RooRealVar  jpsiSigma	( "jpsiSigma",   	"jpsiSigma",	0.045,	0.01,	0.2 	);
+			RooRealVar  jpsiSigma	( "jpsiSigma",   	"jpsiSigma",	0.045,	0.01,	0.1 	);
 
 			// RooRealVar  gausN		( "gausN",       	"gausN",		3.5,	0.00,	20 		);
 			// RooConstVar  sigmaRatio 	( "sigmaRatio",   "sigmaRatio",  	Init_sigmaRatio );

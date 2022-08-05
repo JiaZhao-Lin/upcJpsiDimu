@@ -10,10 +10,10 @@ const double Jpsi2MuMuBR_Uncer = 0.033/5.961;
 //------------------------------------------------------------------------------------------------------------
 //-------------------------------------------Run2 ALICE MidRap------------------------------------------------
 const std::vector<double> ALICE_Run2_MidRap_W  				= 	{ 124.67672		},
-						ALICE_Run2_MidRap_Sigma	    		= 	{ 4.07/2/86.483 },
+						ALICE_Run2_MidRap_Sigma	    		= 	{ 4.07/2/85.7231 },
 						ALICE_Run2_MidRap_Sigma_StatErr		=	{ ALICE_Run2_MidRap_Sigma[0] * 0.11/4.07 },
-						ALICE_Run2_MidRap_Sigma_SysErrLow	=	{ ALICE_Run2_MidRap_Sigma[0] * TMath::Hypot( 0.23/4.07,	 0.05)	}, // 5% error for flux
-						ALICE_Run2_MidRap_Sigma_SysErrHig	=	{ ALICE_Run2_MidRap_Sigma[0] * TMath::Hypot( 0.23/4.07,	 0.05)	}, // 5% error for flux
+						ALICE_Run2_MidRap_Sigma_SysErrLow	=	{ ALICE_Run2_MidRap_Sigma[0] * TMath::Hypot( 0.23/4.07,	 0.55/100)	}, // 5% error for flux
+						ALICE_Run2_MidRap_Sigma_SysErrHig	=	{ ALICE_Run2_MidRap_Sigma[0] * TMath::Hypot( 0.23/4.07,	 0.55/100)	}, // 5% error for flux
 						ALICE_Run2_MidRap_x	    			= 	{ 0.00061691554 },
 						ALICE_Run2_MidRap_Sigma_IA	    	= 	{ 0.0658072 	},
 						ALICE_Run2_MidRap_Sigma_IA_Err		= 	{ 0.00355359 	},
@@ -29,8 +29,8 @@ const std::vector<double> ALICE_Run2_FwdRap_y  				= 	{ -3.875,		-3.625 	},
 						ALICE_Run2_FwdRap_dSigmady_StatErr	=	{ 0.060,		0.0420 	},
 						ALICE_Run2_FwdRap_dSigmady_SysErrLow=	{ 0.147,		0.190 	},
 						ALICE_Run2_FwdRap_dSigmady_SysErrHig=	{ 0.135,		0.166 	},
-						ALICE_Run2_FwdRap_Flux 				=	{ 206.795,		199.037 },
-						ALICE_Run2_FwdRap_Flux_Err 			=	{ 206.795*0.05,	199.037*0.05}, // 5% error for flux
+						ALICE_Run2_FwdRap_Flux 				=	{ 205.984,		198.229 },
+						ALICE_Run2_FwdRap_Flux_Err 			=	{ 205.984*0.24/100,	198.229*0.25/100}, // 5% error for flux
 						ALICE_Run2_FwdRap_Sigma_IA 			=	{ 0.0104829,	0.0128178		},
 						ALICE_Run2_FwdRap_Sigma_IA_Err 		=	{ 0.000566075,	0.000692159	};
 
@@ -51,8 +51,8 @@ const std::vector<double> LHCb_Run2_FwdRap_y  				= 	{ -4.25,		-3.75 	},
 						LHCb_Run2_FwdRap_dSigmady_StatErr	=	{ 0.054,		0.0420 	},
 						LHCb_Run2_FwdRap_dSigmady_SysErrLow=	{ TMath::Hypot(0.049, 0.052),		TMath::Hypot(0.072, 0.084) 	},
 						LHCb_Run2_FwdRap_dSigmady_SysErrHig=	{ TMath::Hypot(0.049, 0.052),		TMath::Hypot(0.072, 0.084) 	},
-						LHCb_Run2_FwdRap_Flux 				=	{ 218.430,		202.916 },
-						LHCb_Run2_FwdRap_Flux_Err 			=	{ 218.430*0.05,	202.916*0.05}, // 5% error for flux
+						LHCb_Run2_FwdRap_Flux 				=	{ 217.615,		202.106 },
+						LHCb_Run2_FwdRap_Flux_Err 			=	{ 217.615*0.23/100,	202.106*0.25/100}, // 5% error for flux
 						LHCb_Run2_FwdRap_Sigma_IA 			=	{ 0.0068337,	0.0116598		},
 						LHCb_Run2_FwdRap_Sigma_IA_Err 		=	{ 0.00036902,	0.000629627	};
 

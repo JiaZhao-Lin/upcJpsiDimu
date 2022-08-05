@@ -112,15 +112,7 @@ TMatrixD getPileUp_CorrFactor()
 	MigrationMatrixInvert = MigrationMatrix; MigrationMatrixInvert.Invert();
 
 	cout<<"getPileUp_CorrFactor--->The MigrationMatrix is:"<<endl<<endl;
-	for (int i = 0; i < nDmatrixs; ++i)
-	{
-		for (int j = 0; j < nDmatrixs; ++j)
-		{
-			cout<<MigrationMatrix[i][j]<<",	";
-		}
-		cout<<endl;
-	}
-	cout<<endl;
+	MigrationMatrix.Print();
 
 	return MigrationMatrixInvert;
 }
@@ -206,5 +198,21 @@ void PileUp_Corr( double NJpsi_inMFit[][7], double NerrJpsi_inMFit[][7], const d
 
 void PileUp_Corr()
 {
-	getInteractionProbability();
+	// getInteractionProbability();
+	auto MigrationMatrixInvert = getPileUp_CorrFactor();
+	// const double fzb00 = 0.889779;
+	// const double fzb0X = 0.0530636;
+	// const double fzbX0 = 0.0508458;
+	// const double fzbXX = 0.00631169;
+	// double tem[nDmatrixs] = {fzb00, fzb0X, fzbX0, fzbXX};
+	// TMatrixD N_Meastured_iy(nDmatrixs,	1, tem);
+	// (MigrationMatrixInvert*N_Meastured_iy).Print();
+
+	// auto MigrationMatrixInvert = getPileUp_CorrFactor();
+	// const double fzb00 = 0.889779;
+	// const double fzb0X = 0.0530636+0.0508458;
+	// const double fzbXX = 0.0631169;
+	// double tem[nDmatrixs] = {fzb00, fzb0X, fzbXX};
+	// TMatrixD N_Meastured_iy(nDmatrixs,	1, tem);
+	// (MigrationMatrixInvert.Invert()*N_Meastured_iy).Print();
 }

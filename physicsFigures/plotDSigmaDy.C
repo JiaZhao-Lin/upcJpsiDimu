@@ -361,44 +361,36 @@ void drawCMS_NeuConfig()
 	gae_XsecVsY_Alice2019 ->SetLineColor(4);
 	gae_XsecVsY_Alice2019 ->SetFillColor(kGray);
 	gae_XsecVsY_Alice2019 ->SetFillStyle(3001);
-	gae_XsecVsY_Alice2019 ->Draw("2same");
 	ge_XsecVsY_Alice2019  ->SetMarkerStyle(25);
 	ge_XsecVsY_Alice2019  ->SetMarkerSize(1.5);
     ge_XsecVsY_Alice2019  ->SetMarkerColor(4);
     ge_XsecVsY_Alice2019  ->SetLineColor(4);
-	ge_XsecVsY_Alice2019  ->Draw("pezsame");
 	
 	gae_XsecVsY_Alice2021 ->SetMarkerStyle(24);
 	gae_XsecVsY_Alice2021 ->SetMarkerColor(4);
 	gae_XsecVsY_Alice2021 ->SetLineColor(4);
 	gae_XsecVsY_Alice2021 ->SetFillColor(kGray);
 	gae_XsecVsY_Alice2021 ->SetFillStyle(3001);
-	gae_XsecVsY_Alice2021 ->Draw("2same");
 	ge_XsecVsY_Alice2021  ->SetMarkerStyle(24);
 	ge_XsecVsY_Alice2021  ->SetMarkerSize(1.6);
     ge_XsecVsY_Alice2021  ->SetMarkerColor(4);
     ge_XsecVsY_Alice2021  ->SetLineColor(4);
-	ge_XsecVsY_Alice2021  ->Draw("pezsame");
 
 	gae_XsecVsY_LHCb2022  ->SetMarkerStyle(26);
 	gae_XsecVsY_LHCb2022 ->SetFillColor(kGray);
 	gae_XsecVsY_LHCb2022 ->SetFillStyle(3001);
-	gae_XsecVsY_LHCb2022 ->Draw("2same");
 	ge_XsecVsY_LHCb2022  ->SetMarkerStyle(26);
 	ge_XsecVsY_LHCb2022  ->SetMarkerSize(1.5);
-	ge_XsecVsY_LHCb2022  ->Draw("pezsame");
 
 	gae_XsecVsY_CMS2022 ->SetMarkerStyle(20);
 	gae_XsecVsY_CMS2022 ->SetMarkerColor(2);
 	gae_XsecVsY_CMS2022 ->SetFillColorAlpha(16, 0.5);
 	gae_XsecVsY_CMS2022 ->SetFillStyle(1001);
-	gae_XsecVsY_CMS2022 ->Draw("2same");
     ge_XsecVsY_CMS2022  ->SetMarkerStyle(20);
 	ge_XsecVsY_CMS2022  ->SetMarkerSize(1.5);
     ge_XsecVsY_CMS2022  ->SetMarkerColor(2);
     ge_XsecVsY_CMS2022  ->SetLineColor(2);
     ge_XsecVsY_CMS2022  ->SetLineWidth(2);
-	ge_XsecVsY_CMS2022  ->Draw("pezsame");
 
 	TLegend  *leg_AnAn =  new TLegend(0.14, 0.60, 0.55, 0.82);
 	TLegend  *leg_Theory =  new TLegend(0.55, 0.13, 0.85, 0.3);
@@ -414,6 +406,15 @@ void drawCMS_NeuConfig()
 	drawCD("Xsec",leg_Theory);
 	leg_Theory->Draw("same");
 	leg_AnAn->Draw("same");
+
+	gae_XsecVsY_Alice2019 ->Draw("2same");
+	ge_XsecVsY_Alice2019  ->Draw("pezsame");
+	gae_XsecVsY_Alice2021 ->Draw("2same");
+	ge_XsecVsY_Alice2021  ->Draw("pezsame");
+	gae_XsecVsY_LHCb2022 ->Draw("2same");
+	ge_XsecVsY_LHCb2022  ->Draw("pezsame");
+	gae_XsecVsY_CMS2022 ->Draw("2same");
+	ge_XsecVsY_CMS2022  ->Draw("pezsame");
 
 	c2->SaveAs("outplots/Xsec_NeuConfig.png");
 	c2->SaveAs("outplots/Xsec_NeuConfig.pdf");

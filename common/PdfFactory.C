@@ -233,6 +233,19 @@ struct JpsiPdf : public PdfFactory
 
 		return N;
 	}
+
+	//--------------TEMP! For Initializing CBAN with CB to Jpsi Peak---------------
+	// static double fReject4Jpsi(double *x, double *par)
+	// {
+	// 	if((x[0]<2.90) || (x[0]>3.10))
+	// 	{
+	// 		TF1::RejectPoint();
+	// 		return 0;
+	// 	}
+
+	// 	return (par[0] * ROOT::Math::crystalball_function(x[0], par[1], par[2], par[3], par[4]));
+	// }
+	//--------------TEMP! For Initializing CBAN with CB to Jpsi Peak---------------
 	//-----------------------------------------------------------------------------------
 };
 
