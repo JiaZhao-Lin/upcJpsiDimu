@@ -568,11 +568,11 @@ void drawEff()
 
 	TLegend* leg1 = new TLegend(0.36, 0.65, 0.6, 0.86);
 	leg1->SetFillStyle(0);
-	leg1->SetTextSize(0.06);
+	leg1->SetTextSize(0.04);
 
 	TLegend* leg2 = new TLegend(0.36, 0.72, 0.6, 0.86);
-	leg1->SetFillStyle(0);
-	leg1->SetTextSize(0.06);
+	leg2->SetFillStyle(0);
+	leg2->SetTextSize(0.04);
 
 	for(int is=0; is<nSpecs; is++)
 	{
@@ -592,9 +592,9 @@ void drawEff()
 
 		if(is==0)
 		{
-			leg1->AddEntry( hRap_Gen[is],      "GEN",                                                                  "pl");
-			leg1->AddEntry( hRap_woEvtSel[is], "#varepsilon_{reco}#times#varepsilon_{trig}",                           "pl");
-			leg1->AddEntry( hRap[is],          "#varepsilon_{reco}#times#varepsilon_{trig}#times#varepsilon_{evtSel}", "pl");
+			leg1->AddEntry( hRap_Gen[is],      "GEN #times Acc.",                                                                  "pl");
+			leg1->AddEntry( hRap_woEvtSel[is], "GEN #times Acc. #times #varepsilon_{reco}#times#varepsilon_{trig}",                           "pl");
+			leg1->AddEntry( hRap[is],          "GEN #times Acc. #times #varepsilon_{reco}#times#varepsilon_{trig}#times#varepsilon_{evtSel}", "pl");
 		}
 		leg1->Draw("same");
 
