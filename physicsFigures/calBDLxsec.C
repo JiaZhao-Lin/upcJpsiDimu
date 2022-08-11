@@ -43,7 +43,7 @@ void calBDLxsec(const TString VMname="Jpsi")
 
 	const double xsec_mb = (xsec/unit_fm2tob)*1000.; //1b = 1000mb;
 
-	cout<<"xsec from BDL: "<<xsec<<endl;
+	cout<<"xsec from BDL: "<<xsec_mb<<endl;
 
 }
 
