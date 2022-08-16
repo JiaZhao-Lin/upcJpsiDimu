@@ -118,8 +118,8 @@ void plotFlux(std::map<TString, std::vector<double>> Map, TString Case)
 		drawLatex(0.15, 0.35-i*0.04, Form("y = %.2f, E = %.2f GeV, dN/dy = %.3f ",Map.at("Raps")[i],Map.at("Energy")[i],Map.at("dNdy_"+Case)[i]),      42,       0.04,      1);
 	}
 
-	// c->SaveAs( "out4Flux/Flux_" + Case + "_dNdy.png" );
-	// c->SaveAs( "out4Flux/Flux_" + Case + "_dNdy.pdf" );
+	c->SaveAs( "out4Flux/Flux_" + Case + "_dNdy.png" );
+	c->SaveAs( "out4Flux/Flux_" + Case + "_dNdy.pdf" );
 	delete c;
 	delete gr;
 	delete points;
@@ -280,8 +280,8 @@ void CompareFlux(TString Case,	std::vector<TString> subCases, std::vector<TStrin
 	drawLatex(0.3, 0.85, "UPC Pb+Pb #sqrt{s_{NN}} = 5.02 TeV (" + Case +")",      42,       0.05,      1);
 	legend->Draw();
 
-	// c->SaveAs( "out4Flux/Flux_" + Case + "_dNdy.png" );
-	// c->SaveAs( "out4Flux/Flux_" + Case + "_dNdy.pdf" );
+	c->SaveAs( "out4Flux/CompareFlux_" + Case + "_dNdy.png" );
+	c->SaveAs( "out4Flux/CompareFlux_" + Case + "_dNdy.pdf" );
 	delete c;
 	delete htem2d;
 }
@@ -289,17 +289,17 @@ void CompareFlux(TString Case,	std::vector<TString> subCases, std::vector<TStrin
 void getPhotonFlux()
 {
 	//------------------Standard Test-------------------------------------------
-	std::map<TString, std::vector<double>>	TestMap = 
-	{
-		{"Raps",	{ 1.75, -1.75, 2, -2, 2.25, -2.25 }},
-		{"dNdy",	{}}
-	};
-	InterpolateFlux(TestMap, "flux/", "_SigNN68p3R6p67a0p56");
-	plotFlux(TestMap,	"0n0n");
-	plotFlux(TestMap,	"0nXnSum");
-	plotFlux(TestMap,	"XnXn");
-	plotFlux(TestMap,	"AnAn");
-	plotPofB();
+	// std::map<TString, std::vector<double>>	TestMap = 
+	// {
+	// 	{"Raps",	{ 1.75, -1.75, 2, -2, 2.25, -2.25 }},
+	// 	{"dNdy",	{}}
+	// };
+	// InterpolateFlux(TestMap, "flux/", "_SigNN68p3R6p67a0p56");
+	// plotFlux(TestMap,	"0n0n");
+	// plotFlux(TestMap,	"0nXnSum");
+	// plotFlux(TestMap,	"XnXn");
+	// plotFlux(TestMap,	"AnAn");
+	// plotPofB();
 	//--------------------------------------------------------------------------
 
 	//--------------------------------------------------------------------------
@@ -313,12 +313,13 @@ void getPhotonFlux()
 	// auto TestMap1 = TestMap;
 	// auto TestMap2 = TestMap;
 	// InterpolateFlux(TestMap, "flux/", "_SigNN68p3R6p67a0p56");
-	// InterpolateFlux(TestMap1, "flux/", "_SigNN68p3R6p64a0p53");
-	// InterpolateFlux(TestMap2, "flux/", "_SigNN68p3R6p70a0p59");
 	// plotFlux(TestMap,	"0n0n");
 	// plotFlux(TestMap,	"0nXnSum");
 	// plotFlux(TestMap,	"XnXn");
 	// plotFlux(TestMap,	"AnAn");
+
+	// InterpolateFlux(TestMap1, "flux/", "_SigNN68p3R6p64a0p53");
+	// InterpolateFlux(TestMap2, "flux/", "_SigNN68p3R6p70a0p59");
 	// auto v1 = getFluxUncer(TestMap.at("dNdy_AnAn"),	TestMap1.at("dNdy_AnAn"));
 	// auto v2 = getFluxUncer(TestMap.at("dNdy_AnAn"),	TestMap2.at("dNdy_AnAn"));
 	// for (int i = 0; i < v1.size(); ++i)
@@ -327,10 +328,14 @@ void getPhotonFlux()
 	// 	cout << "Raps:" << TestMap.at("Raps")[i] << "	Flux:" << TestMap.at("dNdy_AnAn")[i]; cout<< "	Uncer:" << uncer <<endl;
 	// }
 
-	// CompareFlux("AnAn",		{"_SigNN68p3R6p64a0p53", "_SigNN68p3R6p70a0p59"},	{"SigNN68p3R6p64a0p53", "SigNN68p3R6p70a0p59"});
-	// CompareFlux("0n0n",		{"_SigNN68p3R6p64a0p53", "_SigNN68p3R6p70a0p59"},	{"SigNN68p3R6p64a0p53", "SigNN68p3R6p70a0p59"});
-	// CompareFlux("0nXnSum",	{"_SigNN68p3R6p64a0p53", "_SigNN68p3R6p70a0p59"},	{"SigNN68p3R6p64a0p53", "SigNN68p3R6p70a0p59"});
-	// CompareFlux("XnXn",		{"_SigNN68p3R6p64a0p53", "_SigNN68p3R6p70a0p59"},	{"SigNN68p3R6p64a0p53", "SigNN68p3R6p70a0p59"});
+	CompareFlux("AnAn",		{"_SigNN68p3R6p64a0p53", "_SigNN68p3R6p70a0p59", "_SigNN68p3R6p64a0p59", "_SigNN68p3R6p70a0p53"},	{"#sigma_{NN} = 68.3, R = 6.64, a = 0.53", "#sigma_{NN} = 68.3, R = 6.70, a = 0.59", "#sigma_{NN} = 68.3, R = 6.64, a = 0.59", "#sigma_{NN} = 68.3, R = 6.70, a = 0.53"});
+	CompareFlux("0n0n",		{"_SigNN68p3R6p64a0p53", "_SigNN68p3R6p70a0p59", "_SigNN68p3R6p64a0p59", "_SigNN68p3R6p70a0p53"},	{"#sigma_{NN} = 68.3, R = 6.64, a = 0.53", "#sigma_{NN} = 68.3, R = 6.70, a = 0.59", "#sigma_{NN} = 68.3, R = 6.64, a = 0.59", "#sigma_{NN} = 68.3, R = 6.70, a = 0.53"});
+	CompareFlux("0nXnSum",	{"_SigNN68p3R6p64a0p53", "_SigNN68p3R6p70a0p59", "_SigNN68p3R6p64a0p59", "_SigNN68p3R6p70a0p53"},	{"#sigma_{NN} = 68.3, R = 6.64, a = 0.53", "#sigma_{NN} = 68.3, R = 6.70, a = 0.59", "#sigma_{NN} = 68.3, R = 6.64, a = 0.59", "#sigma_{NN} = 68.3, R = 6.70, a = 0.53"});
+	CompareFlux("XnXn",		{"_SigNN68p3R6p64a0p53", "_SigNN68p3R6p70a0p59", "_SigNN68p3R6p64a0p59", "_SigNN68p3R6p70a0p53"},	{"#sigma_{NN} = 68.3, R = 6.64, a = 0.53", "#sigma_{NN} = 68.3, R = 6.70, a = 0.59", "#sigma_{NN} = 68.3, R = 6.64, a = 0.59", "#sigma_{NN} = 68.3, R = 6.70, a = 0.53"});
 
+	// CompareFlux("AnAn",		{"_SigNN68p3R6p67a0p56", "_SigNN68p3R6p64a0p53", "_SigNN68p3R6p70a0p59"},	{"#sigma_{NN} = 68.3, R = 6.67, a = 0.56", "#sigma_{NN} = 68.3, R = 6.64, a = 0.53", "#sigma_{NN} = 68.3, R = 6.70, a = 0.59"});
+	// CompareFlux("0n0n",		{"_SigNN68p3R6p67a0p56", "_SigNN68p3R6p64a0p53", "_SigNN68p3R6p70a0p59"},	{"#sigma_{NN} = 68.3, R = 6.67, a = 0.56", "#sigma_{NN} = 68.3, R = 6.64, a = 0.53", "#sigma_{NN} = 68.3, R = 6.70, a = 0.59"});
+	// CompareFlux("0nXnSum",	{"_SigNN68p3R6p67a0p56", "_SigNN68p3R6p64a0p53", "_SigNN68p3R6p70a0p59"},	{"#sigma_{NN} = 68.3, R = 6.67, a = 0.56", "#sigma_{NN} = 68.3, R = 6.64, a = 0.53", "#sigma_{NN} = 68.3, R = 6.70, a = 0.59"});
+	// CompareFlux("XnXn",		{"_SigNN68p3R6p67a0p56", "_SigNN68p3R6p64a0p53", "_SigNN68p3R6p70a0p59"},	{"#sigma_{NN} = 68.3, R = 6.67, a = 0.56", "#sigma_{NN} = 68.3, R = 6.64, a = 0.53", "#sigma_{NN} = 68.3, R = 6.70, a = 0.59"});
 	//--------------------------------------------------------------------------
 }
