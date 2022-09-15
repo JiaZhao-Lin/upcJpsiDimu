@@ -53,6 +53,9 @@ int    feeddownJpsiColor  = kAzure+10,  feeddownJpsiStyle = 1;
 int    qedColor = kGreen-3, qedStyle = 1;
 //------------------------------------------------------------------------------------------------------------
 
+//------------------------------------------------------------------------------------------------------------
+const int draw4Paper_flag = 1;
+//------------------------------------------------------------------------------------------------------------
 const TString TnPcases[4]		= {"", ".appliedTnP", ".appliedTnP_Low", ".appliedTnP_Hig"};
 const int   RunTnPcase         	= 1;	//Default 1
 
@@ -594,7 +597,6 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 	//--------------------------------------------------
 	
 	//--------------------------------------------------
-	const int draw4Paper_flag = 1;
 	TCanvas* c3;
 	if(draw4Paper_flag==1)
 	{
