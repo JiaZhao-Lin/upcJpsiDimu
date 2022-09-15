@@ -26,8 +26,10 @@ double Fv2ee(TString VMname="Jpsi");
 double Mv(TString VMname="Jpsi");
 double fun_term3(double *x, double *par);
 
-void calBDLxsec(const TString VMname="Jpsi")
+void calBDLxsec(const TString VMname="Rho")
 {
+	cout<<"calculating for " <<VMname<<endl;
+
 	const double fv    = Fv2ee(VMname);
 	const double mv    = Mv(VMname);
 	const double term1 = pow((2.*pi*pow(R,2)), 2)/(16.*pi);
