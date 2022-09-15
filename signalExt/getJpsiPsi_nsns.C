@@ -110,9 +110,10 @@ void getJpsiPsi_nsns()
 
 	PileUp_Corr(NJpsi_inMFit, NerrJpsi_inMFit, nDiffRapBins+1);
 	
+	//fitFullMassAndPt_4Decouple(2.61,4.2, 0.00,3.0);
 	fitFullMassAndPt_4Decouple(2.61,4.2, -0.01,3.0);
 
-	saveFile("CB_Poly3_PUShuai");
+	//saveFile("CB_Poly3_PUShuai");
 }
 //------------------------------------------------------------------------------------------------------------
 
@@ -588,13 +589,28 @@ void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4
 void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double massHig4Fit=4.2, const double ptLow4Fit = 0.0, const double ptHig4Fit = 3.5 )
 {
 	cout<<"now, let's fit the pt spectras !!!"<<endl;
-	TCanvas* c2 = new TCanvas("c2", "c2", 900, 900);
+	//--------------------------------------------------
+	TCanvas* c2 = new TCanvas("c2", "c2", 900, 900); //for pt fitting
+	//--------------------------------------------------
 	
+	//--------------------------------------------------
+	const int draw4Paper_flag = 1;
+	TCanvas* c3;
+	if(draw4Paper_flag==1)
+	{
+		c3 = new TCanvas("c3", "c3", 0, 0, 800, 600); //for pt fitting figures for paper
+		setPad(0.12, 0.08, 0.07, 0.13);
+	}
+	//--------------------------------------------------
+
+
+	//--------------------------------------------------
 	TCanvas* c1 = new TCanvas("c1", "c1", 0, 0, 800, 600);
 	setPad(0.12, 0.08, 0.07, 0.13);
 	c1->cd();
 	c1->SetLogy(0);
 	RooRealVar  mMass("mMass", "m_{#mu#mu} (GeV)", massLow4Fit, massHig4Fit);
+	//--------------------------------------------------
 	
 	TFile *inf_Temps = TFile::Open(Form("../simulation/out4effAndTemp/MassPtTemp_AllSpecs_massWindow_2.95_3.25_%dRapBins.root", nDiffRapBins));
 	TF1 *fQED = new TF1("fQED", fReject4QED, massLow4Fit, massHig4Fit, 4);
@@ -607,8 +623,8 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 
 		for(int iy=0; iy<nDiffRapBins+1; iy++)
 		{
-			if(iy==nDiffRapBins) continue; //temperory to skip all y added fitting 
-			if(SymmetricRapBin && iy < nDiffRapBins/2 )          continue; //tem skip
+			if(iy==nDiffRapBins)                           continue; //temperory to skip all y added fitting 
+			if(SymmetricRapBin && iy < nDiffRapBins/2 )    continue; //tem skip
 			
 			double dY = mDiffRapHi[iy] - mDiffRapLow[iy]; //need to be updated if use for 1.6<|y|<2.4
 			if(SymmetricRapBin && iy > (nDiffRapBins/2 -1) && iy<nDiffRapBins) dY *= 2;
@@ -776,8 +792,8 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			drawLatex(.55, 0.48+textDy, Form("N^{in J/#psi}_{QED} = %d #pm %d", (int)nQEDinJpsi, (int)nQEDinJpsiErr ), mTextFont, mTextSize, mTextColor);
 
 			//----------------------------------------------------------------------------------------------------------------------------------------------------
-			if(SymmetricRapBin && iy > (nDiffRapBins/2 - 1) && iy < nDiffRapBins) c1->SaveAs( Form("outplots/massSpec_4ptFitConstrain_"+nCasesName[i_ncase]+"_iy%d_Symm.png",  iy) );
-			else c1->SaveAs( Form("outplots/massSpec_4ptFitConstrain_"+nCasesName[i_ncase]+"_iy%d.png",  iy) );
+			if(SymmetricRapBin && iy > (nDiffRapBins/2 - 1) && iy < nDiffRapBins) c1->SaveAs( Form("outplots/massSpec_4ptFitConstrain_"+nCasesName[i_ncase]+"_iy%d_Symm.pdf",  iy) );
+			else c1->SaveAs( Form("outplots/massSpec_4ptFitConstrain_"+nCasesName[i_ncase]+"_iy%d.pdf",  iy) );
 			//----------------------------------------------------------------------------------------------------------------------------------------------------
 		
 			//------------------------------------------------------------------------------------------------------------------------------------------
@@ -1103,6 +1119,56 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			}
 
 			c2 -> Clear();
+
+			//---------------------------------------------------------------------------------------------------------------------------------------------------------
+			//---------------------------------------------------------------------------------------------------------------------------------------------------------
+			
+			if(draw4Paper_flag==1)
+			{
+				c3->cd();
+				gPad->SetLogy(1);
+
+				framePt->GetYaxis()->SetRangeUser(1.5, hPt->GetMaximum()*5);
+				framePt->Draw() ;
+				drawLatex(0.15, 0.86, "CMS Pb-Pb #sqrt{s_{NN}} = 5.02 TeV UPC ( "+nCasesName[i_ncase]+" )",  42,        0.055,      mTextColor );
+				drawLatex(0.18, 0.80, yName,                                                                 mTextFont, 0.05,      mTextColor );
+				drawLatex(0.18, 0.70+textDy2, Form("For p_{T} < %.2f GeV/c:",              mPtCut4Coh),                                   mTextFont, 0.035, mTextColor);
+				drawLatex(0.18, 0.65+textDy2, Form("f_{I} = (N^{All}_{InCoh}/N^{Coh}_{J/#psi}) = %.3f #pm %.3f", fI_Value, fI_Error),     mTextFont, 0.035, mTextColor);
+				drawLatex(0.18, 0.55+textDy2, Form("#frac{#sigma^{Coh}_{J/#psi}}{dy} = %.3f #pm %.3f (mb)", xsecValue[i_ncase][iy], xsecError[i_ncase][iy] ),                                     mTextFont, 0.035, mTextColor);
+
+				TLegend  *leg_4paper =  new TLegend(0.56, 0.45, 0.82, 0.80);
+				leg_4paper->SetFillStyle(0);
+				leg_4paper->SetFillColor(0);
+				leg_4paper->SetTextFont(mTextFont);
+				leg_4paper->SetTextSize(0.035);
+				leg_4paper->AddEntry(framePt->findObject("h_dataPt"),            "Data",        "p");
+				leg_4paper->AddEntry(framePt->findObject("totPtPdf_Norm[mPt]"),   Form("Total fit: #chi^{2}/ndf = %1.1f", chi2ndf),   "l");
+				
+				//const TString curveName[5]  = {"totPtPdf_Norm[mPt]_Comp[cohJpsiPdf]","totPtPdf_Norm[mPt]_Comp[incohJpsiPdf]", "totPtPdf_Norm[mPt]_Comp[dissoJpsiPdf]", "totPtPdf_Norm[mPt]_Comp[feeddownJpsiPdf]","totPtPdf_Norm[mPt]_Comp[qedPtPdf]"};
+				//const TString curveTitle[5] = {"Coherent J/#psi", "Incoherent J/#psi", "Incoherent J/#psi with disso.", "Coherent #psi' #rightarrow J/#psi+X", "#gamma#gamma #rightarrow #mu#mu"};
+				for(int icv=0; icv<5; icv++) 
+				{
+					//if(icv==0||icv==3) continue;
+					leg_4paper->AddEntry(framePt->findObject( curveName[icv]), curveTitle[icv], "l");
+				}
+
+				leg_4paper->Draw("same");
+
+				if(SymmetricRapBin && iy > (nDiffRapBins/2 - 1) && iy < nDiffRapBins)
+				{
+					c3->SaveAs( Form("outplots/ptSpec_4decouple_"+nCasesName[i_ncase]+"_iy%d_Symm_4paper.png",  iy) );
+					c3->SaveAs( Form("outplots/ptSpec_4decouple_"+nCasesName[i_ncase]+"_iy%d_Symm_4paper.pdf",  iy) );
+				}
+				else
+				{
+					c3->SaveAs( Form("outplots/ptSpec_4decouple_"+nCasesName[i_ncase]+"_iy%d_4paper.png",  iy) );
+					c3->SaveAs( Form("outplots/ptSpec_4decouple_"+nCasesName[i_ncase]+"_iy%d_4paper.pdf",  iy) );
+				}
+
+				c3 -> Clear();
+
+			}//draw for paper
+			
 		}//iy
 	}//ixn
 	delete c2;

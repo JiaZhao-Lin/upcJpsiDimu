@@ -352,9 +352,10 @@ void drawCMS_NeuConfig()
 	//htem2d_AnAn ->SetTickLength(0.08);
 	htem2d_AnAn->Draw();
     drawLatex(0.15, 0.85, "Pb+Pb #rightarrow Pb'+Pb'+J/#psi",      42,       0.053,      1);
-    drawLatex(0.75, 0.8, "#bf{Inclusive}",      42,       0.065,      1);
-    drawLatex(0.58,0.94,"PbPb 1.52 nb^{-1} (5.02 TeV)",42, 0.05, 1);
-    drawLatex(0.15,0.94,"#bf{CMS}",42, 0.05, 1);
+    drawLatex(0.75, 0.8,  "#bf{AnAn}",                             42,       0.075,      1);
+    //drawLatex(0.75, 0.8, "#bf{Inclusive}",      42,       0.065,      1);
+    drawLatex(0.58,0.94,  "PbPb 1.52 nb^{-1} (5.02 TeV)",          42,       0.050,      1);
+    drawLatex(0.15,0.94,  "#bf{CMS}",                              42,       0.050,      1);
 
 	gae_XsecVsY_Alice2019 ->SetMarkerStyle(25);
 	gae_XsecVsY_Alice2019 ->SetMarkerColor(4);
@@ -392,8 +393,8 @@ void drawCMS_NeuConfig()
     ge_XsecVsY_CMS2022  ->SetLineColor(2);
     ge_XsecVsY_CMS2022  ->SetLineWidth(2);
 
-	TLegend  *leg_AnAn =  new TLegend(0.14, 0.60, 0.55, 0.82);
-	TLegend  *leg_Theory =  new TLegend(0.55, 0.13, 0.85, 0.3);
+
+	TLegend  *leg_AnAn   =  new TLegend(0.14, 0.60, 0.55, 0.82);
 	leg_AnAn->SetFillStyle(0);
 	leg_AnAn->SetFillColor(0);
 	leg_AnAn->SetTextSize(0.050);
@@ -401,11 +402,14 @@ void drawCMS_NeuConfig()
 	leg_AnAn->AddEntry(gae_XsecVsY_Alice2019,		"ALICE 2019",        "lpf");
 	leg_AnAn->AddEntry(gae_XsecVsY_Alice2021,		"ALICE 2021",        "lpf");
 	leg_AnAn->AddEntry(gae_XsecVsY_LHCb2022,		"LHCb  2022",        "lpf");
-	drawLTA("AnAn",leg_Theory);
-	// drawbBK("Xsec",leg_Theory);
-	drawCD("Xsec",leg_Theory);
-	leg_Theory->Draw("same");
 	leg_AnAn->Draw("same");
+	
+	TLegend  *leg_Theory =  new TLegend(0.55, 0.13, 0.85, 0.36);
+	leg_Theory->SetTextSize(0.046);
+	drawLTA("AnAn", leg_Theory);
+	// drawbBK("Xsec",leg_Theory);
+	drawCD("Xsec",  leg_Theory);
+	leg_Theory->Draw("same");
 
 	gae_XsecVsY_Alice2019 ->Draw("2same");
 	ge_XsecVsY_Alice2019  ->Draw("pezsame");
