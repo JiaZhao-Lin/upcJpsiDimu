@@ -904,9 +904,6 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			if(iy==3) hCohJpsiPtHist = (TH1D*)inf_zy3->Get("hPt_1619_Combo");
 			if(iy==4) hCohJpsiPtHist = (TH1D*)inf_zy3->Get("hPt_1921_Combo");
 			if(iy==5) hCohJpsiPtHist = (TH1D*)inf_zy3->Get("hPt_2124_Combo");
-			
-
-
 
 			// KEY: TH1D	hCohJpsiPt_RapBin0;1	-2.4 < y < -2.1
 			// KEY: TH1D	hCohJpsiPt_RapBin1;1	-2.1 < y < -1.9
@@ -917,9 +914,9 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			//if(iy==3) hCohJpsiPtHist = (TH1D*)infZaochen->Get("hCohJpsiPt_RapBin2");
 			//if(iy==4) hCohJpsiPtHist = (TH1D*)infZaochen->Get("hCohJpsiPt_RapBin1");
 			//if(iy==5) hCohJpsiPtHist = (TH1D*)infZaochen->Get("hCohJpsiPt_RapBin0");
-			if(iy==3) hCohJpsiPtHist = (TH1D*)infZaochen->Get("hCohJpsiPt_RapBin3");
-			if(iy==4) hCohJpsiPtHist = (TH1D*)infZaochen->Get("hCohJpsiPt_RapBin4");
-			if(iy==5) hCohJpsiPtHist = (TH1D*)infZaochen->Get("hCohJpsiPt_RapBin5");
+			//if(iy==3) hCohJpsiPtHist = (TH1D*)infZaochen->Get("hCohJpsiPt_RapBin3");
+			//if(iy==4) hCohJpsiPtHist = (TH1D*)infZaochen->Get("hCohJpsiPt_RapBin4");
+			//if(iy==5) hCohJpsiPtHist = (TH1D*)infZaochen->Get("hCohJpsiPt_RapBin5");
 				
 			//----------------------------------------------------------------------
 
@@ -954,8 +951,8 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 
 			RooRealVar mPt("mPt", "p_{T} (GeV)", ptLow4Fit, ptHig4Fit);
 			
-			hCohJpsiPtHist        ->Rebin(mptRebins*4); //read Zaochen
-			//hCohJpsiPtHist        ->Rebin(mptRebins); //read Wei
+			//hCohJpsiPtHist        ->Rebin(mptRebins*4); //read Zaochen
+			hCohJpsiPtHist        ->Rebin(mptRebins); //read Wei draw template
 			hInCohJpsiPtHist      ->Rebin(mptRebins);
 			hFeeddownJpsiPtHist   ->Rebin(mptRebins);
 			hQEDPtHist            ->Rebin(mptRebins);
