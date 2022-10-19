@@ -21,7 +21,7 @@ TGraphAsymmErrors* gae_XsecVsY_0nXnSum_CMS2022;
 TGraphErrors*       ge_XsecVsY_XnXn_CMS2022;
 TGraphAsymmErrors* gae_XsecVsY_XnXn_CMS2022;
 
-void getCMSData(const TString infile = "../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins.appliedTnP.root");
+void getCMSData();
 void getAliceData();
 void drawCMSvsAlice();
 void drawCMS_NeuConfig();
@@ -404,7 +404,7 @@ void drawCMS_NeuConfig()
 	leg_AnAn->AddEntry(gae_XsecVsY_LHCb2022,		"LHCb  2022",        "lpf");
 	leg_AnAn->Draw("same");
 	
-	TLegend  *leg_Theory =  new TLegend(0.55, 0.13, 0.85, 0.36);
+	TLegend  *leg_Theory =  new TLegend(0.75, 0.13, 0.95, 0.36);
 	leg_Theory->SetTextSize(0.046);
 	drawLTA("AnAn", leg_Theory);
 	// drawbBK("Xsec",leg_Theory);
@@ -438,16 +438,10 @@ void drawDDP(TString Name,	TLegend* legend)
 	legend->AddEntry(gr_AnAn_DataDrivenPrediction,	Name.Data(),		"l" );
 }
 
-void getCMSData(const TString infile = "../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins.appliedTnP.root" )
+void getCMSData()
 {
-	// LoadJpsiXsec loadJpsiXsec(infile);
-	// auto ParamsMap = loadJpsiXsec.GetMap();
-	auto ParamsMap				= readMap();
+	auto ParamsMap				= readMap("rootfiles/Results_Map_TestwSmrNoInCoh.root");
 	auto TotalSysUncer_Map 		= readMap("rootfiles/TotalSysUncer_Map.root");
-	// for (int i = 0; i < ParamsMap["Rap"].size(); ++i)
-	// {
-	// 	ParamsMap["Rap"][i] *= -1;
-	// }
 
 	std::vector<double> X_AXIS_ERR = ParamsMap.at("RapErr");
 	auto Xsec_AnAn_TotalSysErr = ParamsMap.at("Xsec_AnAn");

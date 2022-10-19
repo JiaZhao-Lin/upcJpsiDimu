@@ -35,6 +35,7 @@ const std::vector<double> ALICE_Run2_FwdRap_y  				= 	{ -3.875,		-3.625 	},
 						ALICE_Run2_FwdRap_Sigma_IA_Err 		=	{ 0.000566075,	0.000692159	};
 
 std::vector<double> 	ALICE_Run2_FwdRap_W  				= 	{},	
+						ALICE_Run2_FwdRap_w_eff				=	{},
 						ALICE_Run2_FwdRap_Sigma				=	{},	
 						ALICE_Run2_FwdRap_Sigma_StatErr		=	{},
 						ALICE_Run2_FwdRap_Sigma_SysErrLow	=	{},
@@ -57,6 +58,7 @@ const std::vector<double> LHCb_Run2_FwdRap_y  				= 	{ -4.25,		-3.75 	},
 						LHCb_Run2_FwdRap_Sigma_IA_Err 		=	{ 0.00036902,	0.000629627	};
 
 std::vector<double> 	LHCb_Run2_FwdRap_W  				= 	{},	
+						LHCb_Run2_FwdRap_w_eff 				= 	{},	
 						LHCb_Run2_FwdRap_Sigma				=	{},	
 						LHCb_Run2_FwdRap_Sigma_StatErr		=	{},
 						LHCb_Run2_FwdRap_Sigma_SysErrLow	=	{},

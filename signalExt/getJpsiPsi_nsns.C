@@ -22,6 +22,7 @@
 #include "RooSimultaneous.h"
 #include "RooPlot.h"
 #include "RooFitResult.h"
+#include "RooHist.h"
 using namespace RooFit;
 
 //------------------------------------------------------------------------------------------------------------
@@ -80,11 +81,11 @@ TH1D* H_EffVsY_CohPsi2Jpsi;
 TH1D* H_AccVsY_CohJpsi;
 
 
-double fD_inPtCut[NnCases][nDiffRapBins+1];    //fD within pt<0.20 GeV/c
-double fDerr_inPtCut[NnCases][nDiffRapBins+1];    //fD within pt<0.20 GeV/c
-double NJpsi_inMFit[NnCases][nDiffRapBins+1]; //# Jpsi within pt<0.20 GeV/c from mass fitting
-double NerrJpsi_inMFit[NnCases][nDiffRapBins+1]; //# Jpsi within pt<0.20 GeV/c from mass fitting
-double Eff_CohJpsi[NnCases][nDiffRapBins+1];     //efficiency of coherent jpsi
+double fD_inPtCut[NnCases][nDiffRapBins+1];    		//fD within pt<0.20 GeV/c
+double fDerr_inPtCut[NnCases][nDiffRapBins+1];    	//fD within pt<0.20 GeV/c
+double NJpsi_inMFit[NnCases][nDiffRapBins+1]; 		//# Jpsi within pt<0.20 GeV/c from mass fitting
+double NerrJpsi_inMFit[NnCases][nDiffRapBins+1]; 	//# Jpsi within pt<0.20 GeV/c from mass fitting
+double Eff_CohJpsi[NnCases][nDiffRapBins+1];     	//efficiency of coherent jpsi
 // const double temAcc[nDiffRapBins+1] = {0.170, 0.348, 0.348, 0.170, 0.250};//need to be updated by corrected one later
 double Acc_CohJpsi[nDiffRapBins+1];     //acceptance of coherent jpsi
 
@@ -116,7 +117,7 @@ void getJpsiPsi_nsns()
 	//fitFullMassAndPt_4Decouple(2.61,4.2, 0.00,3.0);
 	fitFullMassAndPt_4Decouple(2.61,4.2, -0.01,3.0);
 
-	//saveFile("CB_Poly3_PUShuai");
+	// saveFile("CB_Poly3_PUShuai_TestwSmrNoInCoh");
 }
 //------------------------------------------------------------------------------------------------------------
 
@@ -613,11 +614,18 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 	c1->SetLogy(0);
 	RooRealVar  mMass("mMass", "m_{#mu#mu} (GeV)", massLow4Fit, massHig4Fit);
 	//--------------------------------------------------
-	
+
+	const int mptRebins = 1;
 	TFile *inf_Temps = TFile::Open(Form("../simulation/out4effAndTemp/MassPtTemp_AllSpecs_massWindow_2.95_3.25_%dRapBins.root", nDiffRapBins));
 	TF1 *fQED = new TF1("fQED", fReject4QED, massLow4Fit, massHig4Fit, 4);
 	TF1 *fCohJpsiTemp;
-	
+
+
+	// TFile *inf_Temps_Test = new TFile("./templateTest/out4effAndTemp_zy2_wSmr/MassPtTemp_AllSpecs_massWindow_2.95_3.25_.root", "read");
+	// TFile* inf_Temps_Test = new TFile("./templateTest/out4effAndTemp_zy2_woSmr/MassPtTemp_AllSpecs_massWindow_2.95_3.25_.root", "read");
+	// TFile* inf_Temps_Test = new TFile("./templateTest/out4effAndTemp_zy1_woSmr/MassPtTemp_AllSpecs_massWindow_2.95_3.25_.root", "read");
+
+
 	for(int i_ncase=0; i_ncase<NnCases; i_ncase++)
 	{
 		cout<<"i_ncase: "<<i_ncase<<endl;
@@ -863,7 +871,18 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 				if(iy==nDiffRapBins) hCohJpsiPtHist = (TH1D *)inf_Temps->Get(      "hCohJpsi_"+nCasesName[i_ncase]+"Pt");
 				else                 hCohJpsiPtHist = (TH1D *)inf_Temps->Get( Form("hCohJpsi_"+nCasesName[i_ncase]+"Pt_RapBin%d", iy) );
 			}
-			
+
+			//----------------------------------
+			// Test: overwriting the pt template
+			// if(iy==3) hCohJpsiPtHist = (TH1D*)inf_Temps_Test->Get("hCohJpsiPt_RapBin2");
+			// if(iy==4) hCohJpsiPtHist = (TH1D*)inf_Temps_Test->Get("hCohJpsiPt_RapBin1");
+			// if(iy==5) hCohJpsiPtHist = (TH1D*)inf_Temps_Test->Get("hCohJpsiPt_RapBin0");
+			// if(iy==3) hCohJpsiPtHist = (TH1D*)inf_Temps_Test->Get("hCohJpsiPt_RapBin3");
+			// if(iy==4) hCohJpsiPtHist = (TH1D*)inf_Temps_Test->Get("hCohJpsiPt_RapBin4");
+			// if(iy==5) hCohJpsiPtHist = (TH1D*)inf_Temps_Test->Get("hCohJpsiPt_RapBin5");
+			//----------------------------------------------------------------------
+
+
 			if(iy==nDiffRapBins)
 			{
 				hInCohJpsiPtHist    = (TH1D *)inf_Temps->Get( "hInCohJpsiPt"         );
@@ -880,22 +899,21 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 
 			RooRealVar mPt("mPt", "p_{T} (GeV)", ptLow4Fit, ptHig4Fit);
 			
-			const int mRebPt = 1;
 	
 			//--------------------------------------------------------------------------------------
-			hCohJpsiPtHist->RebinX(mRebPt);
+			hCohJpsiPtHist->RebinX(mptRebins);
 			RooDataHist hCohJpsiPtRooHist(     "hCohJpsiPtRooHist",      "hCohJpsiPtRooHist",      mPt, hCohJpsiPtHist);
 			RooHistPdf  cohJpsiPdf(            "cohJpsiPdf",             "cohJpsiPdf",             mPt, hCohJpsiPtRooHist,      0);
 			//--------------------------------------------------------------------------------------
 
 			//--------------------------------------------------------------------------------------
-			hInCohJpsiPtHist->RebinX(mRebPt);
+			hInCohJpsiPtHist->RebinX(mptRebins);
 			RooDataHist hInCohJpsiPtRooHist(   "hInCohJpsiPtRooHist",    "hInCohJpsiPtRooHist",    mPt, hInCohJpsiPtHist);
 			RooHistPdf  incohJpsiPdf(          "incohJpsiPdf",           "incohJpsiPdf",           mPt, hInCohJpsiPtRooHist,    0);
 			//--------------------------------------------------------------------------------------
 
 			//--------------------------------------------------------------------------------------
-			hFeeddownJpsiPtHist->RebinX(mRebPt);
+			hFeeddownJpsiPtHist->RebinX(mptRebins);
 			RooDataHist hFeeddownJpsiPtRooHist("hFeeddownJpsiPtRooHist", "hFeeddownJpsiPtRooHist", mPt, hFeeddownJpsiPtHist);
 			RooHistPdf  feeddownJpsiPdf(       "feeddownJpsiPdf",        "feeddownJpsiPdf",        mPt, hFeeddownJpsiPtRooHist, 0);
 			//--------------------------------------------------------------------------------------
@@ -904,7 +922,7 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			////------------------------gammagamma-->mumu--------------------------------------------------------------
 			////--------------------------------------------------------------------------------------
 			//if use the simulated tempaltes for gammagamma-->mumu
-			hQEDPtHist->RebinX(mRebPt);
+			hQEDPtHist->RebinX(mptRebins);
 			RooDataHist hQEDPtRooHist("hQEDPtRooHist", "hQEDPtRooHist", mPt, hQEDPtHist);
 			RooHistPdf  qedPtPdf(     "qedPtPdf",      "qedPtPdf",      mPt, hQEDPtRooHist, 0);
 
@@ -946,6 +964,8 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			RooAddPdf totPtPdf("totPtPdf", "totPtPdf", 
 					RooArgList( Pdf_CohJpsi_wFDW, incohJpsiPdf, *dissoJpsiPdf, qedPtPdf ),
 					RooArgList( nCohJpsi_wFDW,    nInCohJpsi,    nDissoJpsi,   nQEDBg)  );
+					// RooArgList( Pdf_CohJpsi_wFDW,  *dissoJpsiPdf, qedPtPdf ),
+					// RooArgList( nCohJpsi_wFDW,        nDissoJpsi,   nQEDBg)  );
 			
 			totPtPdf.fitTo(dataPt,Extended(kTRUE),SumW2Error(kTRUE),Hesse(kTRUE),Minos(kFALSE),Save());
 			
@@ -966,6 +986,8 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			const double frac_InCoh           = hInCohJpsiPtHist ->Integral(1, higBin_InCoh) / hInCohJpsiPtHist->Integral(1, hInCohJpsiPtHist->GetNbinsX());
 			const double N_InCoh_inPtCut      = N_InCohJpsi    * frac_InCoh;
 			const double Nerr_InCoh_inPtCut   = Nerr_InCohJpsi * frac_InCoh;
+			// const double N_InCoh_inPtCut      = 0;
+			// const double Nerr_InCoh_inPtCut   = 0;
 			
 			//calculate number of incoherent Jpsi with n-disso within pt<0.20 GeV/c
 			mPt.setRange("CohSignal", 0., mPtCut4Coh );
@@ -1003,7 +1025,7 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 
 			RooPlot *framePt = mPt.frame(Range(ptLow4Fit, ptHig4Fit), Title(""), Bins(nFramePtBins));
 
-			dataPt  .plotOn(framePt, MarkerStyle(20), MarkerSize(0.6), MarkerColor(1), LineColor(1), LineWidth(mLineWidth), DrawOption("pz"));
+			dataPt  .plotOn(framePt, MarkerStyle(20), MarkerSize(0.8), MarkerColor(2), LineColor(2), LineWidth(mLineWidth), DrawOption("pz"));
 			totPtPdf.plotOn(framePt, LineColor(1), LineStyle(1), LineWidth(mLineWidth));
 			totPtPdf.plotOn(framePt, Components(RooArgSet(cohJpsiPdf)),      LineColor(cohJpsiColor),      LineStyle(cohJpsiStyle),      LineWidth(mLineWidth));
 			totPtPdf.plotOn(framePt, Components(RooArgSet(feeddownJpsiPdf)), LineColor(feeddownJpsiColor), LineStyle(feeddownJpsiStyle), LineWidth(mLineWidth));
@@ -1035,13 +1057,13 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			framePt->GetYaxis()->SetRangeUser(0.5, hPt->GetMaximum()*5);
 			framePt->Draw() ;
 			drawLatex(0.15, 0.92, "CMS Pb-Pb #sqrt{s_{NN}} = 5.02 TeV UPC ( "+nCasesName[i_ncase]+" )",  42,        0.06,      mTextColor );
-			drawLatex(0.18, 0.82, yName,                                                                 mTextFont, 0.05,      mTextColor );
+			drawLatex(0.62, 0.82, yName,                                                                 mTextFont, 0.05,      mTextColor );
 			const double textDy2 = 0.05;
-			drawLatex(0.25, 0.70+textDy2, Form("For p_{T}<%.2f GeV/c:",              mPtCut4Coh),                                   mTextFont, 0.035, mTextColor);
-			drawLatex(0.25, 0.65+textDy2, Form("N^{Coh}_{J/#psi} = %d #pm %d",  (int)N_CohJpsi_inPtCut, (int)Nerr_CohJpsi_inPtCut), mTextFont, 0.035, mTextColor);
-			drawLatex(0.25, 0.60+textDy2, Form("f_{I} = (N^{All}_{InCoh}/N^{Coh}_{J/#psi}) = %.3f #pm %.3f", fI_Value, fI_Error),     mTextFont, 0.035, mTextColor);
-			drawLatex(0.25, 0.52+textDy2, Form("N^{in Mfit}_{J/#psi}/(1+f_{I}+f_{D}) = %d #pm %d",  (int)NJpsi_Coh_cal, (int)NerrJpsi_Coh_cal), mTextFont, 0.035, mTextColor);
-			drawLatex(0.35, 0.45+textDy2, Form("#frac{#sigma^{Coh}_{J/#psi}}{dy} = %.3f #pm %.3f (mb)", xsecValue[i_ncase][iy], xsecError[i_ncase][iy] ),                                     mTextFont, 0.035, mTextColor);
+			drawLatex(0.25, 0.80+textDy2, Form("For p_{T}<%.2f GeV/c:",              mPtCut4Coh),                                   mTextFont, 0.035, mTextColor);
+			drawLatex(0.25, 0.75+textDy2, Form("N^{Coh}_{J/#psi} = %d #pm %d",  (int)N_CohJpsi_inPtCut, (int)Nerr_CohJpsi_inPtCut), mTextFont, 0.035, mTextColor);
+			drawLatex(0.25, 0.70+textDy2, Form("f_{I} = (N^{All}_{InCoh}/N^{Coh}_{J/#psi}) = %.3f #pm %.3f", fI_Value, fI_Error),     mTextFont, 0.035, mTextColor);
+			drawLatex(0.25, 0.65+textDy2, Form("N^{in Mfit}_{J/#psi}/(1+f_{I}+f_{D}) = %d #pm %d",  (int)NJpsi_Coh_cal, (int)NerrJpsi_Coh_cal), mTextFont, 0.035, mTextColor);
+			drawLatex(0.25, 0.57+textDy2, Form("#frac{#sigma^{Coh}_{J/#psi}}{dy} = %.3f #pm %.3f (mb)", xsecValue[i_ncase][iy], xsecError[i_ncase][iy] ),                                     mTextFont, 0.035, mTextColor);
 
 			TLegend  *leg =  new TLegend(0.62, 0.45, 0.88, 0.80);
 			leg->SetFillStyle(0);
@@ -1058,6 +1080,15 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 				//if(icv==0||icv==3) continue;
 				leg->AddEntry(framePt->findObject( curveName[icv]), curveTitle[icv], "l");
 			}
+			//----------------------- Removing Incoherent Jpsi template -----------------------
+			// const TString curveName[5]  = {"totPtPdf_Norm[mPt]_Comp[cohJpsiPdf]", "totPtPdf_Norm[mPt]_Comp[dissoJpsiPdf]", "totPtPdf_Norm[mPt]_Comp[feeddownJpsiPdf]","totPtPdf_Norm[mPt]_Comp[qedPtPdf]"};
+			// const TString curveTitle[5] = {"Coherent J/#psi",  "Incoherent J/#psi with disso.", "Coherent #psi' #rightarrow J/#psi+X", "#gamma#gamma #rightarrow #mu#mu"};
+			// for(int icv=0; icv<4; icv++) 
+			// {
+			// 	//if(icv==0||icv==3) continue;
+			// 	leg->AddEntry(framePt->findObject( curveName[icv]), curveTitle[icv], "l");
+			// }
+			//----------------------- END ----------------------------------------------
 
 			leg->Draw("same");
 
@@ -1170,11 +1201,17 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 				c3 -> Clear();
 
 			}//draw for paper
-			
+
+			delete hCohJpsiPtHist;
+			delete hInCohJpsiPtHist;
+			delete hFeeddownJpsiPtHist;
+			delete hQEDPtHist;
 		}//iy
 	}//ixn
 	delete c2;
-	
+
+	// inf_Temps_Test	->Close();
+	inf_Temps		->Close();
 	cout << "End of program !" << endl;
 }
 

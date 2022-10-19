@@ -3,10 +3,66 @@
 #include "readTheory.C"
 #include "Map_IO.C"
 
-const double JpsiMass   = 3.096916;
 const double Sqrt_s     = 5020;
 const double Gamma_beam = 2672.9;
 const double Mass_N     = (0.93827+0.93957) / 2;
+// the effective Lorentz factor in the rest frame of the collision partner A. It is related to that in the c.m. system of the two colliding heavy ions
+// Eq.4.2 Prog. Parr. Nucl. Phys.. Vol. 39, pp. 503-564. 1997
+const double Gamma_eff  = 2 * Gamma_beam * Gamma_beam -1;
+
+struct Converter
+{
+	static double y2x(const double y)
+	{
+		return (mJpsi_PDG / Sqrt_s) * exp(-y);
+	}
+	
+	static double y2W(const double y)
+	{
+		return sqrt( (2 * Gamma_beam * Mass_N * mJpsi_PDG) * exp(y) );
+	}
+
+	static double W2y(const double W)
+	{
+		return log( W * W / (2 * Gamma_beam * Mass_N * mJpsi_PDG) );
+	}
+
+	static double y2w(const double y)
+	{
+		//Rap to photon energy
+		return mJpsi_PDG / 2 * exp(y);
+	}
+
+	static double y2w_eff(const double y)
+	{
+		//Rap to photon energy in A rest frame
+		return w2w_eff( y2w(y) );
+	}
+
+	static double w2y(const double w)
+	{
+		//Photon energy to Rap
+		return log(2 * w /mJpsi_PDG);
+	}
+
+	static double w2w_eff(const double w)
+	{
+		//convert photon energy in gamma-A cm frame to A rest frame
+		return w * Gamma_eff;
+	}
+
+	static std::vector<double> W2w_eff_v( std::vector<double> W)
+	{
+		std::vector<double> v_;
+		//convert photon energy in gamma-A cm frame to A rest frame
+		for (int i = 0; i < W.size(); i++)
+		{
+			v_.push_back( y2w_eff(W2y( W[i])) );
+		}
+		return v_;
+	}
+};
+
 
 void Cal_R_Error(std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap)
 {
@@ -16,22 +72,13 @@ void Cal_R_Error(std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap)
 	}
 }
 
-double y2x(const double y)
-{
-	return (JpsiMass / Sqrt_s) * exp(-y);
-}
-
-double y2W(const double y)
-{
-	return sqrt( (2 * Gamma_beam * Mass_N * JpsiMass) * exp(y) );
-}
-
 void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap, const std::map<TString, std::vector<double>> &TotalSysUncer_Map, const int flag4Axis = 0 ) //0: logY only, 1: logX and LogY
 {
 	for (int i = 0; i < ALICE_Run2_FwdRap_y.size(); ++i)
 	{
 		//Calculating the values
-		ALICE_Run2_FwdRap_W        		.push_back( y2W(ALICE_Run2_FwdRap_y[i]) );
+		ALICE_Run2_FwdRap_W        		.push_back( Converter::y2W(ALICE_Run2_FwdRap_y[i]) );
+		// ALICE_Run2_FwdRap_w_eff        	.push_back( Converter::y2w_eff(  ALICE_Run2_FwdRap_y[i]  ) );
 		ALICE_Run2_FwdRap_Sigma    		.push_back( ALICE_Run2_FwdRap_dSigmady[i] / ALICE_Run2_FwdRap_Flux[i] );
 		ALICE_Run2_FwdRap_Sigma_StatErr	.push_back( ALICE_Run2_FwdRap_Sigma[i] * ALICE_Run2_FwdRap_dSigmady_StatErr[i] / ALICE_Run2_FwdRap_dSigmady[i]		);
 		ALICE_Run2_FwdRap_Sigma_SysErrLow.push_back( ALICE_Run2_FwdRap_Sigma[i] * TMath::Hypot(ALICE_Run2_FwdRap_dSigmady_SysErrLow[i] / ALICE_Run2_FwdRap_dSigmady[i],
@@ -39,7 +86,7 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 		ALICE_Run2_FwdRap_Sigma_SysErrHig.push_back( ALICE_Run2_FwdRap_Sigma[i] * TMath::Hypot(ALICE_Run2_FwdRap_dSigmady_SysErrHig[i] / ALICE_Run2_FwdRap_dSigmady[i],
 																							 ALICE_Run2_FwdRap_Flux_Err[i] / ALICE_Run2_FwdRap_Flux[i])		);
 		
-		ALICE_Run2_FwdRap_x        		.push_back( y2x(ALICE_Run2_FwdRap_y[i]) );
+		ALICE_Run2_FwdRap_x        		.push_back( Converter::y2x(ALICE_Run2_FwdRap_y[i]) );
 		ALICE_Run2_FwdRap_R 			.push_back( sqrt(ALICE_Run2_FwdRap_Sigma[i]/ALICE_Run2_FwdRap_Sigma_IA[i])	);
 		ALICE_Run2_FwdRap_R_StatErr		.push_back( 0.5 * ALICE_Run2_FwdRap_R[i] * ALICE_Run2_FwdRap_Sigma_StatErr[i]/ALICE_Run2_FwdRap_Sigma[i]	);
 		ALICE_Run2_FwdRap_R_SysErrLow	.push_back( 0.5 * ALICE_Run2_FwdRap_R[i] * TMath::Hypot( ALICE_Run2_FwdRap_Sigma_SysErrLow[i]/ALICE_Run2_FwdRap_Sigma[i],
@@ -50,7 +97,8 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 	for (int i = 0; i < LHCb_Run2_FwdRap_y.size(); ++i)
 	{
 		//Calculating the values
-		LHCb_Run2_FwdRap_W        		.push_back( y2W(LHCb_Run2_FwdRap_y[i]) );
+		LHCb_Run2_FwdRap_W        		.push_back( Converter::y2W(LHCb_Run2_FwdRap_y[i]) );
+		// LHCb_Run2_FwdRap_w_eff     		.push_back( Converter::y2w_eff(  LHCb_Run2_FwdRap_y[i]  ) ) ;
 		LHCb_Run2_FwdRap_Sigma    		.push_back( LHCb_Run2_FwdRap_dSigmady[i] / LHCb_Run2_FwdRap_Flux[i] );
 		LHCb_Run2_FwdRap_Sigma_StatErr	.push_back( LHCb_Run2_FwdRap_Sigma[i] * LHCb_Run2_FwdRap_dSigmady_StatErr[i] / LHCb_Run2_FwdRap_dSigmady[i]		);
 		LHCb_Run2_FwdRap_Sigma_SysErrLow.push_back( LHCb_Run2_FwdRap_Sigma[i] * TMath::Hypot(LHCb_Run2_FwdRap_dSigmady_SysErrLow[i] / LHCb_Run2_FwdRap_dSigmady[i],
@@ -58,7 +106,7 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 		LHCb_Run2_FwdRap_Sigma_SysErrHig.push_back( LHCb_Run2_FwdRap_Sigma[i] * TMath::Hypot(LHCb_Run2_FwdRap_dSigmady_SysErrHig[i] / LHCb_Run2_FwdRap_dSigmady[i],
 																							 LHCb_Run2_FwdRap_Flux_Err[i] / LHCb_Run2_FwdRap_Flux[i])		);
 		
-		LHCb_Run2_FwdRap_x        		.push_back( y2x(LHCb_Run2_FwdRap_y[i]) );
+		LHCb_Run2_FwdRap_x        		.push_back( Converter::y2x(LHCb_Run2_FwdRap_y[i]) );
 		LHCb_Run2_FwdRap_R 			.push_back( sqrt(LHCb_Run2_FwdRap_Sigma[i]/LHCb_Run2_FwdRap_Sigma_IA[i])	);
 		LHCb_Run2_FwdRap_R_StatErr		.push_back( 0.5 * LHCb_Run2_FwdRap_R[i] * LHCb_Run2_FwdRap_Sigma_StatErr[i]/LHCb_Run2_FwdRap_Sigma[i]	);
 		LHCb_Run2_FwdRap_R_SysErrLow	.push_back( 0.5 * LHCb_Run2_FwdRap_R[i] * TMath::Hypot( LHCb_Run2_FwdRap_Sigma_SysErrLow[i]/LHCb_Run2_FwdRap_Sigma[i],
@@ -66,7 +114,8 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 		LHCb_Run2_FwdRap_R_SysErrHig	.push_back( 0.5 * LHCb_Run2_FwdRap_R[i] * TMath::Hypot( LHCb_Run2_FwdRap_Sigma_SysErrHig[i]/LHCb_Run2_FwdRap_Sigma[i],
 																								LHCb_Run2_FwdRap_Sigma_IA_Err[i]/LHCb_Run2_FwdRap_Sigma_IA[i])	);
 	}
-
+	// std::vector<double> ALICE_Run2_MidRap_w_eff;
+	// ALICE_Run2_MidRap_w_eff        	.push_back( Converter::y2w_eff(  0  ) );
 
 	auto c = new TCanvas();
 	// c->SetLogx();
@@ -90,13 +139,14 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 	{
 		c->SetLogy();
 		SigmaVsW = new TH2D("SigmaVsW", ";W_{#gammaN}^{Pb} (GeV);#sigma(#gamma Pb #rightarrow J/#psi Pb) (mb);", 10,0,420, 10, 0.004, 0.13);
+		// SigmaVsW = new TH2D("SigmaVsW", ";#omega_{#gamma}(in target Pb rest frame) (GeV);#sigma(#gamma Pb #rightarrow J/#psi Pb) (mb);", 10,0,3e8, 10, 0.004, 0.13);
 	}
 	else //logX and logY as default one
 	{
 		c->SetLogx();
 		c->SetLogy();
-		//SigmaVsW = new TH2D("SigmaVsW", ";W_{#gammaN}^{Pb} (GeV);#sigma(#gamma A #rightarrow J/#psi A) (mb)", 10,28,520, 10, 0.015, 0.11);
 		SigmaVsW = new TH2D("SigmaVsW", ";W_{#gammaN}^{Pb} (GeV);#sigma(#gamma A #rightarrow J/#psi A) (mb);", 10,14,520, 10, 0.004, 0.13);
+		// SigmaVsW = new TH2D("SigmaVsW", ";#omega_{#gamma}(in target Pb rest frame) (GeV);#sigma(#gamma Pb #rightarrow J/#psi Pb) (mb);", 10,1e5,3e8, 10, 0.004, 0.13);
 		X_AXIS_ERR 			= {11,2,12,1.7,14,1.5};
 		X_AXIS_ERR_ALICE_Fwd= {0.65,0.8};
 		X_AXIS_ERR_ALICE_Mid= {5};
@@ -120,6 +170,13 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 	{
 		Sigmas_TotalSysErr[i] *= 0.01 * TotalSysUncer_Map.at("Sigmas")[i];
 	}
+
+	// std::vector<double> CMS_w_eff = {};
+	// for (int i = 0; i < ShadowRatio_ParamsMap.at("Raps").size(); i++)
+	// {
+	// 	CMS_w_eff.push_back(Converter::y2w_eff(ShadowRatio_ParamsMap.at("Raps")[i]));
+	// }
+
 	TGraphErrors* ge_CMS        			 = new TGraphErrors(ShadowRatio_ParamsMap.at("Ws").size(),	&ShadowRatio_ParamsMap.at("Ws")[0],	&ShadowRatio_ParamsMap.at("Sigmas")[0],	0,	&ShadowRatio_ParamsMap.at("Sigmas_Err")[0]	);
 	TGraphAsymmErrors* gae_CMS 	= new TGraphAsymmErrors(
 												ShadowRatio_ParamsMap.at("Ws").size(),
@@ -170,7 +227,7 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 		legTheory->SetFillColor(0);
 		legTheory->SetTextSize(0.035);
 		legTheory->AddEntry(ge_IA,                "Impulse Approx.", "l");
-                legTheory->AddEntry(ge_CGCnoFluct,        "CGC IPsat",                   "l");
+		legTheory->AddEntry(ge_CGCnoFluct,        "CGC IPsat",                   "l");
 		drawGG("Sigmas",legTheory);
 		drawLTA_Sigmas_R("Sigmas", legTheory);
 		drawbBK("Sigmas",legTheory);
@@ -212,7 +269,7 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 		legTheory->SetFillStyle(0);
 		legTheory->SetFillColor(0);
 		legTheory->SetTextSize(0.035);
-                legTheory->AddEntry(ge_IA,                "Impulse Approx.", "l");
+		legTheory->AddEntry(ge_IA,                "Impulse Approx.", "l");
 		legTheory->AddEntry(ge_CGCnoFluct,        "CGC IPsat",                   "l");
 		drawGG("Sigmas",legTheory);
 		drawLTA_Sigmas_R("Sigmas", legTheory);
@@ -469,13 +526,13 @@ std::map<TString, std::vector<double>> getParamsMap(const TString infile = "../s
 	{auto Temp = fit2D(loadJpsiXsec.GetMap(), flux_uncer, fluxSubCase); ShadowRatio_ParamsMap.at("Raps") = Temp[0]; ShadowRatio_ParamsMap["Raps_Err"] = Temp[1]; ShadowRatio_ParamsMap.at("Sigmas") = Temp[2]; ShadowRatio_ParamsMap.at("Sigmas_Err") = Temp[3];}
 	for (int i = 0; i < ShadowRatio_ParamsMap.at("Raps").size(); ++i)
 	{
-		ShadowRatio_ParamsMap.at("Xs") 		.push_back( y2x(ShadowRatio_ParamsMap.at("Raps")[i]) 	);
+		ShadowRatio_ParamsMap.at("Xs") 		.push_back( Converter::y2x(ShadowRatio_ParamsMap.at("Raps")[i]) 	);
 		ShadowRatio_ParamsMap["Xs_Err"]		.push_back( 0 );
-		ShadowRatio_ParamsMap.at("Ws") 		.push_back( y2W(ShadowRatio_ParamsMap.at("Raps")[i]) 	);
+		ShadowRatio_ParamsMap.at("Ws") 		.push_back( Converter::y2W(ShadowRatio_ParamsMap.at("Raps")[i]) 	);
 		ShadowRatio_ParamsMap["Ws_Err"] 	.push_back( 0 );
 
 		cout<<Form("y: %f,	x: %f,	W: %f", ShadowRatio_ParamsMap.at("Raps")[i], ShadowRatio_ParamsMap.at("Xs")[i], ShadowRatio_ParamsMap.at("Ws")[i])<<endl;
-		cout<<"x from W: "<<pow(JpsiMass,2)/pow(ShadowRatio_ParamsMap.at("Ws")[i],2)<<endl;
+		cout<<"x from W: "<<pow(mJpsi_PDG,2)/pow(ShadowRatio_ParamsMap.at("Ws")[i],2)<<endl;
 	}
 	
 	{getImpulseApprox(ShadowRatio_ParamsMap);}
@@ -493,17 +550,23 @@ std::map<TString, std::vector<double>> getParamsMap(const TString infile = "../s
 void plotShadowingRatio()
 {
 	//---------------------------------Remake Map------------------------------------------
-	// auto ShadowRatio_ParamsMap = getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins.appliedTnP.root");
+	// auto ShadowRatio_ParamsMap = getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_TestwSmrNoInCoh_6RapBins.appliedTnP.root");
 	// auto TotalSysUncer_Map 		= readMap("rootfiles/TotalSysUncer_Map.root");
 	// plotSigmaVsW(ShadowRatio_ParamsMap,TotalSysUncer_Map);
 	// plotRvsX(ShadowRatio_ParamsMap,TotalSysUncer_Map);
-	// saveMap(ShadowRatio_ParamsMap);
+	// saveMap(ShadowRatio_ParamsMap, "rootfiles/Results_Map_TestwSmrNoInCoh.root");
 	//-------------------------------------------------------------------------------------
-
+	vector<double> a = {50, 100, 200, 300, 400, 500,1000};
+	auto b = Converter::W2w_eff_v(a);
+	for (int i = 0; i < a.size(); i++)
+	{
+		cout<<"W:"<<a[i]<<"	omega:"<<b[i]<<endl;
+	}
+	
 	//----------------------------Read Map From Root File----------------------------------
-	auto ShadowRatio_ParamsMap 	= readMap("rootfiles/Results_Map.root");
-	auto TotalSysUncer_Map 		= readMap("rootfiles/TotalSysUncer_Map.root");
-	plotSigmaVsW(ShadowRatio_ParamsMap,TotalSysUncer_Map);
-	plotRvsX(ShadowRatio_ParamsMap,TotalSysUncer_Map);
+	// auto ShadowRatio_ParamsMap 	= readMap("rootfiles/Results_Map.root");
+	// auto TotalSysUncer_Map 		= readMap("rootfiles/TotalSysUncer_Map.root");
+	// plotSigmaVsW(ShadowRatio_ParamsMap,TotalSysUncer_Map);
+	// plotRvsX(ShadowRatio_ParamsMap,TotalSysUncer_Map);
 	//-------------------------------------------------------------------------------------
 }

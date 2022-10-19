@@ -900,10 +900,10 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			//		//----------------------------------
 			
 			//Zaochen repeate Wei
-			TFile* inf_zy3 = new TFile("./templateTest/pttemplate_new_R77_Pt05_zy3.root", "read");
-			if(iy==3) hCohJpsiPtHist = (TH1D*)inf_zy3->Get("hPt_1619_Combo");
-			if(iy==4) hCohJpsiPtHist = (TH1D*)inf_zy3->Get("hPt_1921_Combo");
-			if(iy==5) hCohJpsiPtHist = (TH1D*)inf_zy3->Get("hPt_2124_Combo");
+			// TFile* inf_zy3 = new TFile("./templateTest/pttemplate_new_R77_Pt05_zy3.root", "read");
+			// if(iy==3) hCohJpsiPtHist = (TH1D*)inf_zy3->Get("hPt_1619_Combo");
+			// if(iy==4) hCohJpsiPtHist = (TH1D*)inf_zy3->Get("hPt_1921_Combo");
+			// if(iy==5) hCohJpsiPtHist = (TH1D*)inf_zy3->Get("hPt_2124_Combo");
 
 			// KEY: TH1D	hCohJpsiPt_RapBin0;1	-2.4 < y < -2.1
 			// KEY: TH1D	hCohJpsiPt_RapBin1;1	-2.1 < y < -1.9
@@ -911,9 +911,9 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			// KEY: TH1D	hCohJpsiPt_RapBin3;1	1.6 < y < 1.9
 			// KEY: TH1D	hCohJpsiPt_RapBin4;1	1.9 < y < 2.1
 			// KEY: TH1D	hCohJpsiPt_RapBin5;1	2.1 < y < 2.4
-			//if(iy==3) hCohJpsiPtHist = (TH1D*)infZaochen->Get("hCohJpsiPt_RapBin2");
-			//if(iy==4) hCohJpsiPtHist = (TH1D*)infZaochen->Get("hCohJpsiPt_RapBin1");
-			//if(iy==5) hCohJpsiPtHist = (TH1D*)infZaochen->Get("hCohJpsiPt_RapBin0");
+			if(iy==3) hCohJpsiPtHist = (TH1D*)infZaochen->Get("hCohJpsiPt_RapBin2");
+			if(iy==4) hCohJpsiPtHist = (TH1D*)infZaochen->Get("hCohJpsiPt_RapBin1");
+			if(iy==5) hCohJpsiPtHist = (TH1D*)infZaochen->Get("hCohJpsiPt_RapBin0");
 			//if(iy==3) hCohJpsiPtHist = (TH1D*)infZaochen->Get("hCohJpsiPt_RapBin3");
 			//if(iy==4) hCohJpsiPtHist = (TH1D*)infZaochen->Get("hCohJpsiPt_RapBin4");
 			//if(iy==5) hCohJpsiPtHist = (TH1D*)infZaochen->Get("hCohJpsiPt_RapBin5");
@@ -951,8 +951,8 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 
 			RooRealVar mPt("mPt", "p_{T} (GeV)", ptLow4Fit, ptHig4Fit);
 			
-			//hCohJpsiPtHist        ->Rebin(mptRebins*4); //read Zaochen
-			hCohJpsiPtHist        ->Rebin(mptRebins); //read Wei draw template
+			hCohJpsiPtHist        ->Rebin(mptRebins*4); //read Zaochen
+			// hCohJpsiPtHist        ->Rebin(mptRebins); //read Wei draw template
 			hInCohJpsiPtHist      ->Rebin(mptRebins);
 			hFeeddownJpsiPtHist   ->Rebin(mptRebins);
 			hQEDPtHist            ->Rebin(mptRebins);
@@ -1012,13 +1012,10 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			const double frac_Coh = hCohJpsiPtHist       ->Integral(1, higBin_Coh) / hCohJpsiPtHist     ->Integral(1, hCohJpsiPtHist->GetNbinsX()     );
 
 			
-			//tem test!!!!!!
-			const double fDValue = fD_inPtCut[i_ncase][iy]*1.0;    //need to rescale to full pt fD*(pdf_feeddown->Integral()/pdf_cohJpsi->Integral())
-			//const double fDValue = fD_inPtCut[i_ncase][iy]*(frac_Coh/frac_FDW);    //need to rescale to full pt fD*(pdf_feeddown->Integral()/pdf_cohJpsi->Integral())
+			const double fDValue = fD_inPtCut[i_ncase][iy]*(frac_Coh/frac_FDW);    //need to rescale to full pt fD*(pdf_feeddown->Integral()/pdf_cohJpsi->Integral())
 			
 
 			const double temSCF = 1.0;
-			const double fDError = temSCF*fDerr_inPtCut[i_ncase][iy]*(frac_Coh/frac_FDW); //
 
 			double nInCohJpsiMax = nJpsiValue;
 			double nDissoJpsiMax = nJpsiValue;
@@ -1028,9 +1025,8 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			else 													{ nInCohJpsiMax *= 0.3;	nDissoJpsiMax *= 0.3; }
 
 			//if fix to const fracPrim
-			//RooConstVar fracPrim(     "fracPrim",       "fracPrim",      1./(1.+fDValue)); //factor for definition of Jpsi+Psi->Jpsi PDF
-			//if allow fracPrim move according to fD uncertainties
-			RooRealVar  fracPrim(     "fracPrim",       "fracPrim",      1./(1.+fDValue), 1./(1.+fDValue+fDError), 1./(1.+fDValue-fDError)); //for Jpsi+(Psi->Jpsi) PDF
+			RooConstVar fracPrim(     "fracPrim",       "fracPrim",      1./(1.+fDValue)); //factor for definition of Jpsi+Psi->Jpsi PDF
+
 			
 			RooRealVar  nCohJpsi_wFDW("nCohJpsi_wFDW",  "nCohJpsi_wFDW", nJpsiValue*0.80, 0, nJpsiValue);
 			RooRealVar  nInCohJpsi(   "nInCohJpsi",     "nInCohJpsi",    nJpsiValue*0.04, 0, nInCohJpsiMax);
