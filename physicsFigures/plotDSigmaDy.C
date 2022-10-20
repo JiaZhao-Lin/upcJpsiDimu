@@ -440,7 +440,7 @@ void drawDDP(TString Name,	TLegend* legend)
 
 void getCMSData()
 {
-	auto ParamsMap				= readMap("rootfiles/Results_Map_TestwSmrNoInCoh.root");
+	auto ParamsMap				= readMap("rootfiles/Results_Map_TestwSmr.root");
 	auto TotalSysUncer_Map 		= readMap("rootfiles/TotalSysUncer_Map.root");
 
 	std::vector<double> X_AXIS_ERR = ParamsMap.at("RapErr");

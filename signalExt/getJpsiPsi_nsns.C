@@ -615,7 +615,6 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 	RooRealVar  mMass("mMass", "m_{#mu#mu} (GeV)", massLow4Fit, massHig4Fit);
 	//--------------------------------------------------
 
-	const int mptRebins = 1;
 	TFile *inf_Temps = TFile::Open(Form("../simulation/out4effAndTemp/MassPtTemp_AllSpecs_massWindow_2.95_3.25_%dRapBins.root", nDiffRapBins));
 	TF1 *fQED = new TF1("fQED", fReject4QED, massLow4Fit, massHig4Fit, 4);
 	TF1 *fCohJpsiTemp;
@@ -897,23 +896,24 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			}
 			//--------------------------------------------------------------------------------------
 
-			RooRealVar mPt("mPt", "p_{T} (GeV)", ptLow4Fit, ptHig4Fit);
+			hCohJpsiPtHist->RebinX(hPt->GetBinWidth(1)/hCohJpsiPtHist->GetBinWidth(1));
+			hInCohJpsiPtHist->RebinX(hPt->GetBinWidth(1)/hInCohJpsiPtHist->GetBinWidth(1));
+			hFeeddownJpsiPtHist->RebinX(hPt->GetBinWidth(1)/hFeeddownJpsiPtHist->GetBinWidth(1));
+			hQEDPtHist->RebinX(hPt->GetBinWidth(1)/hQEDPtHist->GetBinWidth(1));
 			
+			RooRealVar mPt("mPt", "p_{T} (GeV)", ptLow4Fit, ptHig4Fit);
 	
 			//--------------------------------------------------------------------------------------
-			hCohJpsiPtHist->RebinX(mptRebins);
 			RooDataHist hCohJpsiPtRooHist(     "hCohJpsiPtRooHist",      "hCohJpsiPtRooHist",      mPt, hCohJpsiPtHist);
 			RooHistPdf  cohJpsiPdf(            "cohJpsiPdf",             "cohJpsiPdf",             mPt, hCohJpsiPtRooHist,      0);
 			//--------------------------------------------------------------------------------------
 
 			//--------------------------------------------------------------------------------------
-			hInCohJpsiPtHist->RebinX(mptRebins);
 			RooDataHist hInCohJpsiPtRooHist(   "hInCohJpsiPtRooHist",    "hInCohJpsiPtRooHist",    mPt, hInCohJpsiPtHist);
 			RooHistPdf  incohJpsiPdf(          "incohJpsiPdf",           "incohJpsiPdf",           mPt, hInCohJpsiPtRooHist,    0);
 			//--------------------------------------------------------------------------------------
 
 			//--------------------------------------------------------------------------------------
-			hFeeddownJpsiPtHist->RebinX(mptRebins);
 			RooDataHist hFeeddownJpsiPtRooHist("hFeeddownJpsiPtRooHist", "hFeeddownJpsiPtRooHist", mPt, hFeeddownJpsiPtHist);
 			RooHistPdf  feeddownJpsiPdf(       "feeddownJpsiPdf",        "feeddownJpsiPdf",        mPt, hFeeddownJpsiPtRooHist, 0);
 			//--------------------------------------------------------------------------------------
@@ -922,7 +922,6 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			////------------------------gammagamma-->mumu--------------------------------------------------------------
 			////--------------------------------------------------------------------------------------
 			//if use the simulated tempaltes for gammagamma-->mumu
-			hQEDPtHist->RebinX(mptRebins);
 			RooDataHist hQEDPtRooHist("hQEDPtRooHist", "hQEDPtRooHist", mPt, hQEDPtHist);
 			RooHistPdf  qedPtPdf(     "qedPtPdf",      "qedPtPdf",      mPt, hQEDPtRooHist, 0);
 

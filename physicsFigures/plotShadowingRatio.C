@@ -550,18 +550,12 @@ std::map<TString, std::vector<double>> getParamsMap(const TString infile = "../s
 void plotShadowingRatio()
 {
 	//---------------------------------Remake Map------------------------------------------
-	// auto ShadowRatio_ParamsMap = getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_TestwSmrNoInCoh_6RapBins.appliedTnP.root");
-	// auto TotalSysUncer_Map 		= readMap("rootfiles/TotalSysUncer_Map.root");
-	// plotSigmaVsW(ShadowRatio_ParamsMap,TotalSysUncer_Map);
-	// plotRvsX(ShadowRatio_ParamsMap,TotalSysUncer_Map);
-	// saveMap(ShadowRatio_ParamsMap, "rootfiles/Results_Map_TestwSmrNoInCoh.root");
+	auto ShadowRatio_ParamsMap = getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_TestwSmr_6RapBins.appliedTnP.root");
+	auto TotalSysUncer_Map 		= readMap("rootfiles/TotalSysUncer_Map.root");
+	plotSigmaVsW(ShadowRatio_ParamsMap,TotalSysUncer_Map);
+	plotRvsX(ShadowRatio_ParamsMap,TotalSysUncer_Map);
+	saveMap(ShadowRatio_ParamsMap, "rootfiles/Results_Map_TestwSmr.root");
 	//-------------------------------------------------------------------------------------
-	vector<double> a = {50, 100, 200, 300, 400, 500,1000};
-	auto b = Converter::W2w_eff_v(a);
-	for (int i = 0; i < a.size(); i++)
-	{
-		cout<<"W:"<<a[i]<<"	omega:"<<b[i]<<endl;
-	}
 	
 	//----------------------------Read Map From Root File----------------------------------
 	// auto ShadowRatio_ParamsMap 	= readMap("rootfiles/Results_Map.root");
