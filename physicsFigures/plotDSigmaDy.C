@@ -440,8 +440,11 @@ void drawDDP(TString Name,	TLegend* legend)
 
 void getCMSData()
 {
-	auto ParamsMap				= readMap("rootfiles/Results_Map_TestwSmr.root");
-	auto TotalSysUncer_Map 		= readMap("rootfiles/TotalSysUncer_Map.root");
+	const int template_option  = 1; //0:OldCohJpsi; 1:NewCohJpsi (w R+1fm);
+	const TString template_Name[2] = {"", "_NewCohJpsi"};
+
+	auto ParamsMap 	= readMap(Form("rootfiles/Results%s_Map.root", template_Name[template_option].Data()));
+	auto TotalSysUncer_Map 		= readMap(Form("rootfiles/TotalSysUncer%s_Map.root", template_Name[template_option].Data()));
 
 	std::vector<double> X_AXIS_ERR = ParamsMap.at("RapErr");
 	auto Xsec_AnAn_TotalSysErr = ParamsMap.at("Xsec_AnAn");

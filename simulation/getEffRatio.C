@@ -2,8 +2,12 @@
 
 
 void getEffRatio(){
-	LoadEfficiency Eff 		("out4effAndTemp/Efficiency_AllSpecs_6RapBins.root", 			false);
-	LoadEfficiency Eff_TnP	("out4effAndTemp/Efficiency_AllSpecs_6RapBins.appliedTnP.root", false);
+	const int template_option  = 1; //0:OldCohJpsi; 1:NewCohJpsi (w R+1fm);
+	const TString template_Name[2] = {"", "_NewCohJpsi"};
+	const TString template_Dir[2] = {"out4effAndTemp", "out4effAndTemp_NewCohJpsi"};
+
+	LoadEfficiency Eff 		(Form("%s/Efficiency_AllSpecs_6RapBins.root", template_Dir[template_option].Data()), 			false);
+	LoadEfficiency Eff_TnP	(Form("%s/Efficiency_AllSpecs_6RapBins.appliedTnP.root", template_Dir[template_option].Data()), false);
 	
 	TH1D* hEffVsY = (TH1D*) Eff.H_EffVsY_CohJpsi->Clone();
 	TH1D* hEffVsY_TnP = (TH1D*) Eff_TnP.H_EffVsY_CohJpsi->Clone();

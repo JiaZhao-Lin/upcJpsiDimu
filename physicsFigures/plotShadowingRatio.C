@@ -549,18 +549,27 @@ std::map<TString, std::vector<double>> getParamsMap(const TString infile = "../s
 
 void plotShadowingRatio()
 {
+	const int template_option  = 1; //0:OldCohJpsi; 1:NewCohJpsi (w R+1fm);
+	const TString template_Name[2] = {"", "_NewCohJpsi"};
+
+	const int   RunTnPcase         	= 1;	//Default 1
+	const TString TnPcases[4]		= {"", ".appliedTnP", ".appliedTnP_Low", ".appliedTnP_Hig"};
+
+	const int   RunHFcase         	= 0;	//Default 0
+	const TString HFcases[4]		= {"", ".looseHF", ".tightHF", ".removeHF"};
+
 	//---------------------------------Remake Map------------------------------------------
-	auto ShadowRatio_ParamsMap = getParamsMap("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_TestwSmr_6RapBins.appliedTnP.root");
-	auto TotalSysUncer_Map 		= readMap("rootfiles/TotalSysUncer_Map.root");
-	plotSigmaVsW(ShadowRatio_ParamsMap,TotalSysUncer_Map);
-	plotRvsX(ShadowRatio_ParamsMap,TotalSysUncer_Map);
-	saveMap(ShadowRatio_ParamsMap, "rootfiles/Results_Map_TestwSmr.root");
+	// auto ShadowRatio_ParamsMap = getParamsMap(Form("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins%s%s%s.root",template_Name[template_option].Data(), TnPcases[RunTnPcase].Data(), HFcases[RunHFcase].Data()));
+	// auto TotalSysUncer_Map 		= readMap(Form("rootfiles/TotalSysUncer%s_Map.root", template_Name[template_option].Data()));
+	// plotSigmaVsW(ShadowRatio_ParamsMap,TotalSysUncer_Map);
+	// plotRvsX(ShadowRatio_ParamsMap,TotalSysUncer_Map);
+	// saveMap(ShadowRatio_ParamsMap, Form("rootfiles/Results%s_Map.root", template_Name[template_option].Data()));
 	//-------------------------------------------------------------------------------------
 	
 	//----------------------------Read Map From Root File----------------------------------
-	// auto ShadowRatio_ParamsMap 	= readMap("rootfiles/Results_Map.root");
-	// auto TotalSysUncer_Map 		= readMap("rootfiles/TotalSysUncer_Map.root");
-	// plotSigmaVsW(ShadowRatio_ParamsMap,TotalSysUncer_Map);
-	// plotRvsX(ShadowRatio_ParamsMap,TotalSysUncer_Map);
+	auto ShadowRatio_ParamsMap 	= readMap(Form("rootfiles/Results%s_Map.root", template_Name[template_option].Data()));
+	auto TotalSysUncer_Map 		= readMap(Form("rootfiles/TotalSysUncer%s_Map.root", template_Name[template_option].Data()));
+	plotSigmaVsW(ShadowRatio_ParamsMap,TotalSysUncer_Map);
+	plotRvsX(ShadowRatio_ParamsMap,TotalSysUncer_Map);
 	//-------------------------------------------------------------------------------------
 }

@@ -57,13 +57,20 @@ int    qedColor = kGreen-3, qedStyle = 1;
 //------------------------------------------------------------------------------------------------------------
 const int draw4Paper_flag = 1;
 //------------------------------------------------------------------------------------------------------------
-const TString TnPcases[4]		= {"", ".appliedTnP", ".appliedTnP_Low", ".appliedTnP_Hig"};
-const int   RunTnPcase         	= 1;	//Default 1
+const int PU_option				=	0;	//Default 0
+const TString PU_name[2]		=	{"_PUShuai",	"_PUATLAS"};
 
+const int template_option  = 1; //0:OldCohJpsi; 1:NewCohJpsi (w R+1fm);
+const TString template_Name[2] = {"", "_NewCohJpsi"};
+const TString template_Dir[2] = {"out4effAndTemp", "out4effAndTemp_NewCohJpsi"};
+
+const int   RunTnPcase         	= 1;	//Default 1
+const TString TnPcases[4]		= {"", ".appliedTnP", ".appliedTnP_Low", ".appliedTnP_Hig"};
+
+const int   RunHFcase         	= 0;	//Default 0
+const TString HFcases[4]		= {"", ".looseHF", ".tightHF", ".removeHF"};
 // const double HFscaleFactor[3]	= {1,	0.97549056,	1.1137430};
 const double HFscaleFactor[3]	= {1,	1,	1.1137430};
-const TString HFcases[4]		= {"", ".looseHF", ".tightHF", ".removeHF"};
-const int   RunHFcase         	= 0;	//Default 0
 
 const int NnCases = 6;
 const std::vector<int> RunCase = {0,1,2,3,4,5};//{0,1,2,3,4,5};
@@ -117,7 +124,7 @@ void getJpsiPsi_nsns()
 	//fitFullMassAndPt_4Decouple(2.61,4.2, 0.00,3.0);
 	fitFullMassAndPt_4Decouple(2.61,4.2, -0.01,3.0);
 
-	// saveFile("CB_Poly3_PUShuai_TestwSmrNoInCoh");
+	// saveFile(	Form(	"CB_Poly3%s", PU_name[PU_option].Data()	)	);
 }
 //------------------------------------------------------------------------------------------------------------
 
@@ -262,7 +269,7 @@ void prepareData()
 //------------------------------------------------------------------------------------------------------------
 void loadEff()
 {
-	LoadEfficiency Efficiency(Form("../simulation/out4effAndTemp/Efficiency_AllSpecs_%dRapBins%s.root", nDiffRapBins, TnPcases[RunTnPcase].Data()), SymmetricRapBin);
+	LoadEfficiency Efficiency(Form("../simulation/%s/Efficiency_AllSpecs_%dRapBins%s.root", template_Dir[template_option].Data(), nDiffRapBins, TnPcases[RunTnPcase].Data()), SymmetricRapBin);
 	H_EffVsY_CohJpsi 		= (TH1D*)	Efficiency.GetCohJpsi()	 	->Clone();
 	H_EffVsY_CohPsi 		= (TH1D*)	Efficiency.GetCohPsi()	 	->Clone();
 	H_EffVsY_CohPsi2Jpsi 	= (TH1D*)	Efficiency.GetCohPsi2Jpsi()	->Clone();
@@ -286,7 +293,7 @@ void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4
 	c1->SetLogy(0);
 	RooRealVar  mMass("mMass", "m_{#mu#mu} (GeV)", massLow4Fit, massHig4Fit);
 
-	TFile *inf_Temps = TFile::Open(Form("../simulation/out4effAndTemp/MassPtTemp_AllSpecs_massWindow_2.95_3.25_%dRapBins%s.root", nDiffRapBins, TnPcases[RunTnPcase].Data()));
+	TFile *inf_Temps = TFile::Open(Form("../simulation/%s/MassPtTemp_AllSpecs_massWindow_2.95_3.25_%dRapBins%s.root", template_Dir[template_option].Data(), nDiffRapBins, TnPcases[RunTnPcase].Data()));
 	TF1 *fQED;
 	fQED = new TF1("fQED", fReject4QED, massLow4Fit, massHig4Fit, 4);
 	TF1 *fCohJpsiTemp;
@@ -569,14 +576,14 @@ void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4
 			drawLatex(0.55, 0.80, ptName,                 mTextFont, 0.05, mTextColor);
 			//------------------------------------------------------------------------------------------------------------------------------------------
 			
-			if(SymmetricRapBin && iy > (nDiffRapBins/2 - 1) && iy < nDiffRapBins){
-				c1->SaveAs( Form("outplots/massSpecFitPull_4JpsiPsi_"+nCasesName[i_ncase]+"_iy%d_Symm.png",  iy) );
-				c1->SaveAs( Form("outplots/massSpecFitPull_4JpsiPsi_"+nCasesName[i_ncase]+"_iy%d_Symm.pdf",  iy) );
-			}
-			else{
-				c1->SaveAs( Form("outplots/massSpecFitPull_4JpsiPsi_"+nCasesName[i_ncase]+"_iy%d.png",  iy) );
-				c1->SaveAs( Form("outplots/massSpecFitPull_4JpsiPsi_"+nCasesName[i_ncase]+"_iy%d.pdf",  iy) );
-			}
+			// if(SymmetricRapBin && iy > (nDiffRapBins/2 - 1) && iy < nDiffRapBins){
+			// 	c1->SaveAs( Form("outplots/massSpecFitPull_4JpsiPsi_"+nCasesName[i_ncase]+"_iy%d_Symm.png",  iy) );
+			// 	c1->SaveAs( Form("outplots/massSpecFitPull_4JpsiPsi_"+nCasesName[i_ncase]+"_iy%d_Symm.pdf",  iy) );
+			// }
+			// else{
+			// 	c1->SaveAs( Form("outplots/massSpecFitPull_4JpsiPsi_"+nCasesName[i_ncase]+"_iy%d.png",  iy) );
+			// 	c1->SaveAs( Form("outplots/massSpecFitPull_4JpsiPsi_"+nCasesName[i_ncase]+"_iy%d.pdf",  iy) );
+			// }
 
 			delete ResFit;
 			delete hCohMass;
@@ -615,14 +622,9 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 	RooRealVar  mMass("mMass", "m_{#mu#mu} (GeV)", massLow4Fit, massHig4Fit);
 	//--------------------------------------------------
 
-	TFile *inf_Temps = TFile::Open(Form("../simulation/out4effAndTemp/MassPtTemp_AllSpecs_massWindow_2.95_3.25_%dRapBins.root", nDiffRapBins));
+	TFile *inf_Temps = TFile::Open(Form("../simulation/%s/MassPtTemp_AllSpecs_massWindow_2.95_3.25_%dRapBins%s.root", template_Dir[template_option].Data(), nDiffRapBins, TnPcases[RunTnPcase].Data()));
 	TF1 *fQED = new TF1("fQED", fReject4QED, massLow4Fit, massHig4Fit, 4);
 	TF1 *fCohJpsiTemp;
-
-
-	// TFile *inf_Temps_Test = new TFile("./templateTest/out4effAndTemp_zy2_wSmr/MassPtTemp_AllSpecs_massWindow_2.95_3.25_.root", "read");
-	// TFile* inf_Temps_Test = new TFile("./templateTest/out4effAndTemp_zy2_woSmr/MassPtTemp_AllSpecs_massWindow_2.95_3.25_.root", "read");
-	// TFile* inf_Temps_Test = new TFile("./templateTest/out4effAndTemp_zy1_woSmr/MassPtTemp_AllSpecs_massWindow_2.95_3.25_.root", "read");
 
 
 	for(int i_ncase=0; i_ncase<NnCases; i_ncase++)
@@ -801,8 +803,8 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			drawLatex(.55, 0.48+textDy, Form("N^{in J/#psi}_{QED} = %d #pm %d", (int)nQEDinJpsi, (int)nQEDinJpsiErr ), mTextFont, mTextSize, mTextColor);
 
 			//----------------------------------------------------------------------------------------------------------------------------------------------------
-			if(SymmetricRapBin && iy > (nDiffRapBins/2 - 1) && iy < nDiffRapBins) c1->SaveAs( Form("outplots/massSpec_4ptFitConstrain_"+nCasesName[i_ncase]+"_iy%d_Symm.pdf",  iy) );
-			else c1->SaveAs( Form("outplots/massSpec_4ptFitConstrain_"+nCasesName[i_ncase]+"_iy%d.pdf",  iy) );
+			if(SymmetricRapBin && iy > (nDiffRapBins/2 - 1) && iy < nDiffRapBins) c1->SaveAs( Form("outplots/massSpec_4ptFitConstrain_"+nCasesName[i_ncase]+"_iy%d_Symm.png",  iy) );
+			else c1->SaveAs( Form("outplots/massSpec_4ptFitConstrain_"+nCasesName[i_ncase]+"_iy%d.png",  iy) );
 			//----------------------------------------------------------------------------------------------------------------------------------------------------
 		
 			//------------------------------------------------------------------------------------------------------------------------------------------
@@ -839,10 +841,10 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			drawLatex(0.55, 0.86, yName,                  mTextFont, 0.05, mTextColor);
 			drawLatex(0.55, 0.80, ptName,                 mTextFont, 0.05, mTextColor);
 			//----------------------------------------------------------------------------------------------------------------------------------------------------
-			if(SymmetricRapBin && iy > (nDiffRapBins/2 - 1) && iy < nDiffRapBins) 
-				c1->SaveAs( Form("outplots/massSpecFitPull_4ptFitConstrain_"+nCasesName[i_ncase]+"_iy%d_Symm.png",  iy) );
-			else 
-				c1->SaveAs( Form("outplots/massSpecFitPull_4ptFitConstrain_"+nCasesName[i_ncase]+"_iy%d.png",  iy) );
+			// if(SymmetricRapBin && iy > (nDiffRapBins/2 - 1) && iy < nDiffRapBins) 
+			// 	c1->SaveAs( Form("outplots/massSpecFitPull_4ptFitConstrain_"+nCasesName[i_ncase]+"_iy%d_Symm.png",  iy) );
+			// else 
+			// 	c1->SaveAs( Form("outplots/massSpecFitPull_4ptFitConstrain_"+nCasesName[i_ncase]+"_iy%d.png",  iy) );
 			//----------------------------------------------------------------------------------------------------------------------------------------------------
 
 			delete ResFit;
@@ -870,16 +872,6 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 				if(iy==nDiffRapBins) hCohJpsiPtHist = (TH1D *)inf_Temps->Get(      "hCohJpsi_"+nCasesName[i_ncase]+"Pt");
 				else                 hCohJpsiPtHist = (TH1D *)inf_Temps->Get( Form("hCohJpsi_"+nCasesName[i_ncase]+"Pt_RapBin%d", iy) );
 			}
-
-			//----------------------------------
-			// Test: overwriting the pt template
-			// if(iy==3) hCohJpsiPtHist = (TH1D*)inf_Temps_Test->Get("hCohJpsiPt_RapBin2");
-			// if(iy==4) hCohJpsiPtHist = (TH1D*)inf_Temps_Test->Get("hCohJpsiPt_RapBin1");
-			// if(iy==5) hCohJpsiPtHist = (TH1D*)inf_Temps_Test->Get("hCohJpsiPt_RapBin0");
-			// if(iy==3) hCohJpsiPtHist = (TH1D*)inf_Temps_Test->Get("hCohJpsiPt_RapBin3");
-			// if(iy==4) hCohJpsiPtHist = (TH1D*)inf_Temps_Test->Get("hCohJpsiPt_RapBin4");
-			// if(iy==5) hCohJpsiPtHist = (TH1D*)inf_Temps_Test->Get("hCohJpsiPt_RapBin5");
-			//----------------------------------------------------------------------
 
 
 			if(iy==nDiffRapBins)
@@ -1209,14 +1201,13 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 	}//ixn
 	delete c2;
 
-	// inf_Temps_Test	->Close();
 	inf_Temps		->Close();
 	cout << "End of program !" << endl;
 }
 
 void saveFile(const TString headerTitle = "Default")
 {
-	TFile *file_JpsiXsec = new TFile(Form("JpsiXsecValues/JpsiXsec_%s_%dRapBins%s%s.root", headerTitle.Data(), nDiffRapBins, TnPcases[RunTnPcase].Data(), HFcases[RunHFcase].Data()), "recreate");
+	TFile *file_JpsiXsec = new TFile(Form("JpsiXsecValues/JpsiXsec_%s_%dRapBins%s%s%s.root", headerTitle.Data(), nDiffRapBins, template_Name[template_option].Data(), TnPcases[RunTnPcase].Data(), HFcases[RunHFcase].Data()), "recreate");
 	cout<<"Saving JpsiXsec into: "<<file_JpsiXsec->GetName()<<endl;
 
 	for(int iCase=0; iCase<RunCase.size(); iCase++)

@@ -2,6 +2,8 @@
 #include "PhysParameters.h"
 #include "../simulation/getPhotonFlux.C"
 
+	const int template_option  = 1; //0:OldCohJpsi; 1:NewCohJpsi (w R+1fm);
+	const TString template_Name[2] = {"", "_NewCohJpsi"};
 
 double y2W(const double y)
 {
@@ -14,8 +16,8 @@ double y2W(const double y)
 
 TF1 * fitSigmas(const int data_option = 3, const int func_option = 6)
 {
-	auto ShadowRatio_ParamsMap 	= readMap("rootfiles/Results_Map.root");
-	auto TotalSysUncer_Map 		= readMap("rootfiles/TotalSysUncer_Map.root");
+	auto ShadowRatio_ParamsMap 	= readMap(Form("rootfiles/Results%s_Map.root", template_Name[template_option].Data()));
+	auto TotalSysUncer_Map 		= readMap(Form("rootfiles/TotalSysUncer%s_Map.root", template_Name[template_option].Data()));
 
 	auto Ws_ToFit 			= ShadowRatio_ParamsMap["Ws"];
 	auto Sigmas_ToFit 		= ShadowRatio_ParamsMap["Sigmas"];
@@ -132,7 +134,7 @@ TF1 * fitSigmas(const int data_option = 3, const int func_option = 6)
 }
 
 void predictDSigmaDy()
-{
+{	
 	int nSteps = 40;
 	double y_step = 0.1;
 
@@ -182,7 +184,7 @@ void predictDSigmaDy()
 	Temp_Map["Xsec_AnAn_Prediction"] = Xsec_AnAn_Prediction;
 
 	cout<<"predictDSigmaDy----------------->DSigmaDy<----------------"<<endl;
-	saveMap(Temp_Map,	"rootfiles/DataDrivenPrediction.root");
+	saveMap(Temp_Map,	Form("rootfiles/DataDrivenPrediction%s.root", template_Name[template_option].Data() ));
 	cout<<"predictDSigmaDy----------------->DONE Saving<----------------"<<endl;
 }
 
