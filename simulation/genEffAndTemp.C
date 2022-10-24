@@ -35,7 +35,7 @@ const TString ptname   = Form("_toCorr_onlyFor_pt_%.2f_%.2f_", ptWindowLow,   pt
 const TString massname = Form("_massWindow_%.2f_%.2f_",        massWindowLow, massWindowHig );
 
 const TString TnPcases[4]       = {"", ".appliedTnP", ".appliedTnP_Low", ".appliedTnP_Hig"};
-const int   RunTnPcase          = 1;//Default 1
+const int   RunTnPcase          = 3;//Default 1
 
 const double HFscaleFactor[3]	= {1,	0.97549056,	1.1137430};
 const TString HFcases[4]	    = {"", ".looseHF", ".tightHF", ".removeHF"};
