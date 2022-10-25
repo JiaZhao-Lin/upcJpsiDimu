@@ -47,6 +47,6 @@ void getEffRatio(){
 	leg->AddEntry(hEffVsY_Ratio,         "TnP/MC",                   "p");
 	leg->Draw("same");
 
-	c->SaveAs("./out4effAndTemp/Eff_Ratio.pdf");
-	c->SaveAs("./out4effAndTemp/Eff_Ratio.png");
+	c->SaveAs(Form("./%s/Eff_Ratio.pdf", template_Dir[template_option].Data()));
+	c->SaveAs(Form("./%s/Eff_Ratio.png", template_Dir[template_option].Data()));
 }

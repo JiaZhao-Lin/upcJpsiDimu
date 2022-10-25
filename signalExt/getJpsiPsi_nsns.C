@@ -57,12 +57,12 @@ int    qedColor = kGreen-3, qedStyle = 1;
 //------------------------------------------------------------------------------------------------------------
 const int draw4Paper_flag = 1;
 //------------------------------------------------------------------------------------------------------------
-const int PU_option				=	0;	//Default 0
+const int PU_option				= 0;	//Default 0
 const TString PU_name[2]		=	{"_PUShuai",	"_PUATLAS"};
 
-const int template_option  = 1; //0:OldCohJpsi; 1:NewCohJpsi (w R+1fm);
-const TString template_Name[2] = {"", "_NewCohJpsi"};
-const TString template_Dir[2] = {"out4effAndTemp", "out4effAndTemp_NewCohJpsi"};
+const int template_option  		= 1;	//Default 1 	(0:OldCohJpsi; 1:NewCohJpsi (w R+1fm));
+const TString template_Name[2] 	= {"", "_NewCohJpsi"};
+const TString template_Dir[2] 	= {"out4effAndTemp", "out4effAndTemp_NewCohJpsi"};
 
 const int   RunTnPcase         	= 1;	//Default 1
 const TString TnPcases[4]		= {"", ".appliedTnP", ".appliedTnP_Low", ".appliedTnP_Hig"};
@@ -73,7 +73,7 @@ const TString HFcases[4]		= {"", ".looseHF", ".tightHF", ".removeHF"};
 const double HFscaleFactor[3]	= {1,	1,	1.1137430};
 
 const int NnCases = 6;
-const std::vector<int> RunCase = {0,1,2,3,4,5};//{0,1,2,3,4,5};
+const std::vector<int> RunCase 	= {0,1,2,3,4,5};//{0,1,2,3,4,5};
 
 const TString nCasesName[NnCases] = {"AnAn", "OnOn", "0nXn", "Xn0n", "OnXnSum", "XnXn"};
 TH1D* hCohMass_in_ny[NnCases][nDiffRapBins+1]; //last content is the sum of all y-bins, within coherent pt threshold
@@ -367,10 +367,21 @@ void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4
 			const double Init_cbNR        = 13.;
 
 			//--------------TEMP! For Initializing CBAN with CB to Jpsi Peak---------------
-			// auto fJpsiPeak = new TF1("fJpsiPeak", JpsiPdf::fReject4Jpsi,massLow4Fit, massHig4Fit,5);
-			// hCohMass ->Fit(fJpsiPeak, "", "",  massLow4Fit, massHig4Fit);
-			// cout<<fJpsiPeak->GetParameter(1)<<"!!!!!!!!!!!!!!!!!!!!!!"<<endl;;
-			// fJpsiPeak->GetParameter(2);
+			// auto cc1 = new TCanvas();
+			// auto fJpsiPeak = new TF1("fJpsiPeak", JpsiPdf::fReject4Jpsi,massLow4Fit, massHig4Fit,6);
+			// fJpsiPeak->SetParameter(1,1);
+			// fJpsiPeak->SetParameter(2,1);
+			// fJpsiPeak->SetParameter(3,1);
+			// fJpsiPeak->SetParameter(4,3.1);
+			// auto hCohMassJpsiPeak = (TH1D*)hCohMass->Clone();
+			// hCohMassJpsiPeak->Rebin(2);
+			// hCohMassJpsiPeak ->Fit(fJpsiPeak, "", "",  massLow4Fit, massHig4Fit);
+			// fJpsiPeak->Draw("same");
+			// hCohMassJpsiPeak->Draw("same");
+			// cc1->SaveAs("./test.png");
+			// cout<<fJpsiPeak->GetParameter(4)<<"!!!!!!!!!!!!!!!!!!!!!!"<<endl;;
+			// // fJpsiPeak->GetParameter(2);
+			// continue;
 			//--------------TEMP! For Initializing CBAN with CB to Jpsi Peak---------------
 
 			RooRealVar  cbAlpha 	( "cbAlpha",     	"cbAlpha",		Init_cbAlpha,	0, 10   );
@@ -502,7 +513,7 @@ void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4
 			//			cout<<endl;
 
 
-			double chi2ndf = frameMass->chiSquare("totMassPdf_Norm[mMass]", "h_dataMass", 9);   //Jpsi+Psi fit
+			double chi2ndf = frameMass->chiSquare("totMassPdf_Norm[mMass]", "h_dataMass", 7); // Need to change to 9 when using CBG. Jpsi+Psi fit
 
 			frameMass->Draw() ;
 			
@@ -777,7 +788,7 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			//			cout<<"******** End ********"<<endl;
 			//			cout<<endl;
 
-			double chi2ndf = frameMass->chiSquare("totMassPdf_Norm[mMass]", "h_dataMass", 9);   //Jpsi+Psi fit
+			double chi2ndf = frameMass->chiSquare("totMassPdf_Norm[mMass]", "h_dataMass", 7);   // Need to change to 9 when using CBG. Jpsi+Psi fit
 
 			frameMass->Draw() ;
 			
@@ -803,8 +814,8 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			drawLatex(.55, 0.48+textDy, Form("N^{in J/#psi}_{QED} = %d #pm %d", (int)nQEDinJpsi, (int)nQEDinJpsiErr ), mTextFont, mTextSize, mTextColor);
 
 			//----------------------------------------------------------------------------------------------------------------------------------------------------
-			if(SymmetricRapBin && iy > (nDiffRapBins/2 - 1) && iy < nDiffRapBins) c1->SaveAs( Form("outplots/massSpec_4ptFitConstrain_"+nCasesName[i_ncase]+"_iy%d_Symm.png",  iy) );
-			else c1->SaveAs( Form("outplots/massSpec_4ptFitConstrain_"+nCasesName[i_ncase]+"_iy%d.png",  iy) );
+			if(SymmetricRapBin && iy > (nDiffRapBins/2 - 1) && iy < nDiffRapBins) c1->SaveAs( Form("outplots/massSpec_4ptFitConstrain_"+nCasesName[i_ncase]+"_iy%d_Symm.pdf",  iy) );
+			else c1->SaveAs( Form("outplots/massSpec_4ptFitConstrain_"+nCasesName[i_ncase]+"_iy%d.pdf",  iy) );
 			//----------------------------------------------------------------------------------------------------------------------------------------------------
 		
 			//------------------------------------------------------------------------------------------------------------------------------------------
@@ -1030,8 +1041,18 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			cout<<"******** End ********"<<endl;
 			cout<<endl;
 			
-			chi2ndf = framePt->chiSquare("totPtPdf_Norm[mPt]", "h_dataPt", 5);
+			// chi2ndf = framePt->chiSquare("totPtPdf_Norm[mPt]", "h_dataPt", 5);
 			// chi2ndf = framePt->chiSquare("totPtPdf_Norm[mPt]", "h_dataPt", 9);
+
+			int nNonZeroBinPt = 0;
+			for (int ibinPt = hPt->FindBin(ptLow4Fit); ibinPt < hPt->FindBin(ptHig4Fit)+1; ibinPt++)
+			{
+				if (hPt->GetBinContent(ibinPt)) nNonZeroBinPt++;
+			}
+			const double Pt_ndf = nNonZeroBinPt -5;
+			const double Pt_chi2 = totPtPdf.createChi2(dataPt, Range(ptLow4Fit, ptHig4Fit),
+                 Extended(true), DataError(RooAbsData::Poisson))->getVal();
+			cout<<"NDF counted: "<< Pt_ndf<<endl;
 	
 			c2 -> Divide(1,2);
 			c2 -> cd(1);
@@ -1056,13 +1077,13 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			drawLatex(0.25, 0.65+textDy2, Form("N^{in Mfit}_{J/#psi}/(1+f_{I}+f_{D}) = %d #pm %d",  (int)NJpsi_Coh_cal, (int)NerrJpsi_Coh_cal), mTextFont, 0.035, mTextColor);
 			drawLatex(0.25, 0.57+textDy2, Form("#frac{#sigma^{Coh}_{J/#psi}}{dy} = %.3f #pm %.3f (mb)", xsecValue[i_ncase][iy], xsecError[i_ncase][iy] ),                                     mTextFont, 0.035, mTextColor);
 
-			TLegend  *leg =  new TLegend(0.62, 0.45, 0.88, 0.80);
+			TLegend  *leg =  new TLegend(0.60, 0.45, 0.88, 0.80);
 			leg->SetFillStyle(0);
 			leg->SetFillColor(0);
 			leg->SetTextFont(mTextFont);
-			leg->SetTextSize(0.035);
+			leg->SetTextSize(0.03);
 			leg->AddEntry(framePt->findObject("h_dataPt"),            "Data",        "p");
-			leg->AddEntry(framePt->findObject("totPtPdf_Norm[mPt]"),   Form("Total fit: #chi^{2}/ndf = %1.1f", chi2ndf),   "l");
+			leg->AddEntry(framePt->findObject("totPtPdf_Norm[mPt]"),   Form("Fit: #chi^{2}/ndf = %1.1f/%1.f = %1.1f", Pt_chi2, Pt_ndf, Pt_chi2/Pt_ndf),   "l");
 			//(RooHist::h_dataPt,RooCurve::totPtPdf_Norm[mPt],RooCurve::totPtPdf_Norm[mPt]_Comp[cohJpsiPdf],RooCurve::totPtPdf_Norm[mPt]_Comp[feeddownJpsiPdf],RooCurve::totPtPdf_Norm[mPt]_Comp[incohJpsiPdf],RooCurve::totPtPdf_Norm[mPt]_Comp[dissoJpsiPdf],RooCurve::totPtPdf_Norm[mPt]_Comp[qedPtPdf])
 			const TString curveName[5]  = {"totPtPdf_Norm[mPt]_Comp[cohJpsiPdf]","totPtPdf_Norm[mPt]_Comp[incohJpsiPdf]", "totPtPdf_Norm[mPt]_Comp[dissoJpsiPdf]", "totPtPdf_Norm[mPt]_Comp[feeddownJpsiPdf]","totPtPdf_Norm[mPt]_Comp[qedPtPdf]"};
 			const TString curveTitle[5] = {"Coherent J/#psi", "Incoherent J/#psi", "Incoherent J/#psi with disso.", "Coherent #psi' #rightarrow J/#psi+X", "#gamma#gamma #rightarrow #mu#mu"};
@@ -1166,7 +1187,7 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 				leg_4paper->SetTextFont(mTextFont);
 				leg_4paper->SetTextSize(0.035);
 				leg_4paper->AddEntry(framePt->findObject("h_dataPt"),            "Data",        "p");
-				leg_4paper->AddEntry(framePt->findObject("totPtPdf_Norm[mPt]"),   Form("Total fit: #chi^{2}/ndf = %1.1f", chi2ndf),   "l");
+				leg_4paper->AddEntry(framePt->findObject("totPtPdf_Norm[mPt]"),   Form("Fit: #chi^{2}/ndf = %1.1f", Pt_chi2/Pt_ndf),   "l");
 				
 				//const TString curveName[5]  = {"totPtPdf_Norm[mPt]_Comp[cohJpsiPdf]","totPtPdf_Norm[mPt]_Comp[incohJpsiPdf]", "totPtPdf_Norm[mPt]_Comp[dissoJpsiPdf]", "totPtPdf_Norm[mPt]_Comp[feeddownJpsiPdf]","totPtPdf_Norm[mPt]_Comp[qedPtPdf]"};
 				//const TString curveTitle[5] = {"Coherent J/#psi", "Incoherent J/#psi", "Incoherent J/#psi with disso.", "Coherent #psi' #rightarrow J/#psi+X", "#gamma#gamma #rightarrow #mu#mu"};
