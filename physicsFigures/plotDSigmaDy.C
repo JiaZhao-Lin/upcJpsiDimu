@@ -312,9 +312,9 @@ void drawCMS_NeuConfig()
 	//htem2d_XnXn ->SetTickLength(0.08);
 	htem2d_XnXn->Draw();
     drawLatex(0.15, 0.85, "Pb+Pb #rightarrow Pb'+Pb'+J/#psi",      42,       0.053,      1);
-    drawLatex(0.8, 0.8, "#bf{XnXn}",      42,       0.075,      1);
-    drawLatex(0.58,0.94,"PbPb 1.52 nb^{-1} (5.02 TeV)",42, 0.05, 1);
-    drawLatex(0.15,0.94,"#bf{CMS}",42, 0.05, 1);
+    drawLatex(0.8,  0.8,  "#bf{XnXn}",      42,       0.075,      1);
+    drawLatex(0.58, 0.94, "PbPb 1.52 nb^{-1} (5.02 TeV)",42, 0.05, 1);
+    drawLatex(0.15, 0.94, "#bf{CMS}",42, 0.05, 1);
 
 	gae_XsecVsY_XnXn_CMS2022 ->SetMarkerStyle(20);
     gae_XsecVsY_XnXn_CMS2022 ->SetMarkerColor(2);
@@ -394,7 +394,7 @@ void drawCMS_NeuConfig()
     ge_XsecVsY_CMS2022  ->SetLineWidth(2);
 
 
-	TLegend  *leg_AnAn   =  new TLegend(0.14, 0.60, 0.55, 0.82);
+	TLegend  *leg_AnAn   =  new TLegend(0.14, 0.55, 0.55, 0.82);
 	leg_AnAn->SetFillStyle(0);
 	leg_AnAn->SetFillColor(0);
 	leg_AnAn->SetTextSize(0.050);
@@ -404,12 +404,18 @@ void drawCMS_NeuConfig()
 	leg_AnAn->AddEntry(gae_XsecVsY_LHCb2022,		"LHCb  2022",        "lpf");
 	leg_AnAn->Draw("same");
 	
-	TLegend  *leg_Theory =  new TLegend(0.75, 0.13, 0.95, 0.36);
-	leg_Theory->SetTextSize(0.046);
-	drawLTA("AnAn", leg_Theory);
-	// drawbBK("Xsec",leg_Theory);
-	drawCD("Xsec",  leg_Theory);
-	leg_Theory->Draw("same");
+	TLegend  *leg_LTA =  new TLegend(0.48, 0.18, 0.70, 0.34);
+	leg_LTA->SetTextSize(0.048);
+	drawLTA("AnAn", leg_LTA);
+	// drawbBK("Xsec",leg_LTA);
+	//drawCD("Xsec",  leg_LTA);
+	leg_LTA->Draw("same");
+	
+	TLegend  *leg_CD =  new TLegend(0.71, 0.15, 0.97, 0.35);
+	leg_CD->SetTextSize(0.050);
+	drawCD("Xsec",  leg_CD);
+	leg_CD->Draw("same");
+
 
 	gae_XsecVsY_Alice2019 ->Draw("2same");
 	ge_XsecVsY_Alice2019  ->Draw("pezsame");
@@ -440,8 +446,11 @@ void drawDDP(TString Name,	TLegend* legend)
 
 void getCMSData()
 {
-	auto ParamsMap				= readMap("rootfiles/Results_Map_TestwSmr.root");
-	auto TotalSysUncer_Map 		= readMap("rootfiles/TotalSysUncer_Map.root");
+	const int template_option  = 1; //0:OldCohJpsi; 1:NewCohJpsi (w R+1fm);
+	const TString template_Name[2] = {"", "_NewCohJpsi"};
+
+	auto ParamsMap 	= readMap(Form("rootfiles/Results%s_Map.root", template_Name[template_option].Data()));
+	auto TotalSysUncer_Map 		= readMap(Form("rootfiles/TotalSysUncer%s_Map.root", template_Name[template_option].Data()));
 
 	std::vector<double> X_AXIS_ERR = ParamsMap.at("RapErr");
 	auto Xsec_AnAn_TotalSysErr = ParamsMap.at("Xsec_AnAn");
