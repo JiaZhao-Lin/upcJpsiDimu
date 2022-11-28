@@ -157,7 +157,7 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
     SigmaVsW->GetXaxis()->CenterTitle();
 	SigmaVsW->GetYaxis()->SetTitleSize(0.05);
 	SigmaVsW->GetYaxis()->SetTitleSize(0.05);
-	SigmaVsW->GetYaxis()->SetTitleOffset(0.85);
+	SigmaVsW->GetYaxis()->SetTitleOffset(0.99);
 	SigmaVsW->GetYaxis()->SetLabelSize(0.04);
 	SigmaVsW->GetXaxis()->SetTitleSize(0.05);
 	SigmaVsW->GetXaxis()->SetTitleOffset(0.98);
@@ -217,9 +217,9 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 		legData->SetFillColor(0);
 		legData->SetTextSize(0.04);
 		legData->AddEntry(ge_CMS,               "CMS",               "p");
-		legData->AddEntry(ge_ALICE_Run2_FwdRap, "ALICE (-4 < y < -3.5)", "p");
-		legData->AddEntry(ge_ALICE_Run2_MidRap, "ALICE (|y| < 0.15)",  "p");
-		legData->AddEntry(ge_LHCb_Run2_FwdRap, "LHCb (-4.5 < y < -3.5)", "p");
+		legData->AddEntry(ge_ALICE_Run2_FwdRap, "ALICE* (-4 < y < -3.5)", "p");
+		legData->AddEntry(ge_ALICE_Run2_MidRap, "ALICE* (|y| < 0.15)",  "p");
+		legData->AddEntry(ge_LHCb_Run2_FwdRap,  "LHCb* (-4.5 < y < -3.5)", "p");
 		legData->Draw("same");
 
 		TLegend  *legTheory =  new TLegend(0.68, 0.15, 0.98, 0.50);
@@ -228,10 +228,15 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 		legTheory->SetTextSize(0.035);
 		legTheory->AddEntry(ge_IA,                "Impulse Approx.", "l");
 		legTheory->AddEntry(ge_CGCnoFluct,        "CGC IPsat",                   "l");
+
 		drawGG("Sigmas",legTheory);
+
 		drawLTA_Sigmas_R("Sigmas", legTheory);
+
 		drawbBK("Sigmas",legTheory);
+
 		drawCD("Sigmas",legTheory);
+
 		legTheory->Draw("same");
 
 		// TF1 *f1 	= new TF1("f1","log10(x)",3.5469263e-5,0.048933106);
@@ -249,36 +254,64 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 		// hAxis->GetYaxis()->SetTickSize(0.5);
 		// hAxis->Draw("Same X+");
 
-        drawLatex(0.15, 0.84, "Pb+Pb #rightarrow Pb+Pb+J/#psi",  42,        0.05,      1 );
-        drawLatex(0.58,0.94,"PbPb 1.52 nb^{-1} (5.02 TeV)",42, 0.05, 1);
-        drawLatex(0.15,0.94,"#bf{CMS}",42, 0.05, 1);
+        drawLatex(0.15, 0.84, "Pb+Pb #rightarrow Pb'+Pb'+J/#psi",  42,        0.05,      1 );
+        drawLatex(0.56, 0.94, "PbPb 1.52 nb^{-1} (5.02 TeV)",      42,        0.05,      1 );
+        drawLatex(0.15, 0.94, "#bf{CMS}",                          42,        0.05,      1 );
 	}
 	else
 	{
-		TLegend  *legData =  new TLegend(0.25, 0.15, 0.55, 0.3);
+		TLegend  *legData =  new TLegend(0.20, 0.17, 0.50, 0.37);
 		legData->SetFillStyle(0);
 		legData->SetFillColor(0);
 		legData->SetTextSize(0.04);
-		legData->AddEntry(ge_CMS,               "CMS",                   "p");
-		legData->AddEntry(ge_ALICE_Run2_FwdRap, "ALICE (-4 < y < -3.5)", "p");
-		legData->AddEntry(ge_ALICE_Run2_MidRap, "ALICE (|y| < 0.15)",    "p");
-		legData->AddEntry(ge_LHCb_Run2_FwdRap, "LHCb (-4.5 < y < -3.5)", "p");
+		legData->AddEntry(ge_CMS,               "CMS",                    "p");
+		legData->AddEntry(ge_ALICE_Run2_FwdRap, "ALICE* (-4 < y < -3.5)", "p");
+		legData->AddEntry(ge_ALICE_Run2_MidRap, "ALICE* (|y| < 0.15)",    "p");
+		legData->AddEntry(ge_LHCb_Run2_FwdRap,  "LHCb* (-4.5 < y < -3.5)","p");
 		legData->Draw("same");
 
-		TLegend  *legTheory =  new TLegend(0.68, 0.15, 0.98, 0.5);
+		TLegend  *legTheory =  new TLegend(0.58, 0.31, 0.85, 0.46);
 		legTheory->SetFillStyle(0);
 		legTheory->SetFillColor(0);
-		legTheory->SetTextSize(0.035);
+		legTheory->SetTextSize(0.033);
 		legTheory->AddEntry(ge_IA,                "Impulse Approx.", "l");
-		legTheory->AddEntry(ge_CGCnoFluct,        "CGC IPsat",                   "l");
+		legTheory->AddEntry(ge_CGCnoFluct,        "CGC IPsat",       "l");
 		drawGG("Sigmas",legTheory);
-		drawLTA_Sigmas_R("Sigmas", legTheory);
-		drawbBK("Sigmas",legTheory);
-		drawCD("Sigmas",legTheory);
 		legTheory->Draw("same");
+		
 
-        drawLatex(0.15, 0.84, "Pb+Pb #rightarrow Pb+Pb+J/#psi",  42,        0.05,      1 );
-        drawLatex(0.58,0.94,"PbPb 1.52 nb^{-1} (5.02 TeV)",42, 0.05, 1);
+		TLegend  *leg_LTA =  new TLegend(0.58, 0.26, 0.95, 0.31);
+		leg_LTA->SetNColumns(2);
+		leg_LTA->SetFillStyle(0);
+		leg_LTA->SetFillColor(0);
+		leg_LTA->SetTextSize(0.030);
+		drawLTA_Sigmas_R("Sigmas", leg_LTA);
+		leg_LTA->Draw("same");
+	
+		TLegend  *leg_bBK =  new TLegend(0.58, 0.21, 0.91, 0.26);
+		leg_bBK->SetNColumns(2);
+		leg_bBK->SetFillStyle(0);
+		leg_bBK->SetFillColor(0);
+		leg_bBK->SetTextSize(0.030);
+		drawbBK("Sigmas", leg_bBK);
+		leg_bBK->Draw("same");
+		
+		TLegend  *leg_CD =  new TLegend(0.58, 0.16, 0.94, 0.21);
+		leg_CD->SetNColumns(3);
+		leg_CD->SetFillStyle(0);
+		leg_CD->SetFillColor(0);
+		leg_CD->SetTextSize(0.030);
+		drawCD("Sigmas", leg_CD);
+		leg_CD->Draw("same");	
+
+		drawLatex(0.18,0.86,"x~3.8#times10^{-3}",42, 0.025, 1);
+		drawLatex(0.29,0.86,"x~9.6#times10^{-4}",42, 0.025, 1);
+		drawLatex(0.48,0.86,"x~2.4#times10^{-4}",42, 0.025, 1);
+		drawLatex(0.67,0.86,"x~1.1#times10^{-4}",42, 0.025, 1);
+		drawLatex(0.87,0.86,"x~6.0#times10^{-5}",42, 0.025, 1);
+
+		drawLatex(0.15, 0.80, "Pb+Pb #rightarrow Pb'+Pb'+J/#psi",  42,        0.05,      1 );
+        drawLatex(0.56,0.94,"PbPb 1.52 nb^{-1} (5.02 TeV)",42, 0.05, 1);
         drawLatex(0.15,0.94,"#bf{CMS}",42, 0.05, 1);
 	}
 	
@@ -455,21 +488,47 @@ void plotRvsX( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap, co
 	leg->SetFillStyle(0);
 	leg->SetFillColor(0);
 	leg->SetTextSize(0.04);
-	leg->AddEntry(ge_CMS,               "CMS",                   "p");
-	leg->AddEntry(ge_ALICE_Run2_FwdRap, "ALICE (-4 < y < -3.5)", "p");
-	leg->AddEntry(ge_ALICE_Run2_MidRap, "ALICE (|y| < 0.15)",    "p");
-	leg->AddEntry(ge_LHCb_Run2_FwdRap, "LHCb (-4.5 < y < -3.5)", "p");
+	leg->AddEntry(ge_CMS,               "CMS",                     "p");
+	leg->AddEntry(ge_ALICE_Run2_FwdRap, "ALICE* (-4 < y < -3.5)",  "p");
+	leg->AddEntry(ge_ALICE_Run2_MidRap, "ALICE* (|y| < 0.15)",     "p");
+	leg->AddEntry(ge_LHCb_Run2_FwdRap,  "LHCb* (-4.5 < y < -3.5)", "p");
     leg->Draw("same");
 
-    TLegend  *leg1 =  new TLegend(0.74, 0.24, 0.99, 0.55);
+    TLegend  *leg1 =  new TLegend(0.53, 0.35, 0.95, 0.40);
+	leg1->SetNColumns(2);
     leg1->SetFillStyle(0);
     leg1->SetFillColor(0);
-    leg1->SetTextSize(0.035);
+    leg1->SetTextSize(0.033);
 	drawGG("R",leg1);
-	drawLTA_Sigmas_R("R", leg1);
-	drawbBK("R", leg1);
-	drawCD("R", leg1);
 	leg1->Draw("same");
+	//drawLTA_Sigmas_R("R", leg1);
+	//drawbBK("R", leg1);
+	//drawCD("R", leg1);
+
+	TLegend  *leg_LTA =  new TLegend(0.53, 0.30, 0.95, 0.35);
+	leg_LTA->SetNColumns(2);
+	leg_LTA->SetFillStyle(0);
+	leg_LTA->SetFillColor(0);
+	leg_LTA->SetTextSize(0.033);
+	drawLTA_Sigmas_R("R", leg_LTA);
+	leg_LTA->Draw("same");
+
+	TLegend  *leg_bBK =  new TLegend(0.53, 0.25, 0.91, 0.30);
+	leg_bBK->SetNColumns(2);
+	leg_bBK->SetFillStyle(0);
+	leg_bBK->SetFillColor(0);
+	leg_bBK->SetTextSize(0.033);
+	drawbBK("R", leg_bBK);
+	leg_bBK->Draw("same");
+
+	TLegend  *leg_CD =  new TLegend(0.53, 0.20, 0.94, 0.25);
+	leg_CD->SetNColumns(3);
+	leg_CD->SetFillStyle(0);
+	leg_CD->SetFillColor(0);
+	leg_CD->SetTextSize(0.033);
+	drawCD("R", leg_CD);
+	leg_CD->Draw("same");
+	
 
 	gae_CMS ->Draw("2same");
 	ge_CMS->Draw("pezsame");
@@ -480,10 +539,10 @@ void plotRvsX( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap, co
 	gae_LHCb_Run2_FwdRap ->Draw("2same");
 	ge_LHCb_Run2_FwdRap->Draw("pezsame");
 
-	drawLatex(0.15, 0.84, "Pb+Pb #rightarrow Pb+Pb+J/#psi",  42,        0.05,      1 );
-	drawLatex(0.48, 0.17, "Nuclear suppression factor", 42, 0.055, 1);
+	drawLatex(0.15, 0.84, "Pb+Pb #rightarrow Pb'+Pb'+J/#psi",  42,        0.05,      1 );
+	//drawLatex(0.48, 0.17, "Nuclear suppression factor", 42, 0.055, 1);
 
-    drawLatex(0.58,0.94,"PbPb 1.52 nb^{-1} (5.02 TeV)",42, 0.05, 1);
+    drawLatex(0.56,0.94,"PbPb 1.52 nb^{-1} (5.02 TeV)",42, 0.05, 1);
     drawLatex(0.15,0.94,"#bf{CMS}",42, 0.05, 1);
 
 	c->SaveAs("outplots/ShadowingRatiovsX.png");
@@ -496,6 +555,7 @@ void plotRvsX( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap, co
 
 std::map<TString, std::vector<double>> getParamsMap(const TString infile = "../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins.appliedTnP.root", const double flux_uncer = 1.0, const TString fluxSubCase = "_SigNN68p3R6p67a0p56")
 {
+	//---------------------------------Read Map------------------------------------------
 	std::map<TString, std::vector<double>> ShadowRatio_ParamsMap = {
 		{"Raps",		{}},	{"Raps_Err",		{}},
 		{"Sigmas",		{}},	{"Sigmas_Err",		{}},
@@ -522,6 +582,54 @@ std::map<TString, std::vector<double>> getParamsMap(const TString infile = "../s
 	{
 		ShadowRatio_ParamsMap.at("Rap")[i] *= -1;
 	}
+	//-------------------------------------------------------------------------------------
+
+	//---------------------------------Manual Test Map------------------------------------------
+	//WS
+	// std::map<TString, std::vector<double>> ShadowRatio_ParamsMap = {
+	// 	{"Raps",		{}},	{"Raps_Err",		{}},
+	// 	{"Sigmas",		{}},	{"Sigmas_Err",		{}},
+	// 	{"Sigmas_IA",	{}},	{"Sigmas_IA_Err",	{}},
+	// 	{"R",			{}},	{"R_Err",			{}},
+	// 	{"Xs",			{}},	{"Xs_Err",			{}},
+	// 	{"Ws",			{}},	{"Ws_Err",			{}},
+	// 	{"Rap",			{-1.7000, -1.8000, -1.9000, -2.0000, -2.1000, -2.2000, -2.3000, -2.4000}},	{"RapErr",				{0,0,0,0,0,0,0,0}},
+	// 	{"Xsec_AnAn",	{3.6673,3.5814,3.4918,3.4005,3.2986,3.2020,3.0970,2.9921}},	{"XsecErr_AnAn",		{0.0001,0.0001,0.0001,0.0001,0.0001,0.0001,0.0001,0.0001}},
+	// 	{"Xsec_0n0n",	{2.6450, 2.5837, 2.5214, 2.4603, 2.3931, 2.3332, 2.2687, 2.2067}},	{"XsecErr_0n0n",		{0.0001,0.0001,0.0001,0.0001,0.0001,0.0001,0.0001,0.0001}},
+	// 	{"Xsec_0nXnSum",{.7501,.7296,.7069,.6823,.6546,.6256,.5940,.5610}},	{"XsecErr_0nXnSum",		{0.0001,0.0001,0.0001,0.0001,0.0001,0.0001,0.0001,0.0001}},
+	// 	{"Xsec_XnXn",	{.2722,.2682,.2634,.2578,.2509,.2433,.2343,.2244}},	{"XsecErr_XnXn",		{0.0001,0.0001,0.0001,0.0001,0.0001,0.0001,0.0001,0.0001}},
+	// };
+	// std::map<TString, std::vector<double>> tem = {
+	// 	{"Rap",			{1.7000, 1.8000, 1.9000, 2.0000, 2.1000, 2.2000, 2.3000, 2.4000}},	{"RapErr",				{0,0,0,0,0,0,0,0}},
+	// 	{"Xsec_AnAn",	{3.6673,3.5814,3.4918,3.4005,3.2986,3.2020,3.0970,2.9921}},	{"XsecErr_AnAn",		{0.0001,0.0001,0.0001,0.0001,0.0001,0.0001,0.0001,0.0001}},
+	// 	{"Xsec_0n0n",	{2.6450, 2.5837, 2.5214, 2.4603, 2.3931, 2.3332, 2.2687, 2.2067}},	{"XsecErr_0n0n",		{0.0001,0.0001,0.0001,0.0001,0.0001,0.0001,0.0001,0.0001}},
+	// 	{"Xsec_0nXnSum",{.7501,.7296,.7069,.6823,.6546,.6256,.5940,.5610}},	{"XsecErr_0nXnSum",		{0.0001,0.0001,0.0001,0.0001,0.0001,0.0001,0.0001,0.0001}},
+	// 	{"Xsec_XnXn",	{.2722,.2682,.2634,.2578,.2509,.2433,.2343,.2244}},	{"XsecErr_XnXn",		{0.0001,0.0001,0.0001,0.0001,0.0001,0.0001,0.0001,0.0001}},
+	// };
+
+	//SS
+	// std::map<TString, std::vector<double>> ShadowRatio_ParamsMap = {
+	// 	{"Raps",		{}},	{"Raps_Err",		{}},
+	// 	{"Sigmas",		{}},	{"Sigmas_Err",		{}},
+	// 	{"Sigmas_IA",	{}},	{"Sigmas_IA_Err",	{}},
+	// 	{"R",			{}},	{"R_Err",			{}},
+	// 	{"Xs",			{}},	{"Xs_Err",			{}},
+	// 	{"Ws",			{}},	{"Ws_Err",			{}},
+	// 	{"Rap",			{-1.7000, -1.8000, -1.9000, -2.0000, -2.1000, -2.2000, -2.3000, -2.4000  }},	{"RapErr",				{0.,0.,0,0,0,0,0,0}},
+	// 	{"Xsec_AnAn",	{2.5587,  2.5201,  2.4798,  2.4395,  2.3908,  2.3473,  2.2968,  2.2466}},	{"XsecErr_AnAn",		{0.0001,0.0001,0.0001,0.0001,0.0001,0.0001,0.0001,0.0001}},
+	// 	{"Xsec_0n0n",	{1.9093,	1.8860,	1.8621,	1.8395,	1.8112,	1.7887,	1.7614,	1.7356}},	{"XsecErr_0n0n",		{0.0001,0.0001,0.0001,0.0001,0.0001,0.0001,0.0001,0.0001}},
+	// 	{"Xsec_0nXnSum",{.4788,.4662,.4528,.4386,.4224,.4059,.3879,.3692}},	{"XsecErr_0nXnSum",		{0.0001,0.0001,0.0001,0.0001,0.0001,0.0001,0.0001,0.0001}},
+	// 	{"Xsec_XnXn",	{.1706,.1679,.1648,.1614,.1572,.1527,.1475,.1418}},	{"XsecErr_XnXn",		{0.0001,0.0001,0.0001,0.0001,0.0001,0.0001,0.0001,0.0001}},
+	// };
+
+	// std::map<TString, std::vector<double>> tem = {
+	// 	{"Rap",			{1.7000, 1.8000, 1.9000, 2.0000, 2.1000, 2.2000, 2.3000, 2.4000  }},	{"RapErr",				{0.,0.,0,0,0,0,0,0}},
+	// 	{"Xsec_AnAn",	{2.5587,  2.5201,  2.4798,  2.4395,  2.3908,  2.3473,  2.2968,  2.2466}},	{"XsecErr_AnAn",		{0.0001,0.0001,0.0001,0.0001,0.0001,0.0001,0.0001,0.0001}},
+	// 	{"Xsec_0n0n",	{1.9093,	1.8860,	1.8621,	1.8395,	1.8112,	1.7887,	1.7614,	1.7356}},	{"XsecErr_0n0n",		{0.0001,0.0001,0.0001,0.0001,0.0001,0.0001,0.0001,0.0001}},
+	// 	{"Xsec_0nXnSum",{.4788,.4662,.4528,.4386,.4224,.4059,.3879,.3692}},	{"XsecErr_0nXnSum",		{0.0001,0.0001,0.0001,0.0001,0.0001,0.0001,0.0001,0.0001}},
+	// 	{"Xsec_XnXn",	{.1706,.1679,.1648,.1614,.1572,.1527,.1475,.1418}},	{"XsecErr_XnXn",		{0.0001,0.0001,0.0001,0.0001,0.0001,0.0001,0.0001,0.0001}},
+	// };
+	//-------------------------------------------------------------------------------------
 
 	{auto Temp = fit2D(loadJpsiXsec.GetMap(), flux_uncer, fluxSubCase); ShadowRatio_ParamsMap.at("Raps") = Temp[0]; ShadowRatio_ParamsMap["Raps_Err"] = Temp[1]; ShadowRatio_ParamsMap.at("Sigmas") = Temp[2]; ShadowRatio_ParamsMap.at("Sigmas_Err") = Temp[3];}
 	for (int i = 0; i < ShadowRatio_ParamsMap.at("Raps").size(); ++i)

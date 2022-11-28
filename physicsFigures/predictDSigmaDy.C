@@ -13,8 +13,18 @@ double y2W(const double y)
 	return sqrt( (2 * Gamma_beam * Mass_N * JpsiMass) * exp(y) );
 }
 
+double fPieceWise4Fit(double *x, double *par)
+{
+	if((x[0]>42))
+	{
+		return exp( par[2]*x[0] + par[3]);
+	}
 
-TF1 * fitSigmas(const int data_option = 3, const int func_option = 6)
+	return exp( par[0]*x[0] + par[1]);
+
+}
+
+TF1 * fitSigmas(const int data_option = 0, const int func_option = 9)
 {
 	auto ShadowRatio_ParamsMap 	= readMap(Form("rootfiles/Results%s_Map.root", template_Name[template_option].Data()));
 	auto TotalSysUncer_Map 		= readMap(Form("rootfiles/TotalSysUncer%s_Map.root", template_Name[template_option].Data()));
@@ -23,9 +33,22 @@ TF1 * fitSigmas(const int data_option = 3, const int func_option = 6)
 	auto Sigmas_ToFit 		= ShadowRatio_ParamsMap["Sigmas"];
 	auto Sigmas_Err_ToFit 	= ShadowRatio_ParamsMap["Sigmas_Err"];
 
-	// std::vector<double> Ws_ToFit 			= {};
-	// std::vector<double> Sigmas_ToFit 		= {};
-	// std::vector<double> Sigmas_Err_ToFit 	= {};
+	// --------------------------For moving points up and down-----------------------------------
+	// for (int i = 0; i < Ws_ToFit.size(); i++)
+	// {
+	// 	// cout<<Ws_ToFit[i]<<endl;
+	// 	// if (i%2==1)
+	// 	// {
+	// 	// 	Sigmas_ToFit[i]-= 0.01 * TotalSysUncer_Map.at("Sigmas")[i]*TotalSysUncer_Map.at("Sigmas_TotalSysUncer")[i];
+	// 	// }
+	// 	// else
+	// 	// {
+	// 	// 	Sigmas_ToFit[i]+= 0.01 * TotalSysUncer_Map.at("Sigmas")[i]*TotalSysUncer_Map.at("Sigmas_TotalSysUncer")[i];
+	// 	// }
+	// 	Sigmas_ToFit[i]-= 0.01 * TotalSysUncer_Map.at("Sigmas")[i]*TotalSysUncer_Map.at("Sigmas_TotalSysUncer")[i];
+	// }
+	// ------------------------------------------------------------------------------------------
+
 
 	TF1* funcSigmas;
 
@@ -58,6 +81,27 @@ TF1 * fitSigmas(const int data_option = 3, const int func_option = 6)
 			funcSigmas = new TF1("SigmasPrediction","[0] + ([1]-[0])/( 1+exp( [2]*(log(x)-log([3])) ) )");
 			funcSigmas->SetParameters(0.01, 0.01,-1,10);
 			break;
+		case 8:	//piecewise
+			funcSigmas = new TF1("SigmasPrediction", fPieceWise4Fit, 0, 400,4);
+			funcSigmas->SetParameters(0.01, 0.01,0.01,0.01);
+			funcSigmas->SetParNames("a1", "b1", "a2", "b2");
+			// fJpsiPeak->SetParameter(1,1);
+			// fJpsiPeak->SetParameter(2,1);
+			// fJpsiPeak->SetParameter(3,1);
+			// fJpsiPeak->SetParameter(4,3.1);
+			// funcSigmas = new TF1("SigmasPrediction","[0] + ([1]-[0])/( 1+exp( [2]*(log(x)-log([3])) ) )");
+			// funcSigmas->SetParameters(0.01, 0.01,-1,10);
+			break;
+		case 9:	//Linear
+			funcSigmas = new TF1("SigmasPrediction", "[0] * x + [1]", 42,400);
+			funcSigmas->SetParameters(0.001, 1);
+			funcSigmas->SetParNames("a", "b");
+			break;
+		case 10: //Log
+			funcSigmas = new TF1("SigmasPrediction", "exp( [0]*x + [1])", 42,400);
+			funcSigmas->SetParameters(0.001, 0.1);
+			funcSigmas->SetParNames("a", "b");
+			break;
 		default: // Err Funcion
 			funcSigmas = new TF1("SigmasPrediction","[0]*TMath::Erf((x-[1])/[2])");
 			funcSigmas->SetParameters(0.1,10,10);
@@ -68,22 +112,27 @@ TF1 * fitSigmas(const int data_option = 3, const int func_option = 6)
 
 	for (int i = 0; i < ALICE_Run2_FwdRap_y.size(); ++i)
 	{
-		//Calculating the values
 		ALICE_Run2_FwdRap_W        		.push_back( y2W(ALICE_Run2_FwdRap_y[i]) );
 		ALICE_Run2_FwdRap_Sigma    		.push_back( ALICE_Run2_FwdRap_dSigmady[i] / ALICE_Run2_FwdRap_Flux[i] );
 		ALICE_Run2_FwdRap_Sigma_StatErr	.push_back( ALICE_Run2_FwdRap_Sigma[i] * ALICE_Run2_FwdRap_dSigmady_StatErr[i] / ALICE_Run2_FwdRap_dSigmady[i]		);
 	}
-	TGraphErrors* ge_ALICE_Run2_MidRap	= new TGraphErrors(ALICE_Run2_MidRap_W.size(),	&ALICE_Run2_MidRap_W[0],	&ALICE_Run2_MidRap_Sigma[0],	0,	&ALICE_Run2_MidRap_Sigma_StatErr[0]	);
-	TGraphErrors* ge_ALICE_Run2_FwdRap	= new TGraphErrors(ALICE_Run2_FwdRap_W.size(),	&ALICE_Run2_FwdRap_W[0],	&ALICE_Run2_FwdRap_Sigma[0],	0,	&ALICE_Run2_FwdRap_Sigma_StatErr[0]	);
-
+	for (int i = 0; i < LHCb_Run2_FwdRap_y.size(); ++i)
+	{
+		LHCb_Run2_FwdRap_W        		.push_back( y2W(LHCb_Run2_FwdRap_y[i]) );
+		LHCb_Run2_FwdRap_Sigma    		.push_back( LHCb_Run2_FwdRap_dSigmady[i] / LHCb_Run2_FwdRap_Flux[i] );
+		LHCb_Run2_FwdRap_Sigma_StatErr	.push_back( LHCb_Run2_FwdRap_Sigma[i] * LHCb_Run2_FwdRap_dSigmady_StatErr[i] / LHCb_Run2_FwdRap_dSigmady[i]		);
+	}
 
 	switch(data_option) {
-		case 1:	// use ALICE Fwd Data points Only
+		case 1:	// use ALICE LHCb Fwd and CMS Data points 
 			Ws_ToFit.insert(Ws_ToFit.end(),	ALICE_Run2_FwdRap_W.begin(),	ALICE_Run2_FwdRap_W.end());
+			Ws_ToFit.insert(Ws_ToFit.end(),	LHCb_Run2_FwdRap_W.begin(),	LHCb_Run2_FwdRap_W.end());
 			Sigmas_ToFit.insert(Sigmas_ToFit.end(),	ALICE_Run2_FwdRap_Sigma.begin(),	ALICE_Run2_FwdRap_Sigma.end());
+			Sigmas_ToFit.insert(Sigmas_ToFit.end(),	LHCb_Run2_FwdRap_Sigma.begin(),	LHCb_Run2_FwdRap_Sigma.end());
 			Sigmas_Err_ToFit.insert(Sigmas_Err_ToFit.end(),	ALICE_Run2_FwdRap_Sigma_StatErr.begin(),	ALICE_Run2_FwdRap_Sigma_StatErr.end());
+			Sigmas_Err_ToFit.insert(Sigmas_Err_ToFit.end(),	LHCb_Run2_FwdRap_Sigma_StatErr.begin(),	LHCb_Run2_FwdRap_Sigma_StatErr.end());
 			break;
-		case 2:	// use ALICE Fwd and Mid Data points
+		case 2:	// use ALICE Mid and CMS Data points
 			Ws_ToFit.insert(Ws_ToFit.end(),	ALICE_Run2_MidRap_W.begin(),	ALICE_Run2_MidRap_W.end());
 			Sigmas_ToFit.insert(Sigmas_ToFit.end(),	ALICE_Run2_MidRap_Sigma.begin(),	ALICE_Run2_MidRap_Sigma.end());
 			Sigmas_Err_ToFit.insert(Sigmas_Err_ToFit.end(),	ALICE_Run2_MidRap_Sigma_StatErr.begin(),	ALICE_Run2_MidRap_Sigma_StatErr.end());
@@ -96,36 +145,46 @@ TF1 * fitSigmas(const int data_option = 3, const int func_option = 6)
 			Sigmas_Err_ToFit.insert(Sigmas_Err_ToFit.end(),	ALICE_Run2_FwdRap_Sigma_StatErr.begin(),	ALICE_Run2_FwdRap_Sigma_StatErr.end());
 			Sigmas_Err_ToFit.insert(Sigmas_Err_ToFit.end(),	ALICE_Run2_MidRap_Sigma_StatErr.begin(),	ALICE_Run2_MidRap_Sigma_StatErr.end());
 			break;
-		default:;
+		default: // use CMS Data points ONLY
+			break;
 	}
 
 	auto c = new TCanvas();
 	c->SetLogy();
-	auto SigmaVsW = new TH2D("SigmaVsW", ";W_{#gammaPb} (GeV);#sigma(#gamma A #rightarrow J/#psi A) (mb);", 10,0,420, 10, 0.005, 0.20);
+	auto SigmaVsW = new TH2D("SigmaVsW", ";W_{#gammaN}^{Pb} (GeV);#sigma(#gamma Pb #rightarrow J/#psi Pb) (mb);", 10,0,420, 10, 0.004, 0.13);
 
 	SigmaVsW->GetYaxis()->CenterTitle();
-	SigmaVsW->GetYaxis()->SetTitleSize(0.065);
-	SigmaVsW->GetYaxis()->SetTitleSize(0.065);
-	SigmaVsW->GetYaxis()->SetTitleOffset(0.85);
+    SigmaVsW->GetXaxis()->CenterTitle();
+	SigmaVsW->GetYaxis()->SetTitleSize(0.05);
+	SigmaVsW->GetYaxis()->SetTitleSize(0.05);
+	SigmaVsW->GetYaxis()->SetTitleOffset(0.99);
 	SigmaVsW->GetYaxis()->SetLabelSize(0.04);
 	SigmaVsW->GetXaxis()->SetTitleSize(0.05);
 	SigmaVsW->GetXaxis()->SetTitleOffset(0.98);
 	SigmaVsW->GetXaxis()->SetLabelSize(0.04);
 	SigmaVsW->SetTickLength(0.04);
 	SigmaVsW->Draw();
-	drawLatex(0.15, 0.85, "UPC Pb+Pb #sqrt{s_{NN}} = 5.02 TeV",      42,       0.05,      1);
-	drawLatex(0.15, 0.78, Form("Fit Func: %s",funcSigmas->GetFormula()->GetExpFormula().Data()),      42,       0.03,      1);
+
+    drawLatex(0.12,0.94,"PbPb 1.52 nb^{-1} (5.02 TeV)",42, 0.05, 1);	
+	// drawLatex(0.15, 0.78, Form("Fit Func: %s",funcSigmas->GetFormula()->GetExpFormula().Data()),      42,       0.03,      1);
+	drawLatex(0.15, 0.80, "Fit Func: y = a*x + b",      42,       0.04,      1);
+	drawLatex(0.15, 0.70, "Fitting to the data moved to lower syst. error",      42,       0.03,      1);
 
 	cout<<"fitSigmas----------------->Proceessing<----------------"<<endl;
-	TGraphErrors* gr = new TGraphErrors(Ws_ToFit.size(), &Ws_ToFit[0], &Sigmas_ToFit[0],0, &Sigmas_Err_ToFit[0]);
+	TGraphErrors* gr = new TGraphErrors(Ws_ToFit.size(), Ws_ToFit.data(), Sigmas_ToFit.data(),0, Sigmas_Err_ToFit.data());
 	
-	gr->Fit(funcSigmas);
+	funcSigmas->SetLineStyle(2);
+	gr->Fit(funcSigmas, "R");
 	gr->SetTitle("TGraph1D TF1 Fit; dN_{1}/dy; dN_{2}/dy; d#sigma/dy");
 	gr->SetMarkerColor(kBlue);
 	// gr->SetMarkerSize(0.8);
-	gr->SetLineWidth(5);
+	gr->SetLineWidth(2);
 	gr->Draw("same pez");
 	cout<<endl;
+
+	// TPaveStats *st = (TPaveStats*)gr->FindObject("stats");
+	// st->SetX1NDC(0.8); //new x start position
+	// st->SetX2NDC(0.9); //new x end position
 
 	c->SaveAs("outplots/SigmasVsW_Fit.pdf");
 	cout<<"fitSigmas----------------->DONE<----------------"<<endl;
@@ -169,7 +228,7 @@ void predictDSigmaDy()
 		{"Ws",		Ws_Prediction}
 	};
 
-	InterpolateFlux(Temp_Map,	"../simulation/flux/");
+	InterpolateFlux(Temp_Map,	"../simulation/flux/", "_SigNN68p3R6p67a0p56");
 
 	for (int i = 0; i < nSteps; ++i)
 	{
@@ -183,8 +242,8 @@ void predictDSigmaDy()
 	}
 	Temp_Map["Xsec_AnAn_Prediction"] = Xsec_AnAn_Prediction;
 
-	cout<<"predictDSigmaDy----------------->DSigmaDy<----------------"<<endl;
-	saveMap(Temp_Map,	Form("rootfiles/DataDrivenPrediction%s.root", template_Name[template_option].Data() ));
-	cout<<"predictDSigmaDy----------------->DONE Saving<----------------"<<endl;
+	// cout<<"predictDSigmaDy----------------->DSigmaDy<----------------"<<endl;
+	// saveMap(Temp_Map,	Form("rootfiles/DataDrivenPrediction%s.root", template_Name[template_option].Data() ));
+	// cout<<"predictDSigmaDy----------------->DONE Saving<----------------"<<endl;
 }
 

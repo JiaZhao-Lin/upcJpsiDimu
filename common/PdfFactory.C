@@ -172,7 +172,7 @@ struct QEDPdf : public PdfFactory
 			return 0;
 		}
 
-		return par[0] + par[1]*x[0] + par[2]*pow(x[0],2) + par[3]*pow(x[0],3) + + par[4]*pow(x[0],4);
+		return par[0] + par[1]*x[0] + par[2]*pow(x[0],2) + par[3]*pow(x[0],3) + par[4]*pow(x[0],4);
 	}
 };
 

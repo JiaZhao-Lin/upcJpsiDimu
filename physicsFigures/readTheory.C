@@ -4,10 +4,10 @@
 
 void drawLTA(TString Case, TLegend * leg)
 {
-	std::vector<TString> Name = {"LTA WS", "LTA SS", "EPS09 central"};
+	std::vector<TString> Name = {"LTA SS", "LTA WS", "EPS09 central"};
 	std::vector<int> colors = {2,8,4};
 
-	MultiDataReader MDR({"../physicsFigures/inputfiles/LTA_Jpsi_weak_shadowing.dat", "../physicsFigures/inputfiles/LTA_Jpsi_strong_shadowing.dat", "../physicsFigures/inputfiles/EPS09_central_Jpsi.dat"},
+	MultiDataReader MDR({"../physicsFigures/inputfiles/LTA_Jpsi_strong_shadowing.dat", "../physicsFigures/inputfiles/LTA_Jpsi_weak_shadowing.dat", "../physicsFigures/inputfiles/EPS09_central_Jpsi.dat"},
 						{"y", "AnAn", "0n0n", "0nXnSum", "XnXn"});
 
 	for (int i = 0; i < MDR.SDRs.size()-1; ++i)

@@ -54,19 +54,33 @@ std::vector<std::vector<double>> fit2D(std::map<TString, std::vector<double>> Ma
    for (int i = 0; i < X_RapBin.size(); ++i)
    {
       cout<<"fit2D: Proceessing ------------------>Rap: "<<Rap[i]<<" <------------------------------- "<<endl;
-      TGraph2DErrors* gr = new TGraph2DErrors(X_RapBin[i].size(), &X_RapBin[i][0], &Y_RapBin[i][0], &Z_RapBin[i][0],0,0, &Z_Err_RapBin[i][0]);
+      auto c = new TCanvas();
+
+      auto frame3D = new TH3D("", "TGraph2D TF2 Fit; dN_{1}/dy; dN_{2}/dy; d#sigma/dy", 10,0,160, 10, 0, 20,10,0,3);
+      // frame3D->GetYaxis()->CenterTitle();
+      // frame3D->GetXaxis()->CenterTitle();
+      // frame3D->GetYaxis()->SetTitleSize(0.05);
+      // frame3D->GetYaxis()->SetTitleSize(0.05);
+      // frame3D->GetYaxis()->SetTitleOffset(0.99);
+      // frame3D->GetYaxis()->SetLabelSize(0.04);
+      // frame3D->GetXaxis()->SetTitleSize(0.05);
+      // frame3D->GetXaxis()->SetTitleOffset(0.98);
+      // frame3D->GetXaxis()->SetLabelSize(0.04);
+      // frame3D->SetTickLength(0.04);
+      frame3D->Draw("iso");
+
+      TGraph2DErrors* gr = new TGraph2DErrors(X_RapBin[i].size(), X_RapBin[i].data(), Y_RapBin[i].data(), Z_RapBin[i].data(),0,0, Z_Err_RapBin[i].data());
       TF2 * f = new TF2("func","[0] * x + [1] * y");
       f->SetParameters(0.001,0.5);
 
-      auto c = new TCanvas();
       auto fitResults = gr->Fit(f,  "S");
       fitResults->Print();
 
-      gr->SetTitle("TGraph2D TF2 Fit; dN_{1}/dy; dN_{2}/dy; d#sigma/dy");
+      // gr->SetTitle("TGraph2D TF2 Fit; dN_{1}/dy; dN_{2}/dy; d#sigma/dy");
       gr->SetMarkerColor(kBlue);
       gr->SetMarkerSize(1.5);
-      gr->SetLineWidth(5);
-      gr->Draw("pez");
+      gr->SetLineWidth(3);
+      gr->Draw("same p err");
       // f->SetMarkerColor(kBlue);
       f->Draw("same surf");
       drawLatex(0.1, 0.95, Form("(#sigma(y = %.2f), #sigma(y = %.2f)) = (%.4f #pm %.4f, %.4f #pm %.4f)", Rap[i], -Rap[i],
@@ -79,7 +93,7 @@ std::vector<std::vector<double>> fit2D(std::map<TString, std::vector<double>> Ma
       Sigmas      .push_back(f->GetParameter(0));  Sigmas      .push_back(f->GetParameter(1));
       Sigmas_Err  .push_back(f->GetParError(0));   Sigmas_Err  .push_back(f->GetParError(1));
 
-      delete gr; delete c; delete f;
+      delete gr; delete c; delete f;delete frame3D;
    }
    return {Raps, Raps_Err, Sigmas, Sigmas_Err};
 }
