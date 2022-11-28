@@ -1126,7 +1126,7 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			drawLatex(0.25, 0.75+textDy2, Form("N^{Coh}_{J/#psi} = %d #pm %d",  (int)N_CohJpsi_inPtCut, (int)Nerr_CohJpsi_inPtCut), mTextFont, 0.035, mTextColor);
 			drawLatex(0.25, 0.70+textDy2, Form("f_{I} = (N^{All}_{InCoh}/N^{Coh}_{J/#psi}) = %.3f #pm %.3f", fI_Value, fI_Error),     mTextFont, 0.035, mTextColor);
 			drawLatex(0.25, 0.65+textDy2, Form("N^{in Mfit}_{J/#psi}/(1+f_{I}+f_{D}) = %d #pm %d",  (int)NJpsi_Coh_cal, (int)NerrJpsi_Coh_cal), mTextFont, 0.035, mTextColor);
-			drawLatex(0.25, 0.57+textDy2, Form("#frac{#sigma^{Coh}_{J/#psi}}{dy} = %.3f #pm %.3f (mb)", xsecValue[i_ncase][iy], xsecError[i_ncase][iy] ),                                     mTextFont, 0.035, mTextColor);
+			drawLatex(0.25, 0.57+textDy2, Form("#frac{d#sigma^{Coh}_{J/#psi}}{dy} = %.3f #pm %.3f (mb)", xsecValue[i_ncase][iy], xsecError[i_ncase][iy] ),                                     mTextFont, 0.035, mTextColor);
 
 			TLegend  *leg =  new TLegend(0.60, 0.45, 0.88, 0.80);
 			leg->SetFillStyle(0);
