@@ -317,13 +317,13 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 	}
 	
 	ge_CGCnoFluct->SetMarkerColor(1);
-	ge_CGCnoFluct->SetLineColor(4);
-	ge_CGCnoFluct->SetLineStyle(2);
+	ge_CGCnoFluct->SetLineColor(11);
+	ge_CGCnoFluct->SetLineStyle(5);
 	ge_CGCnoFluct->SetLineWidth(2);
 	ge_CGCnoFluct->Draw("lsame");
 
 	ge_IA->SetMarkerColor(2);
-	ge_IA->SetLineStyle(6);
+	ge_IA->SetLineStyle(5);
 	ge_IA->SetLineColor(1);
 	ge_IA->SetLineWidth(2);
 	ge_IA->Draw("lsame");

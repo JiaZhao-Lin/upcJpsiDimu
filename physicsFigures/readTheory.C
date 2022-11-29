@@ -5,7 +5,8 @@
 void drawLTA(TString Case, TLegend * leg)
 {
 	std::vector<TString> Name = {"LTA SS", "LTA WS", "EPS09 central"};
-	std::vector<int> colors = {2,8,4};
+	std::vector<int> colors = {2,2,2};
+	std::vector<int> styles = {1,7,3};
 
 	MultiDataReader MDR({"../physicsFigures/inputfiles/LTA_Jpsi_strong_shadowing.dat", "../physicsFigures/inputfiles/LTA_Jpsi_weak_shadowing.dat", "../physicsFigures/inputfiles/EPS09_central_Jpsi.dat"},
 						{"y", "AnAn", "0n0n", "0nXnSum", "XnXn"});
@@ -19,30 +20,30 @@ void drawLTA(TString Case, TLegend * leg)
 	
 		if (Case == "AnAn"){
 			gr_AnAn->SetLineColor(colors[i]);
-            gr_AnAn->SetLineStyle(9);
-            gr_AnAn->SetLineWidth(3);
-            gr_AnAn->Draw("same");
+            gr_AnAn->SetLineStyle(styles[i]);
+            gr_AnAn->SetLineWidth(2);
+            gr_AnAn->Draw("lsame");
 			leg->AddEntry(gr_AnAn,	Name[i].Data(),		"l" );
 		}
 		else if (Case == "0n0n"){
 			gr_0n0n->SetLineColor(colors[i]);
-            gr_0n0n->SetLineStyle(9);
-            gr_0n0n->SetLineWidth(3);
-            gr_0n0n->Draw("same");
+            gr_0n0n->SetLineStyle(styles[i]);
+            gr_0n0n->SetLineWidth(2);
+            gr_0n0n->Draw("lsame");
 			leg->AddEntry(gr_0n0n,	Name[i].Data(),		"l" );
 		}
 		else if (Case == "0nXnSum"){
 			gr_0nXnSum->SetLineColor(colors[i]);
-            gr_0nXnSum->SetLineStyle(9);
-            gr_0nXnSum->SetLineWidth(3);
-            gr_0nXnSum->Draw("same");
+            gr_0nXnSum->SetLineStyle(styles[i]);
+            gr_0nXnSum->SetLineWidth(2);
+            gr_0nXnSum->Draw("lsame");
 			leg->AddEntry(gr_0nXnSum,	Name[i].Data(),	"l" );
 		}
 		else if (Case == "XnXn"){
 			gr_XnXn->SetLineColor(colors[i]);
-            gr_XnXn->SetLineStyle(9);
-            gr_XnXn->SetLineWidth(3);
-            gr_XnXn->Draw("same");
+            gr_XnXn->SetLineStyle(styles[i]);
+            gr_XnXn->SetLineWidth(2);
+            gr_XnXn->Draw("lsame");
 			leg->AddEntry(gr_XnXn,	Name[i].Data(),		"l" );
 		}
 	}
@@ -52,7 +53,8 @@ void drawLTA(TString Case, TLegend * leg)
 void drawLTA_Sigmas_R(TString Case, TLegend * leg)
 {
 	std::vector<TString> Name = {"LTA_SS","LTA_WS"};
-	std::vector<int> colors = {2,8,4};
+	std::vector<int> colors = {2,2,2};
+	std::vector<int> styles = {1,7,3};
 
 	SingleDataReader SDR1("./inputfiles/LTA_Jpsi_Sigma_R_1.dat", 
 						{"y", "Xs_Left", "R_StrSuppr_Left", "R_WeakSuppr_Left", "Ws_Left", "Sigmas_StrSuppr_Left", "Sigmas_WeakSuppr_Left", "Xs_Right", "R_StrSuppr_Right", "R_WeakSuppr_Right", "Ws_Right", "Sigmas_StrSuppr_Right", "Sigmas_WeakSuppr_Right"});
@@ -110,16 +112,16 @@ void drawLTA_Sigmas_R(TString Case, TLegend * leg)
 		// gr_SigmasVsW_StrSuppr->SetFillColor(colors[0]);
    		// gr_SigmasVsW_StrSuppr->SetFillStyle(3005);
    		gr_SigmasVsW_StrSuppr->SetLineColor(colors[0]);
-   		gr_SigmasVsW_StrSuppr->SetLineStyle(9);
-   		gr_SigmasVsW_StrSuppr->SetLineWidth(3);
+   		gr_SigmasVsW_StrSuppr->SetLineStyle(styles[0]);
+   		gr_SigmasVsW_StrSuppr->SetLineWidth(2);
    		gr_SigmasVsW_StrSuppr->Draw("lsame");
 		leg->AddEntry(gr_SigmasVsW_StrSuppr,	Name[0].Data(),		"l" );
 
 		// gr_SigmasVsW_WeakSuppr->SetFillColor(colors[1]);
    		// gr_SigmasVsW_WeakSuppr->SetFillStyle(3005);
    		gr_SigmasVsW_WeakSuppr->SetLineColor(colors[1]);
-   		gr_SigmasVsW_WeakSuppr->SetLineStyle(9);
-   		gr_SigmasVsW_WeakSuppr->SetLineWidth(3);
+   		gr_SigmasVsW_WeakSuppr->SetLineStyle(styles[1]);
+   		gr_SigmasVsW_WeakSuppr->SetLineWidth(2);
    		gr_SigmasVsW_WeakSuppr->Draw("lsame");
 		leg->AddEntry(gr_SigmasVsW_WeakSuppr,	Name[1].Data(),		"l" );
 	}
@@ -128,16 +130,16 @@ void drawLTA_Sigmas_R(TString Case, TLegend * leg)
 		// gr_RvsX_StrSuppr->SetFillColor(colors[0]);
    		// gr_RvsX_StrSuppr->SetFillStyle(3005);
 		gr_RvsX_StrSuppr->SetLineColor(colors[0]);
-		gr_RvsX_StrSuppr->SetLineStyle(9);
-		gr_RvsX_StrSuppr->SetLineWidth(3);
+		gr_RvsX_StrSuppr->SetLineStyle(styles[0]);
+		gr_RvsX_StrSuppr->SetLineWidth(2);
    		gr_RvsX_StrSuppr->Draw("lsame");
 		leg->AddEntry(gr_RvsX_StrSuppr,	Name[0].Data(),		"l" );
 
 		// gr_RvsX_WeakSuppr->SetFillColor(colors[1]);
    		// gr_RvsX_WeakSuppr->SetFillStyle(3005);
    		gr_RvsX_WeakSuppr->SetLineColor(colors[1]);
-   		gr_RvsX_WeakSuppr->SetLineStyle(9);
-   		gr_RvsX_WeakSuppr->SetLineWidth(3);
+   		gr_RvsX_WeakSuppr->SetLineStyle(styles[1]);
+   		gr_RvsX_WeakSuppr->SetLineWidth(2);
    		gr_RvsX_WeakSuppr->Draw("lsame");
 		leg->AddEntry(gr_RvsX_WeakSuppr,	Name[1].Data(),		"l" );
 	}
@@ -147,7 +149,8 @@ void drawLTA_Sigmas_R(TString Case, TLegend * leg)
 void drawGG(TString Case, TLegend * leg)
 {
 	std::vector<TString> Name = {"GG-hs"};
-	std::vector<int> colors = {2,8,37};
+	std::vector<int> colors = {6};
+	std::vector<int> styles = {5};
 
 	std::map<TString, std::vector<double>> Map ={
 		{"Xs",			{}},
@@ -185,9 +188,9 @@ void drawGG(TString Case, TLegend * leg)
 	{
 		// gr_SigmasVsW->SetFillColor(colors[0]);
    		// gr_SigmasVsW->SetFillStyle(3005);
-   		gr_SigmasVsW->SetLineColor(colors[2]);
-   		gr_SigmasVsW->SetLineStyle(5);
-   		gr_SigmasVsW->SetLineWidth(3);
+   		gr_SigmasVsW->SetLineColor(colors[0]);
+   		gr_SigmasVsW->SetLineStyle(styles[0]);
+   		gr_SigmasVsW->SetLineWidth(2);
    		gr_SigmasVsW->Draw("lsame");
 		leg->AddEntry(gr_SigmasVsW,	Name[0].Data(),		"l" );
 
@@ -196,9 +199,9 @@ void drawGG(TString Case, TLegend * leg)
 	{
 		// gr_RvsW->SetFillColor(colors[0]);
    		// gr_RvsW->SetFillStyle(3005);
-		gr_RvsW->SetLineColor(colors[2]);
-		gr_RvsW->SetLineStyle(5);
-		gr_RvsW->SetLineWidth(3);
+		gr_RvsW->SetLineColor(colors[0]);
+		gr_RvsW->SetLineStyle(styles[0]);
+		gr_RvsW->SetLineWidth(2);
    		gr_RvsW->Draw("lsame");
 		leg->AddEntry(gr_RvsW,	Name[0].Data(),		"l" );
 	}
@@ -209,7 +212,8 @@ void drawbBK(TString Case, TLegend * leg)
 {
 	std::vector<TString> Name	 = {"bBK_GG",	"bBK_A"};
 
-	std::vector<int> colors = {2,8,4};
+	std::vector<int> colors = {4, 4};
+	std::vector<int> styles = {1, 7};
 
 	MultiDataReader MDR1({"./inputfiles/bBK_GG_Jpsi_Sigma.txt", "./inputfiles/bBK_A_Jpsi_Sigma.txt"},
 						{"Xs", "Ws", "Sigmas"});
@@ -240,23 +244,23 @@ void drawbBK(TString Case, TLegend * leg)
 	
 		if (Case == "Xsec"){
 			gr_AnAn->SetLineColor(colors[i]);
-            gr_AnAn->SetLineStyle(5);
-            gr_AnAn->SetLineWidth(3);
-            gr_AnAn->Draw("same");
+            gr_AnAn->SetLineStyle(styles[i]);
+            gr_AnAn->SetLineWidth(2);
+            gr_AnAn->Draw("lsame");
 			leg->AddEntry(gr_AnAn,	Name[i].Data(),		"l" );
 		}
 		else if (Case == "Sigmas"){
 			gr_Simgas->SetLineColor(colors[i]);
-            gr_Simgas->SetLineStyle(5);
-            gr_Simgas->SetLineWidth(3);
-            gr_Simgas->Draw("same");
+            gr_Simgas->SetLineStyle(styles[i]);
+            gr_Simgas->SetLineWidth(2);
+            gr_Simgas->Draw("lsame");
 			leg->AddEntry(gr_Simgas,	Name[i].Data(),		"l" );
 		}
 		else if (Case == "R"){
 			gr_R->SetLineColor(colors[i]);
-            gr_R->SetLineStyle(5);
-            gr_R->SetLineWidth(3);
-            gr_R->Draw("same");
+            gr_R->SetLineStyle(styles[i]);
+            gr_R->SetLineWidth(2);
+            gr_R->Draw("lsame");
 			leg->AddEntry(gr_R,	Name[i].Data(),		"l" );
 		}
 	}
@@ -266,7 +270,8 @@ void drawbBK(TString Case, TLegend * leg)
 void drawCD(TString Case, TLegend * leg)
 {
 	std::vector<TString> Name	 = {"CD_BGK",	"CD_GBW",	"CD_IIM"};
-	std::vector<int> colors = {2,8,4};
+	std::vector<int> colors = {8, 8, 8};
+	std::vector<int> styles = {1, 7, 3};
 
 	MultiDataReader MDR1({"./inputfiles/CD_BGK_Jpsi_Sigma.dat", "./inputfiles/CD_GBW_Jpsi_Sigma.dat", "./inputfiles/CD_IIM_Jpsi_Sigma.dat"},
 						{"Ws", "Sigmas"});
@@ -301,23 +306,23 @@ void drawCD(TString Case, TLegend * leg)
 	
 		if (Case == "Xsec"){
 			gr_AnAn->SetLineColor(colors[i]);
-            gr_AnAn->SetLineStyle(6);
-            gr_AnAn->SetLineWidth(3);
-            gr_AnAn->Draw("same");
+            gr_AnAn->SetLineStyle(styles[i]);
+            gr_AnAn->SetLineWidth(2);
+            gr_AnAn->Draw("lsame");
 			leg->AddEntry(gr_AnAn,	Name[i].Data(),		"l" );
 		}
 		else if (Case == "Sigmas"){
 			gr_Simgas->SetLineColor(colors[i]);
-            gr_Simgas->SetLineStyle(6);
-            gr_Simgas->SetLineWidth(3);
-            gr_Simgas->Draw("same");
+            gr_Simgas->SetLineStyle(styles[i]);
+            gr_Simgas->SetLineWidth(2);
+            gr_Simgas->Draw("lsame");
 			leg->AddEntry(gr_Simgas,	Name[i].Data(),		"l" );
 		}
 		else if (Case == "R"){
 			gr_R->SetLineColor(colors[i]);
-            gr_R->SetLineStyle(6);
-            gr_R->SetLineWidth(3);
-            gr_R->Draw("same");
+            gr_R->SetLineStyle(styles[i]);
+            gr_R->SetLineWidth(2);
+            gr_R->Draw("lsame");
 			leg->AddEntry(gr_R,	Name[i].Data(),		"l" );
 		}
 	}
