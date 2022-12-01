@@ -234,7 +234,7 @@ void drawCMS_NeuConfig()
 	drawLatex(0.15, 0.85, "Pb+Pb #rightarrow Pb+Pb+J/#psi",      42,       0.053,      1);
     drawLatex(0.8, 0.8, "#bf{0n0n}",      42,       0.075,      1);
     drawLatex(0.58,0.94,"PbPb 1.52 nb^{-1} (5.02 TeV)",42, 0.05, 1);
-    drawLatex(0.15,0.94,"#bf{CMS}",42, 0.05, 1);
+    drawLatex(0.15,0.94,"#bf{CMS} #it{Preliminary}",42, 0.05, 1);
 
 	gae_XsecVsY_0n0n_CMS2022 ->SetMarkerStyle(20);
     gae_XsecVsY_0n0n_CMS2022 ->SetMarkerColor(2);
@@ -274,7 +274,7 @@ void drawCMS_NeuConfig()
     drawLatex(0.15, 0.85, "Pb+Pb #rightarrow Pb+Pb'+J/#psi",      42,       0.053,      1);
     drawLatex(0.8, 0.8, "#bf{0nXn}",      42,       0.075,      1);
     drawLatex(0.58,0.94,"PbPb 1.52 nb^{-1} (5.02 TeV)",42, 0.05, 1);
-    drawLatex(0.15,0.94,"#bf{CMS}",42, 0.05, 1);
+    drawLatex(0.15,0.94,"#bf{CMS} #it{Preliminary}",42, 0.05, 1);
 
 	gae_XsecVsY_0nXnSum_CMS2022 ->SetMarkerStyle(20);
     gae_XsecVsY_0nXnSum_CMS2022 ->SetMarkerColor(2);
@@ -314,7 +314,7 @@ void drawCMS_NeuConfig()
     drawLatex(0.15, 0.85, "Pb+Pb #rightarrow Pb'+Pb'+J/#psi",      42,       0.053,      1);
     drawLatex(0.8,  0.8,  "#bf{XnXn}",      42,       0.075,      1);
     drawLatex(0.58, 0.94, "PbPb 1.52 nb^{-1} (5.02 TeV)",42, 0.05, 1);
-    drawLatex(0.15, 0.94, "#bf{CMS}",42, 0.05, 1);
+    drawLatex(0.15, 0.94, "#bf{CMS} #it{Preliminary}",42, 0.05, 1);
 
 	gae_XsecVsY_XnXn_CMS2022 ->SetMarkerStyle(20);
     gae_XsecVsY_XnXn_CMS2022 ->SetMarkerColor(2);
@@ -355,7 +355,7 @@ void drawCMS_NeuConfig()
     drawLatex(0.75, 0.8,  "#bf{AnAn}",                             42,       0.075,      1);
     //drawLatex(0.75, 0.8, "#bf{Inclusive}",      42,       0.065,      1);
     drawLatex(0.58,0.94,  "PbPb 1.52 nb^{-1} (5.02 TeV)",          42,       0.050,      1);
-    drawLatex(0.15,0.94,  "#bf{CMS}",                              42,       0.050,      1);
+    drawLatex(0.15,0.94,  "#bf{CMS} #it{Preliminary}",                              42,       0.050,      1);
 
 	gae_XsecVsY_Alice2019 ->SetMarkerStyle(25);
 	gae_XsecVsY_Alice2019 ->SetMarkerColor(4);

@@ -578,6 +578,7 @@ void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4
 				//{
 				//	leg->AddEntry(frameMass->findObject( curveName[icv]), curveTitle[icv], "l");
 				//}
+				drawLatex(0.69, 0.945, "#bf{CMS} #it{Preliminary}",  42,        0.045,      mTextColor );
 				drawLatex(0.15, 0.86, "CMS Pb-Pb #sqrt{s_{NN}} = 5.02 TeV UPC ( "+nCasesName[i_ncase]+" )",  42,        0.055,      mTextColor );
 
 				//drawLatex(0.15, 0.86, nCasesName[i_ncase], mTextFont, 0.06, mTextColor);
@@ -1226,6 +1227,7 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 
 				framePt->GetYaxis()->SetRangeUser(1.5, hPt->GetMaximum()*5);
 				framePt->Draw() ;
+				drawLatex(0.69, 0.945, "#bf{CMS} #it{Preliminary}",  42,        0.045,     mTextColor );
 				drawLatex(0.15, 0.86, "CMS Pb-Pb #sqrt{s_{NN}} = 5.02 TeV UPC ( "+nCasesName[i_ncase]+" )",  42,        0.055,     mTextColor );
 				drawLatex(0.60, 0.76, yName,                                                                 mTextFont, 0.05,      mTextColor );
 				//drawLatex(0.18, 0.70+textDy2, Form("For p_{T} < %.2f GeV/c:",              mPtCut4Coh),                                   mTextFont, 0.035, mTextColor);

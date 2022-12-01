@@ -257,7 +257,7 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 
         drawLatex(0.15, 0.84, "Pb+Pb #rightarrow Pb'+Pb'+J/#psi",  42,        0.05,      1 );
         drawLatex(0.56, 0.94, "PbPb 1.52 nb^{-1} (5.02 TeV)",      42,        0.05,      1 );
-        drawLatex(0.15, 0.94, "#bf{CMS}",                          42,        0.05,      1 );
+        drawLatex(0.15, 0.94, "#bf{CMS} #it{Preliminary}",                          42,        0.05,      1 );
 	}
 	else
 	{
@@ -313,7 +313,7 @@ void plotSigmaVsW( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap
 
 		drawLatex(0.15, 0.80, "Pb+Pb #rightarrow Pb'+Pb'+J/#psi",  42,        0.05,      1 );
         drawLatex(0.56,0.94,"PbPb 1.52 nb^{-1} (5.02 TeV)",42, 0.05, 1);
-        drawLatex(0.15,0.94,"#bf{CMS}",42, 0.05, 1);
+        drawLatex(0.15,0.94,"#bf{CMS} #it{Preliminary}",42, 0.05, 1);
 	}
 	
 	ge_CGCnoFluct->SetMarkerColor(1);
@@ -544,7 +544,7 @@ void plotRvsX( std::map<TString, std::vector<double>> &ShadowRatio_ParamsMap, co
 	//drawLatex(0.48, 0.17, "Nuclear suppression factor", 42, 0.055, 1);
 
     drawLatex(0.56,0.94,"PbPb 1.52 nb^{-1} (5.02 TeV)",42, 0.05, 1);
-    drawLatex(0.15,0.94,"#bf{CMS}",42, 0.05, 1);
+    drawLatex(0.15,0.94,"#bf{CMS} #it{Preliminary}",42, 0.05, 1);
 
 	c->SaveAs("outplots/ShadowingRatiovsX.png");
 	c->SaveAs("outplots/ShadowingRatiovsX.pdf");
