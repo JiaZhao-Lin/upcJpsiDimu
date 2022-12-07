@@ -1,0 +1,154 @@
+/*
+Core Data structure used in the analysis
+Contain a map for convenient manipulation of the data 
+Use AnalysisDataObserver to notify each data change
+
+Example Usage:
+-----------------------------------------
+struct AnalysisData a("CMS");
+AnalysisDataObserver obs;
+a.Subscribe(&obs);
+a.LoadMap(map); // a.LoadHist(".root");
+a.ClearMap();
+-----------------------------------------
+
+Design pattern used: Observer
+
+Dec. 2022
+JiaZhao Lin
+*/
+
+
+#ifndef AnalysisData_H
+#define AnalysisData_H
+
+#include "Observer.h"
+#include "../common/LoadSignal.C"
+
+struct AnalysisData: Observable<AnalysisData>
+{
+	const TString data_name;
+	AnalysisData(TString name): data_name(name) {}
+
+	bool IsMapEmpty()                   { return !data_map.size(); }
+	bool IsMapKeyExist(TString param)   { return data_map.find(param) != data_map.end(); }
+	void CheckParam(TString param)      { if ( !IsMapKeyExist(param) ) throw std::runtime_error( Form( "AnalysisData --> Param %s does not Exist!", param.Data() ) ); }
+	void CheckMap()                     { if ( data_map.size() == 0 ) throw std::runtime_error("AnalysisData --> Empty Map!"); }
+	void ClearMap()                     { data_map.clear(); Notify(*this, "Cleared"); }
+	TString GetDataName() const         { return data_name;}
+	
+	void LoadMap(std::map< TString, std::vector<double> > map)
+	{
+		if (!IsMapEmpty()) ClearMap();
+		data_map = map;
+		Notify(*this, "Loaded");
+	}
+
+	void LoadHist(TString inFileDir)
+	{
+		if (!IsMapEmpty()) ClearMap();
+		LoadDSigmaDy cLoadDSigmaDy(inFileDir);
+		LoadMap( cLoadDSigmaDy.GetMap() );
+	}
+
+	void Init()
+	{
+		if (!IsMapEmpty()) ClearMap();
+		data_map = {
+			{"Rap",		    {}},    {"Rap_Err", 		{}},
+			{"Sigma",		{}},    {"Sigma_Err",		{}},
+			{"Sigma_IA",	{}},    {"Sigma_Err_IA",	{}},
+			{"R",			{}},    {"R_Err",			{}},
+			{"X",			{}},    {"X_Err",			{}},
+			{"W",			{}},    {"W_Err",			{}},
+
+			{"Dy",			    {}},	{"Dy_Err",   				{}},
+			{"DSigmaDy_AnAn",	{}},	{"DSigmaDy_Err_AnAn",		{}},
+			{"DSigmaDy_0n0n",	{}},	{"DSigmaDy_Err_0n0n",		{}},
+			{"DSigmaDy_0nXnSum",{}},	{"DSigmaDy_Err_0nXnSum",	{}},
+			{"DSigmaDy_XnXn",	{}},	{"DSigmaDy_Err_XnXn",		{}}
+		};
+	}
+
+	void Add(TString param, std::vector<double> values)
+	{
+		if ( IsMapKeyExist(param) ) throw std::runtime_error( Form( "AnalysisData --> Param %s Already Exist!", param.Data() ) );
+		data_map[param] = values;
+		Notify(*this, param);
+	}
+
+	void Update(TString param, std::vector<double> values)
+	{
+		CheckParam(param);
+		data_map.at(param) = values;
+		Notify(*this, param);
+	}
+
+	void Modify(TString param, int i, double value)
+	{
+		CheckParam(param);
+		data_map[param][i] = value;
+		Notify(*this, param);
+	}
+
+	double Get(TString param, int i)
+	{
+		CheckParam(param);
+		return data_map.at(param)[i];
+	}
+
+	std::vector<double> Get(TString param)
+	{
+		CheckParam(param);
+		return data_map.at(param);
+	}
+
+	std::map< TString, std::vector<double> > GetMap()
+	{
+		CheckMap();
+		return data_map;
+	}
+
+private:
+	std::map< TString, std::vector<double> > data_map;
+};
+
+
+struct AnalysisDataObserver: Observer<AnalysisData>
+{
+	void PrintKeyValues(TString key, std::vector<double> values)
+	{
+		cout << std::left << std::setw(25) << key;
+		for (int i = 0; i < values.size(); i++) { cout << std::setw(15) << values[i]; }
+		cout << endl;
+	}
+
+	void FieldChanged(AnalysisData& source, TString name)
+	{
+		if (name == "Loaded")
+		{
+			auto temp_map = source.GetMap();
+			cout << Form("AnalysisDataObserver------> %s Map has been updated. Printing the Map! <------", source.GetDataName().Data()) << endl;
+			for (auto it = temp_map.begin(); it != temp_map.end(); it++)
+			{
+				auto key    = it->first;
+				auto values  = it->second;
+
+				PrintKeyValues(key, values);
+			}
+			cout << "AnalysisDataObserver----------> Print Ended! <----------" << endl << endl;
+		}
+		else if (name == "Cleared")
+		{
+			cout << Form("AnalysisDataObserver------> %s Map Cleared <------", source.GetDataName().Data()) << endl;
+			cout << "------------------------------------------" << endl << endl;
+		}
+		else
+		{
+			cout << Form("AnalysisDataObserver------> %s Param updated <------", source.GetDataName().Data()) << endl;
+			PrintKeyValues(name, source.Get(name));
+		}
+	}
+};
+
+#endif

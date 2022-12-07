@@ -1,3 +1,15 @@
+/*
+Classes to read histogram from root file
+Contains pointers for accessing the histograms
+
+Dec. 2022
+JiaZhao Lin
+*/
+
+
+#ifndef LOADSIGNAL_C
+#define LOADSIGNAL_C
+
 #include "LoadSignal.h"
 #include "constants.h"
 
@@ -126,54 +138,56 @@ struct LoadAcceptance : public LoadSignal
 };
 
 
-struct LoadJpsiXsec : public LoadSignal
+struct LoadDSigmaDy : public LoadSignal
 {
 	//Priviate but not so priviate members-----------------------------------------------
-	TH1D* V_JpsiXsec[6];
-	std::map<TString, std::vector<double>> Map_Xsec;
+	TH1D* V_JpsiDSigmaDy[6];
+	std::map<TString, std::vector<double>> Map;
 	//-----------------------------------------------------------------------------------
 
 	//Constructor------------------------------------------------------------------------
-	LoadJpsiXsec(TString infileDir) : LoadSignal{infileDir}	{	Read();	}
-	virtual ~LoadJpsiXsec() = default;
+	LoadDSigmaDy(TString infileDir) : LoadSignal{infileDir}	{	Read();	}
+	virtual ~LoadDSigmaDy() = default;
 	//-----------------------------------------------------------------------------------
 
 	//Virtual Functions------------------------------------------------------------------
 	virtual Bool_t Read() override
 	{	
-		cout<<"------>START Reading JpsiXsec: "<<infile->GetName()<<endl;
+		cout<<"------>START Loading DSigmaDy: "<<infile->GetName()<<endl;
 
-		V_JpsiXsec[0] = (TH1D*) infile->Get("hAnAn") ;
-		V_JpsiXsec[1] = (TH1D*) infile->Get("hOnOn") ;
-		V_JpsiXsec[2] = (TH1D*) infile->Get("hOnXn") ;
-		V_JpsiXsec[3] = (TH1D*) infile->Get("hXnOn") ;
-		V_JpsiXsec[4] = (TH1D*) infile->Get("hOnXnSum") ;
-		V_JpsiXsec[5] = (TH1D*) infile->Get("hXnXn") ;
+		V_JpsiDSigmaDy[0] = (TH1D*) infile->Get("hAnAn") ;
+		V_JpsiDSigmaDy[1] = (TH1D*) infile->Get("hOnOn") ;
+		V_JpsiDSigmaDy[2] = (TH1D*) infile->Get("hOnXn") ;
+		V_JpsiDSigmaDy[3] = (TH1D*) infile->Get("hXnOn") ;
+		V_JpsiDSigmaDy[4] = (TH1D*) infile->Get("hOnXnSum") ;
+		V_JpsiDSigmaDy[5] = (TH1D*) infile->Get("hXnXn") ;
 
-		std::vector<double> Xsec_0n0n, Xsec_0nXnSum, Xsec_XnXn, Xsec_AnAn, Rap;
-		std::vector<double> XsecErr_0n0n, XsecErr_0nXnSum, XsecErr_XnXn, XsecErr_AnAn, RapErr;
+		std::vector<double> DSigmaDy_0n0n, DSigmaDy_0nXnSum, DSigmaDy_XnXn, DSigmaDy_AnAn, Rap;
+		std::vector<double> DSigmaDy_Err_0n0n, DSigmaDy_Err_0nXnSum, DSigmaDy_Err_XnXn, DSigmaDy_Err_AnAn, RapErr;
 		for (int iy = nDiffRapBins/2 + 2 ; iy < nDiffRapBins + 2 ; ++iy)
 		{
-			Rap.push_back(	V_JpsiXsec[5]->GetBinCenter(iy)	); 				RapErr.push_back(		V_JpsiXsec[5]->GetBinWidth(iy)/2	);
-			Xsec_AnAn.push_back(	V_JpsiXsec[0]->GetBinContent(iy)	);	XsecErr_AnAn.push_back(		V_JpsiXsec[0]->GetBinError(iy)	);
-			Xsec_0n0n.push_back(	V_JpsiXsec[1]->GetBinContent(iy)	);	XsecErr_0n0n.push_back(		V_JpsiXsec[1]->GetBinError(iy)	);
-			Xsec_0nXnSum.push_back(	V_JpsiXsec[4]->GetBinContent(iy)	);	XsecErr_0nXnSum.push_back(	V_JpsiXsec[4]->GetBinError(iy)	);
-			Xsec_XnXn.push_back(	V_JpsiXsec[5]->GetBinContent(iy)	);	XsecErr_XnXn.push_back(		V_JpsiXsec[5]->GetBinError(iy)	);
+			Rap.push_back(	V_JpsiDSigmaDy[5]->GetBinCenter(iy)	); 				RapErr.push_back(		V_JpsiDSigmaDy[5]->GetBinWidth(iy)/2	);
+			DSigmaDy_AnAn.push_back(	V_JpsiDSigmaDy[0]->GetBinContent(iy)	);	DSigmaDy_Err_AnAn.push_back(		V_JpsiDSigmaDy[0]->GetBinError(iy)	);
+			DSigmaDy_0n0n.push_back(	V_JpsiDSigmaDy[1]->GetBinContent(iy)	);	DSigmaDy_Err_0n0n.push_back(		V_JpsiDSigmaDy[1]->GetBinError(iy)	);
+			DSigmaDy_0nXnSum.push_back(	V_JpsiDSigmaDy[4]->GetBinContent(iy)	);	DSigmaDy_Err_0nXnSum.push_back(		V_JpsiDSigmaDy[4]->GetBinError(iy)	);
+			DSigmaDy_XnXn.push_back(	V_JpsiDSigmaDy[5]->GetBinContent(iy)	);	DSigmaDy_Err_XnXn.push_back(		V_JpsiDSigmaDy[5]->GetBinError(iy)	);
 		}
-		Map_Xsec["Rap"] = Rap; 						Map_Xsec["RapErr"] = RapErr;
-		Map_Xsec["Xsec_0n0n"] = Xsec_0n0n; 			Map_Xsec["XsecErr_0n0n"] = XsecErr_0n0n;
-		Map_Xsec["Xsec_0nXnSum"] = Xsec_0nXnSum; 	Map_Xsec["XsecErr_0nXnSum"] = XsecErr_0nXnSum;
-		Map_Xsec["Xsec_XnXn"] = Xsec_XnXn; 			Map_Xsec["XsecErr_XnXn"] = XsecErr_XnXn;
-		Map_Xsec["Xsec_AnAn"] = Xsec_AnAn; 			Map_Xsec["XsecErr_AnAn"] = XsecErr_AnAn;
+		Map["Dy"] = Rap; 								Map["Dy_Err"] = RapErr;
+		Map["DSigmaDy_0n0n"] = DSigmaDy_0n0n; 			Map["DSigmaDy_Err_0n0n"] = DSigmaDy_Err_0n0n;
+		Map["DSigmaDy_0nXnSum"] = DSigmaDy_0nXnSum; 	Map["DSigmaDy_Err_0nXnSum"] = DSigmaDy_Err_0nXnSum;
+		Map["DSigmaDy_XnXn"] = DSigmaDy_XnXn; 			Map["DSigmaDy_Err_XnXn"] = DSigmaDy_Err_XnXn;
+		Map["DSigmaDy_AnAn"] = DSigmaDy_AnAn; 			Map["DSigmaDy_Err_AnAn"] = DSigmaDy_Err_AnAn;
 
-		cout<<"------>DONE  Reading JpsiXsec: "<<infile->GetName()<<endl;
+		cout<<"------>DONE  Reading DSigmaDy: "<<infile->GetName()<<endl;
 		return kTRUE;
 	}
 	//-----------------------------------------------------------------------------------
 
 	//Free Functions---------------------------------------------------------------------
-	TH1D* GetJpsiXsec(const int i)	{if(!V_JpsiXsec[i])	std::runtime_error("LoadJpsiXsec: Empty!!!"); return V_JpsiXsec[i];}
-	std::map<TString, std::vector<double>> GetMap()	const {if(!Map_Xsec.size())	std::runtime_error("LoadJpsiXsec: Empty!!!"); 	return Map_Xsec;}
-	std::vector<double> GetMapElement(const TString n)	{if(!Map_Xsec.size())	std::runtime_error("LoadJpsiXsec: Empty!!!");	return Map_Xsec[n];}
-	double GetMapElementVal(const TString n, const int i)	{if(!Map_Xsec.size())	std::runtime_error("LoadJpsiXsec: Empty!!!");	return Map_Xsec[n][i];}
+	TH1D* GetHist(const int i)	{if(!V_JpsiDSigmaDy[i])	std::runtime_error("LoadDSigmaDy: Empty!!!"); return V_JpsiDSigmaDy[i];}
+	std::map<TString, std::vector<double>> GetMap()	const {if(!Map.size())	std::runtime_error("LoadDSigmaDy: Empty!!!"); 	return Map;}
+	std::vector<double> GetMapElement(const TString n)	{if(!Map.size())	std::runtime_error("LoadDSigmaDy: Empty!!!");	return Map[n];}
+	double GetMapElementVal(const TString n, const int i)	{if(!Map.size())	std::runtime_error("LoadDSigmaDy: Empty!!!");	return Map[n][i];}
 };
+
+#endif
