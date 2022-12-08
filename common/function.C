@@ -1,3 +1,5 @@
+#ifndef function_C
+#define function_C
 //TH1D *rebHisto(TH1D *oldHisto, TString name, int nBinsX, double *BinX, TString NorX = "X");
 //TH2D *rebHisto(TH2D *oldHisto, TString name, int nBinsX, double *BinX, int nBinsY, double *BinY, TString RebXY="XY", TString NorXY="Y");
 //TH1D *calGeoMean(TH1D *hNum1, TH1D *hNum2, TString name);
@@ -1010,3 +1012,5 @@ void pdfAction(TCanvas *c, TPDF *ps, Bool_t isClosePDF = kFALSE)
 //    ps->NewPage();                                                                 
 //    ps->Off();                                                                     
 //};     
+
+#endif

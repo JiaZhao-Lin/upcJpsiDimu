@@ -19,7 +19,7 @@ struct Fit2DAnalyzer: PhotonFluxAnalyzer
         std::vector<std::vector<double>> X_RapBin, Y_RapBin, Z_RapBin, Z_Err_RapBin;
         std::vector< std::pair<double, double> > fluxCoefficients_0n0n, fluxCoefficients_0nXnSum, fluxCoefficients_XnXn;
 
-        int n_data = data.Get("Rap").size();
+        int n_data = data.GetSize("Rap");
         for (int i = 0; i < n_data ; i+=2)
         {
             fluxCoefficients_0n0n       .push_back( {data.Get("dNdy_0n0n"       ,i )    ,data.Get("dNdy_0n0n"       ,i+1 )} );
@@ -34,7 +34,7 @@ struct Fit2DAnalyzer: PhotonFluxAnalyzer
             X.push_back(fluxCoefficients_0n0n[i].first  *fluxScaleFactor);   X.push_back(fluxCoefficients_0nXnSum[i].first   *fluxScaleFactor);   X.push_back(fluxCoefficients_XnXn[i].first  *fluxScaleFactor);
             Y.push_back(fluxCoefficients_0n0n[i].second *fluxScaleFactor);   Y.push_back(fluxCoefficients_0nXnSum[i].second  *fluxScaleFactor);   Y.push_back(fluxCoefficients_XnXn[i].second *fluxScaleFactor);
             Z.push_back(data.Get("DSigmaDy_0n0n", i));                  Z.push_back(data.Get("DSigmaDy_0nXnSum", i));                   Z.push_back(data.Get("DSigmaDy_XnXn", i));
-            Z_Err.push_back(data.Get("DSigmaDy_Err_0n0n", i));          Z_Err.push_back(data.Get("DSigmaDy_Err_0nXnSum", i));           Z_Err.push_back(data.Get("DSigmaDy_Err_XnXn", i));
+            Z_Err.push_back(data.Get("DSigmaDy_0n0n_Err", i));          Z_Err.push_back(data.Get("DSigmaDy_0nXnSum_Err", i));           Z_Err.push_back(data.Get("DSigmaDy_XnXn_Err", i));
             X_RapBin.push_back(X);
             Y_RapBin.push_back(Y);
             Z_RapBin.push_back(Z);
@@ -106,9 +106,9 @@ struct Fit2DAnalyzer: PhotonFluxAnalyzer
 //     AnalysisDataObserver obs;
 //     data.Subscribe(&obs);
 //     data.Add("Dy",                     {-1.7000, -1.8000, -1.9000});
-//     data.Add("DSigmaDy_0n0n",           {2.6450, 2.5837, 2.5214});   data.Add("DSigmaDy_Err_0n0n",           {0.0001,0.0001,0.0001});
-//     data.Add("DSigmaDy_0nXnSum",           {.7501,.7296,.7069});   data.Add("DSigmaDy_Err_0nXnSum",           {0.0001,0.0001,0.0001});
-//     data.Add("DSigmaDy_XnXn",           {.2722,.2682,.2634});      data.Add("DSigmaDy_Err_XnXn",           {0.0001,0.0001,0.0001});
+//     data.Add("DSigmaDy_0n0n",           {2.6450, 2.5837, 2.5214});   data.Add("DSigmaDy_0n0n_Err",           {0.0001,0.0001,0.0001});
+//     data.Add("DSigmaDy_0nXnSum",           {.7501,.7296,.7069});   data.Add("DSigmaDy_0nXnSum_Err",           {0.0001,0.0001,0.0001});
+//     data.Add("DSigmaDy_XnXn",           {.2722,.2682,.2634});      data.Add("DSigmaDy_XnXn_Err",           {0.0001,0.0001,0.0001});
 // 	struct Fit2DAnalyzer ana(data, "../simulation/flux/", "_SigNN68p3R6p67a0p56");
 //     ana.Handle();
 //     //---------------------------------Manual Test Map------------------------------------------

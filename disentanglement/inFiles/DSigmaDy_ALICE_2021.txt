@@ -1,0 +1,2 @@
+Dy			DSigmaDy_AnAn		DSigmaDy_AnAn_Err		DSigmaDy_AnAn_SysErr
+0			4.07				0.11					0.23

@@ -125,7 +125,7 @@ public:
         LoadPhotonFlux();
 
         //Calculate photon energy from the rap
-        int n_data = data.Get("Rap").size();
+        int n_data = data.GetSize("Rap");
         std::vector<double> w_temp;
         for (int j = 0; j < n_data; ++j)
         {

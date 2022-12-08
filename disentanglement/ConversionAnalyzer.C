@@ -11,7 +11,7 @@ struct ConversionAnalyzer : Analyzer
     void AddRap()
     {
         std::vector<double> temp;
-        int n_Dy = data.Get("Dy").size();
+        int n_Dy = data.GetSize("Dy");
         for (int i = 0; i < n_Dy; i++)
         {
             temp.push_back(data.Get("Dy", i)); temp.push_back( -data.Get("Dy", i) );

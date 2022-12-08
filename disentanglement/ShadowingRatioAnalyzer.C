@@ -10,7 +10,7 @@ struct ShadowingRatioAnalyzer : ImpulseApproxAnalyzer
 
     void Calculate_R()
     {
-        int n_data = data.Get("Rap").size();
+        int n_data = data.GetSize("Rap");
         std::vector<double> temp;
         for (int i = 0; i < n_data; ++i)
         {
@@ -21,7 +21,7 @@ struct ShadowingRatioAnalyzer : ImpulseApproxAnalyzer
 
     void Calculate_R_Err()
     {
-        int n_data = data.Get("Rap").size();
+        int n_data = data.GetSize("Rap");
         std::vector<double> temp;
         for (int i = 0; i < n_data; ++i)
         {

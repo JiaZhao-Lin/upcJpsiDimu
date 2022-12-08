@@ -30,12 +30,12 @@ struct AnalysisData: Observable<AnalysisData>
 	const TString data_name;
 	AnalysisData(TString name): data_name(name) {}
 
-	bool IsMapEmpty()                   { return !data_map.size(); }
-	bool IsMapKeyExist(TString param)   { return data_map.find(param) != data_map.end(); }
-	void CheckParam(TString param)      { if ( !IsMapKeyExist(param) ) throw std::runtime_error( Form( "AnalysisData --> Param %s does not Exist!", param.Data() ) ); }
-	void CheckMap()                     { if ( data_map.size() == 0 ) throw std::runtime_error("AnalysisData --> Empty Map!"); }
-	void ClearMap()                     { data_map.clear(); Notify(*this, "Cleared"); }
-	TString GetDataName() const         { return data_name;}
+	bool IsMapEmpty()					const	{ return !data_map.size(); }
+	bool IsMapKeyExist(TString param)	const	{ return data_map.find(param) != data_map.end(); }
+	void CheckParam(TString param)		const	{ if ( !IsMapKeyExist(param) ) throw std::runtime_error( Form( "AnalysisData --> Param %s does not Exist!", param.Data() ) ); }
+	void CheckMap()						const	{ if ( data_map.size() == 0 ) throw std::runtime_error("AnalysisData --> Empty Map!"); }
+	void ClearMap()								{ data_map.clear(); Notify(*this, "Cleared"); }
+	TString GetDataName()				const	{ return data_name;}
 	
 	void LoadMap(std::map< TString, std::vector<double> > map)
 	{
@@ -57,16 +57,16 @@ struct AnalysisData: Observable<AnalysisData>
 		data_map = {
 			{"Rap",		    {}},    {"Rap_Err", 		{}},
 			{"Sigma",		{}},    {"Sigma_Err",		{}},
-			{"Sigma_IA",	{}},    {"Sigma_Err_IA",	{}},
+			{"Sigma_IA",	{}},    {"Sigma_IA_Err",	{}},
 			{"R",			{}},    {"R_Err",			{}},
 			{"X",			{}},    {"X_Err",			{}},
 			{"W",			{}},    {"W_Err",			{}},
 
 			{"Dy",			    {}},	{"Dy_Err",   				{}},
-			{"DSigmaDy_AnAn",	{}},	{"DSigmaDy_Err_AnAn",		{}},
-			{"DSigmaDy_0n0n",	{}},	{"DSigmaDy_Err_0n0n",		{}},
-			{"DSigmaDy_0nXnSum",{}},	{"DSigmaDy_Err_0nXnSum",	{}},
-			{"DSigmaDy_XnXn",	{}},	{"DSigmaDy_Err_XnXn",		{}}
+			{"DSigmaDy_AnAn",	{}},	{"DSigmaDy_AnAn_Err",		{}},
+			{"DSigmaDy_0n0n",	{}},	{"DSigmaDy_0n0n_Err",		{}},
+			{"DSigmaDy_0nXnSum",{}},	{"DSigmaDy_0nXnSum_Err",	{}},
+			{"DSigmaDy_XnXn",	{}},	{"DSigmaDy_XnXn_Err",		{}}
 		};
 	}
 
@@ -91,22 +91,33 @@ struct AnalysisData: Observable<AnalysisData>
 		Notify(*this, param);
 	}
 
-	double Get(TString param, int i)
+	double Get(TString param, int i)	const
 	{
 		CheckParam(param);
 		return data_map.at(param)[i];
 	}
 
-	std::vector<double> Get(TString param)
+	std::vector<double> Get(TString param)	const
 	{
 		CheckParam(param);
 		return data_map.at(param);
 	}
 
-	std::map< TString, std::vector<double> > GetMap()
+	int GetSize(TString param)	const
+	{
+		CheckParam(param);
+		return data_map.at(param).size();
+	}
+
+	std::map< TString, std::vector<double> > GetMap()	const
 	{
 		CheckMap();
 		return data_map;
+	}
+
+	void Print()	const
+	{
+		Notify(*this, "Print");
 	}
 
 private:
@@ -116,19 +127,22 @@ private:
 
 struct AnalysisDataObserver: Observer<AnalysisData>
 {
-	void PrintKeyValues(TString key, std::vector<double> values)
+	void PrintKeyValues(TString key, std::vector<double> values) const
 	{
 		cout << std::left << std::setw(25) << key;
 		for (int i = 0; i < values.size(); i++) { cout << std::setw(15) << values[i]; }
 		cout << endl;
 	}
 
-	void FieldChanged(AnalysisData& source, TString name)
+	void FieldChanged(const AnalysisData& source, TString name) const
 	{
-		if (name == "Loaded")
+		if (name == "Loaded" || "Print")
 		{
 			auto temp_map = source.GetMap();
-			cout << Form("AnalysisDataObserver------> %s Map has been updated. Printing the Map! <------", source.GetDataName().Data()) << endl;
+			
+			if (name == "Loaded")	cout << Form("AnalysisDataObserver------> %s Map has been updated. Printing the Map! <------",	source.GetDataName().Data()) << endl;
+			else					cout << Form("AnalysisDataObserver------> Printing the Map: %s <------", 						source.GetDataName().Data()) << endl;
+
 			for (auto it = temp_map.begin(); it != temp_map.end(); it++)
 			{
 				auto key    = it->first;

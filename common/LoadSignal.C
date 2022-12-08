@@ -163,20 +163,20 @@ struct LoadDSigmaDy : public LoadSignal
 		V_JpsiDSigmaDy[5] = (TH1D*) infile->Get("hXnXn") ;
 
 		std::vector<double> DSigmaDy_0n0n, DSigmaDy_0nXnSum, DSigmaDy_XnXn, DSigmaDy_AnAn, Rap;
-		std::vector<double> DSigmaDy_Err_0n0n, DSigmaDy_Err_0nXnSum, DSigmaDy_Err_XnXn, DSigmaDy_Err_AnAn, RapErr;
+		std::vector<double> DSigmaDy_0n0n_Err, DSigmaDy_0nXnSum_Err, DSigmaDy_XnXn_Err, DSigmaDy_AnAn_Err, Dy_Err;
 		for (int iy = nDiffRapBins/2 + 2 ; iy < nDiffRapBins + 2 ; ++iy)
 		{
-			Rap.push_back(	V_JpsiDSigmaDy[5]->GetBinCenter(iy)	); 				RapErr.push_back(		V_JpsiDSigmaDy[5]->GetBinWidth(iy)/2	);
-			DSigmaDy_AnAn.push_back(	V_JpsiDSigmaDy[0]->GetBinContent(iy)	);	DSigmaDy_Err_AnAn.push_back(		V_JpsiDSigmaDy[0]->GetBinError(iy)	);
-			DSigmaDy_0n0n.push_back(	V_JpsiDSigmaDy[1]->GetBinContent(iy)	);	DSigmaDy_Err_0n0n.push_back(		V_JpsiDSigmaDy[1]->GetBinError(iy)	);
-			DSigmaDy_0nXnSum.push_back(	V_JpsiDSigmaDy[4]->GetBinContent(iy)	);	DSigmaDy_Err_0nXnSum.push_back(		V_JpsiDSigmaDy[4]->GetBinError(iy)	);
-			DSigmaDy_XnXn.push_back(	V_JpsiDSigmaDy[5]->GetBinContent(iy)	);	DSigmaDy_Err_XnXn.push_back(		V_JpsiDSigmaDy[5]->GetBinError(iy)	);
+			Rap.push_back(	V_JpsiDSigmaDy[5]->GetBinCenter(iy)	); 				Dy_Err.push_back(		V_JpsiDSigmaDy[5]->GetBinWidth(iy)/2	);
+			DSigmaDy_AnAn.push_back(	V_JpsiDSigmaDy[0]->GetBinContent(iy)	);	DSigmaDy_AnAn_Err.push_back(		V_JpsiDSigmaDy[0]->GetBinError(iy)	);
+			DSigmaDy_0n0n.push_back(	V_JpsiDSigmaDy[1]->GetBinContent(iy)	);	DSigmaDy_0n0n_Err.push_back(		V_JpsiDSigmaDy[1]->GetBinError(iy)	);
+			DSigmaDy_0nXnSum.push_back(	V_JpsiDSigmaDy[4]->GetBinContent(iy)	);	DSigmaDy_0nXnSum_Err.push_back(		V_JpsiDSigmaDy[4]->GetBinError(iy)	);
+			DSigmaDy_XnXn.push_back(	V_JpsiDSigmaDy[5]->GetBinContent(iy)	);	DSigmaDy_XnXn_Err.push_back(		V_JpsiDSigmaDy[5]->GetBinError(iy)	);
 		}
-		Map["Dy"] = Rap; 								Map["Dy_Err"] = RapErr;
-		Map["DSigmaDy_0n0n"] = DSigmaDy_0n0n; 			Map["DSigmaDy_Err_0n0n"] = DSigmaDy_Err_0n0n;
-		Map["DSigmaDy_0nXnSum"] = DSigmaDy_0nXnSum; 	Map["DSigmaDy_Err_0nXnSum"] = DSigmaDy_Err_0nXnSum;
-		Map["DSigmaDy_XnXn"] = DSigmaDy_XnXn; 			Map["DSigmaDy_Err_XnXn"] = DSigmaDy_Err_XnXn;
-		Map["DSigmaDy_AnAn"] = DSigmaDy_AnAn; 			Map["DSigmaDy_Err_AnAn"] = DSigmaDy_Err_AnAn;
+		Map["Dy"] = Rap; 								Map["Dy_Err"] = Dy_Err;
+		Map["DSigmaDy_0n0n"] = DSigmaDy_0n0n; 			Map["DSigmaDy_0n0n_Err"] = DSigmaDy_0n0n_Err;
+		Map["DSigmaDy_0nXnSum"] = DSigmaDy_0nXnSum; 	Map["DSigmaDy_0nXnSum_Err"] = DSigmaDy_0nXnSum_Err;
+		Map["DSigmaDy_XnXn"] = DSigmaDy_XnXn; 			Map["DSigmaDy_XnXn_Err"] = DSigmaDy_XnXn_Err;
+		Map["DSigmaDy_AnAn"] = DSigmaDy_AnAn; 			Map["DSigmaDy_AnAn_Err"] = DSigmaDy_AnAn_Err;
 
 		cout<<"------>DONE  Reading DSigmaDy: "<<infile->GetName()<<endl;
 		return kTRUE;

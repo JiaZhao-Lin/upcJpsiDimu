@@ -16,23 +16,23 @@ JiaZhao Lin
 class Analyzer
 {
 protected:
-    Analyzer* next{nullptr};
-    AnalysisData& data;
+	Analyzer*		next{nullptr};
+	AnalysisData& 	data;
 
 public:
-    Analyzer(AnalysisData& data_) : data(data_) {};
-    virtual ~Analyzer() = default;
-    
-    void Add(Analyzer* ana)
-    {
-        if (next)   {   next->Add(ana);     }
-        else        {   next = ana;         }
-    }
-    virtual void Handle()
-    {
-        if (next)   {   next->Handle();     }
-        else        {   cout << endl << "------> Analyzer END << ------" << endl << endl;}
-    }
+	Analyzer(AnalysisData& data_)	:	data(data_) {};
+	virtual ~Analyzer() = default;
+	
+	void Add(Analyzer* ana)
+	{
+		if	(next)	{	next->Add(ana);     }
+		else		{	next = ana;         }
+	}
+	virtual void Handle()
+	{
+		if	(next)	{	next->Handle();		}
+		else		{	cout << endl << "------> Analyzer END << ------" << endl << endl;}
+	}
 };
 
 #endif

@@ -25,6 +25,7 @@ JiaZhao Lin
 #include "ConversionAnalyzer.C"
 #include "Fit2DAnalyzer.C"
 #include "ShadowingRatioAnalyzer.C"
+#include "ResultPlotProcessor.C"
 
 void Disentanglement()
 {
@@ -45,4 +46,12 @@ void Disentanglement()
 	AnaRoot.Add(&cShadowingRatioAnalyzer);
 
 	AnaRoot.Handle();
+
+	Data_CMS.Print();
+
+	// struct ResultPlotProcessor p;
+	// p.SetFigureFrame(FigureFrameStrategyList::Sigma_Log);
+	// p.AddPlot		(Data_CMS,	PlotStrategyList::Sigma_CMS);
+	// p.Process		();
+	// p.SaveAs		("./outFigures/test.pdf");
 }

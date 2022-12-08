@@ -23,7 +23,10 @@ enum class PlotStrategyList
 
 struct ResultPlotStrategy
 {
-	const AnalysisData& data;
+	const AnalysisData& 					data;
+	std::unique_ptr< TGraphErrors > 		ge;
+	std::unique_ptr< TGraphAsymmErrors >	gae;
+
 	ResultPlotStrategy(const AnalysisData& data_) : data{data_} {};
 
 	virtual void Apply() = 0;
@@ -32,22 +35,22 @@ struct ResultPlotStrategy
 
 struct Sigma_CMS_PlotStrategy : ResultPlotStrategy
 {
-	TGraphErrors* ge
-	TGraphAsymmErrors*gae 
+	std::vector<double> X_AXIS_ERR		= std::vector<double>(data.GetSize("W"), 3.8);
+
 	Sigma_CMS_PlotStrategy(const AnalysisData& data_) :     ResultPlotStrategy{data_} {}
 
 	void Apply()
 	{
-		ge 		= new TGraphErrors(ShadowRatio_ParamsMap.at("Ws").size(),	&ShadowRatio_ParamsMap.at("Ws")[0],	&ShadowRatio_ParamsMap.at("Sigmas")[0],	0,	&ShadowRatio_ParamsMap.at("Sigmas_Err")[0]	);
-		gae 	= new TGraphAsymmErrors(ShadowRatio_ParamsMap.at("Ws").size(),
-												&ShadowRatio_ParamsMap.at("Ws")[0],        &ShadowRatio_ParamsMap.at("Sigmas")[0],
-												&X_AXIS_ERR[0],  &X_AXIS_ERR[0],
-												&Sigmas_TotalSysErr[0], &Sigmas_TotalSysErr[0]);
+		ge 		= std::make_unique< TGraphErrors >		(data.GetSize("W"),	data.Get("W").data(),	data.Get("Sigma").data(),	nullptr,	data.Get("Sigma_Err").data()	);
+		// gae 	= std::make_unique< TGraphAsymmErrors >		(data.GetSize("W"),
+		// 										data.Get("W").data(),        data.Get("Sigma").data(),
+		// 										X_AXIS_ERR.data(),  X_AXIS_ERR.data(),
+		// 										Sigmas_TotalSysErr.data(), Sigmas_TotalSysErr.data());
 
-		gae ->SetMarkerStyle(24);
-		gae ->SetFillColorAlpha(16, 0.7);
-		gae ->SetFillStyle(1001);
-		gae ->Draw("2same");
+		// gae ->SetMarkerStyle(24);
+		// gae ->SetFillColorAlpha(16, 0.7);
+		// gae ->SetFillStyle(1001);
+		// gae ->Draw("2same");
 		ge  ->SetMarkerStyle(20);
 		ge  ->SetMarkerSize(1.6);
 		ge  ->SetMarkerColor(2);
@@ -59,20 +62,79 @@ struct Sigma_CMS_PlotStrategy : ResultPlotStrategy
 
 struct Sigma_ALICE_2019_Strategy : ResultPlotStrategy
 {
-	Sigma_ALICE_2019_Strategy(const AnalysisData& data_) : ResultPlotStrategy{data_} {}
+	std::vector<double> X_AXIS_ERR		= std::vector<double>(data.GetSize("W"), 3.8);
 
+	Sigma_ALICE_2019_Strategy(const AnalysisData& data_)	: ResultPlotStrategy{data_} {}
+	
 	void Apply()
 	{
+		ge		= std::make_unique< TGraphErrors >		(data.GetSize("W"),	data.Get("W").data(),	data.Get("Sigma").data(),	nullptr,	data.Get("Sigma_Err").data()	);
+		// gae 	= std::make_unique< TGraphAsymmErrors >	(data.GetSize("W"),	data.Get("W").data(),	data.Get("Sigma").data(),
+		// 										X_AXIS_ERR.data(),	X_AXIS_ERR.data(),
+		// 										data_SysErrLow.data(),	data_SysErrHig.data());
+
+		gae	->SetMarkerStyle(24);
+		gae	->SetFillColorAlpha(16, 0.7);
+		gae	->SetFillStyle(1001);
+		gae	->Draw("2same");
+		ge	->SetMarkerStyle(25);
+		ge	->SetMarkerColor(4);
+		ge	->SetMarkerSize(1.5);
+		ge	->SetLineColor(4);
+		ge	->SetLineWidth(2);
+		ge	->Draw("pezsame");
+		
+	}
+};
+
+struct Sigma_ALICE_2021_Strategy : ResultPlotStrategy
+{
+	std::vector<double> X_AXIS_ERR		= std::vector<double>(data.GetSize("W"), 3.8);
+
+	Sigma_ALICE_2021_Strategy(const AnalysisData& data_)	: ResultPlotStrategy{data_} {}
+	
+	void Apply()
+	{
+		ge		= std::make_unique< TGraphErrors >		(data.GetSize("W"),	data.Get("W").data(),	data.Get("Sigma").data(),	nullptr,	data.Get("Sigma_Err").data()	);
+		// gae 	= std::make_unique< TGraphAsymmErrors >	(data.GetSize("W"),	data.Get("W").data(),	data.Get("Sigma").data(),
+		// 										X_AXIS_ERR.data(),	X_AXIS_ERR.data(),
+		// 										data_SysErrLow.data(),	data_SysErrHig.data());
+
 		gae ->SetMarkerStyle(24);
 		gae ->SetFillColorAlpha(16, 0.7);
 		gae ->SetFillStyle(1001);
 		gae ->Draw("2same");
-		ge  ->SetMarkerStyle(25);
-		ge  ->SetMarkerColor(4);
-		ge  ->SetMarkerSize(1.5);
-		ge  ->SetLineColor(4);
-		ge  ->SetLineWidth(2);
-		ge  ->Draw("pezsame");
+		ge	->SetMarkerStyle(24);
+		ge	->SetMarkerColor(4);
+		ge	->SetMarkerSize(1.6);
+		ge	->SetLineColor(4);
+		ge	->SetLineWidth(2);
+		ge	->Draw("pezsame");
+		
 	}
 };
 
+struct Sigma_LHCb_2022_Strategy : ResultPlotStrategy
+{
+	std::vector<double> X_AXIS_ERR		= std::vector<double>(data.GetSize("W"), 3.8);
+
+	Sigma_LHCb_2022_Strategy(const AnalysisData& data_)	: ResultPlotStrategy{data_} {}
+	
+	void Apply()
+	{
+		ge		= std::make_unique< TGraphErrors >		(data.GetSize("W"),	data.Get("W").data(),	data.Get("Sigma").data(),	nullptr,	data.Get("Sigma_Err").data()	);
+		// gae 	= std::make_unique< TGraphAsymmErrors >	(data.GetSize("W"),	data.Get("W").data(),	data.Get("Sigma").data(),
+		// 										X_AXIS_ERR.data(),	X_AXIS_ERR.data(),
+		// 										data_SysErrLow.data(),	data_SysErrHig.data());
+
+		gae ->SetMarkerStyle(24);
+		gae ->SetFillColorAlpha(16, 0.7);
+		gae ->SetFillStyle(1001);
+		ge->SetMarkerStyle(26);
+		ge->SetMarkerColor(4);
+		ge->SetMarkerSize(1.5);
+		ge->SetLineColor(4);
+		ge->SetLineWidth(2);
+		
+	}
+};

@@ -32,7 +32,7 @@ struct ImpulseApproxAnalyzer : Analyzer
         //constants
         const double    JpsiMass    = 3.096916;
         const double    M_N         = (0.93827+0.93957) / 2;
-        const int       n_data      = data.Get("W").size();
+        const int       n_data      = data.GetSize("W");
         std::vector<double> IAs     = {},
                             IAs_Err = {};
 
@@ -72,7 +72,7 @@ struct ImpulseApproxAnalyzer : Analyzer
         }
 
         data.Add("Sigma_IA",        IAs     );
-        data.Add("Sigma_Err_IA",    IAs_Err );
+        data.Add("Sigma_IA_Err",    IAs_Err );
     }
 
     void Handle() override
