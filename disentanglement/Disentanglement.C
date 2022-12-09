@@ -22,36 +22,37 @@ Dec. 2022
 JiaZhao Lin
 */
 
-#include "ConversionAnalyzer.C"
-#include "Fit2DAnalyzer.C"
-#include "ShadowingRatioAnalyzer.C"
+#include "DisentanglementAnalyzer.C"
+#include "FwdRapAnalyzer.C"
 #include "ResultPlotProcessor.C"
 
 void Disentanglement()
 {
 
 	AnalysisData Data_CMS("CMS");
+	AnalysisData Data_ALICE_2019("ALICE_2019");
 	AnalysisDataObserver obs;
 	Data_CMS.Subscribe(&obs);
+	Data_ALICE_2019.Subscribe(&obs);
 
 	Data_CMS.LoadHist("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins_NewCohJpsi.appliedTnP.root");
+	Data_ALICE_2019.LoadFile("inFiles/DSigmaDy_ALICE_2019.txt");
 
-	Analyzer                    AnaRoot                 (Data_CMS);
-	ConversionAnalyzer          cConversionAnalyzer     (Data_CMS);
-	Fit2DAnalyzer               cFit2DAnalyzer          (Data_CMS,      "../simulation/flux/",      "_SigNN68p3R6p67a0p56");
-	ShadowingRatioAnalyzer      cShadowingRatioAnalyzer (Data_CMS);
+	DisentanglementAnalyzer AnaRoot_CMS(Data_CMS,	"../simulation/flux/",      "_SigNN68p3R6p67a0p56");
+	FwdRapAnalyzer AnaRoot_ALICE_2019(Data_ALICE_2019,	"../simulation/flux/",      "_SigNN68p3R6p67a0p56");
 
-	AnaRoot.Add(&cConversionAnalyzer);
-	AnaRoot.Add(&cFit2DAnalyzer);
-	AnaRoot.Add(&cShadowingRatioAnalyzer);
+	AnaRoot_CMS.Handle();
+	AnaRoot_ALICE_2019.Handle();
 
-	AnaRoot.Handle();
+	// Data_CMS.Print();
+	// Data_ALICE_2019.Print();
 
-	Data_CMS.Print();
+	
 
-	// struct ResultPlotProcessor p;
-	// p.SetFigureFrame(FigureFrameStrategyList::Sigma_Log);
-	// p.AddPlot		(Data_CMS,	PlotStrategyList::Sigma_CMS);
-	// p.Process		();
-	// p.SaveAs		("./outFigures/test.pdf");
+	struct ResultPlotProcessor p;
+	p.SetFigureFrame(FigureFrameStrategyList::DSigmaDy);
+	p.AddPlot		(Data_CMS,	PlotStrategyList::DSigmaDy_CMS);
+	p.AddPlot		(Data_ALICE_2019,	PlotStrategyList::DSigmaDy_ALICE_2019);
+	p.Process		();
+	p.SaveAs		("./outFigures/test.pdf");
 }

@@ -65,7 +65,7 @@ struct Fit2DAnalyzer: PhotonFluxAnalyzer
             f->SetParameters(0.001,0.5);
 
             auto fitResults = gr->Fit(f,  "S");
-            fitResults->Print();
+            // fitResults->Print();
 
             // gr->SetTitle("TGraph2D TF2 Fit; dN_{1}/dy; dN_{2}/dy; d#sigma/dy");
             gr->SetMarkerColor(kBlue);

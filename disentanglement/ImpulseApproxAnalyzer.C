@@ -5,7 +5,7 @@
 
 struct ImpulseApproxAnalyzer : Analyzer
 {
-    ImpulseApproxAnalyzer(AnalysisData& data_) : Analyzer(data_) {};
+    ImpulseApproxAnalyzer(AnalysisData& data_) : Analyzer{data_} {};
 
 
     static double NuclearFormFactor(Double_t *t, Double_t *par)

@@ -23,7 +23,7 @@ public:
     TString inFileDir;
     TString subCase;
 
-    PhotonFluxAnalyzer(AnalysisData& data_, TString inFileDir_, TString subCase_) : Analyzer(data_), inFileDir(inFileDir_), subCase(subCase_) {};
+    PhotonFluxAnalyzer(AnalysisData& data_, TString inFileDir_, TString subCase_) : Analyzer{data_}, inFileDir(inFileDir_), subCase(subCase_) {};
 
     void LoadPhotonFlux()
     {

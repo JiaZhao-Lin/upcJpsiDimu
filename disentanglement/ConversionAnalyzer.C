@@ -6,7 +6,13 @@
 
 struct ConversionAnalyzer : Analyzer
 {
-    ConversionAnalyzer(AnalysisData& data_) : Analyzer(data_) {};
+    ConversionAnalyzer(AnalysisData& data_) : Analyzer{data_} {};
+
+    void PrintHandling() const
+	{
+		cout << endl << std::setfill('+') << std::setw(100) << Form("%s::Handle Is Handling The Business... ", typeid(this).name()) << endl;
+		cout << setfill(' ');
+	}
 
     void AddRap()
     {
@@ -36,7 +42,7 @@ struct ConversionAnalyzer : Analyzer
 
     void Handle() override
     {
-        cout << endl << "+++ConversionAnalyzer::Handling..." <<endl;
+        PrintHandling();
         
         AddRap();
         Conversions();

@@ -5,7 +5,7 @@
 
 struct ShadowingRatioAnalyzer : ImpulseApproxAnalyzer
 {
-    ShadowingRatioAnalyzer(AnalysisData& data_) : ImpulseApproxAnalyzer(data_) {};
+    ShadowingRatioAnalyzer(AnalysisData& data_) : ImpulseApproxAnalyzer{data_} {};
 
 
     void Calculate_R()

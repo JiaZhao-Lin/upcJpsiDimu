@@ -24,9 +24,14 @@ JiaZhao Lin
 
 #include "Observer.h"
 #include "../common/LoadSignal.C"
+#include "../common/DataReader.C"
 
-struct AnalysisData: Observable<AnalysisData>
+class AnalysisData: public Observable<AnalysisData>
 {
+private:
+	std::map< TString, std::vector<double> > data_map;
+
+public:
 	const TString data_name;
 	AnalysisData(TString name): data_name(name) {}
 
@@ -46,9 +51,14 @@ struct AnalysisData: Observable<AnalysisData>
 
 	void LoadHist(TString inFileDir)
 	{
-		if (!IsMapEmpty()) ClearMap();
 		LoadDSigmaDy cLoadDSigmaDy(inFileDir);
-		LoadMap( cLoadDSigmaDy.GetMap() );
+		LoadMap(	cLoadDSigmaDy.GetMap()	);
+	}
+
+	void LoadFile(TString inFileDir)
+	{
+		SingleDataReader dataReader( inFileDir );
+		LoadMap(	dataReader.GetMap()	);
 	}
 
 	void Init()
@@ -119,9 +129,6 @@ struct AnalysisData: Observable<AnalysisData>
 	{
 		Notify(*this, "Print");
 	}
-
-private:
-	std::map< TString, std::vector<double> > data_map;
 };
 
 
@@ -136,7 +143,7 @@ struct AnalysisDataObserver: Observer<AnalysisData>
 
 	void FieldChanged(const AnalysisData& source, TString name) const
 	{
-		if (name == "Loaded" || "Print")
+		if (name == "Loaded" || name == "Print")
 		{
 			auto temp_map = source.GetMap();
 			

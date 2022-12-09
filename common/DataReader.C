@@ -64,11 +64,15 @@ struct SingleDataReader	:	DataReader
 	ColumnPrototype cp;
 	bool hasHeader = false;
 	ReadColumnFileStrategy ReadStrategy = ReadColumnFileStrategy::ReadViaIO;
+
 	std::map<TString, std::vector<double>> Map;
 
 	SingleDataReader(TString FileDir_)										:	FileDir{FileDir_},	cp{FileDir_},	hasHeader{true}		{ 	Read(); }
 	SingleDataReader(TString FileDir_,	ColumnPrototype cp_)				:	FileDir{FileDir_},	cp{cp_} 			{ 	Read(); }
 	SingleDataReader(TString FileDir_,	std::vector<TString> ColumnNames_)	:	FileDir{FileDir_},	cp{ColumnNames_} 	{	Read(); }
+
+	void CheckMap()						const	{ if ( Map.size() == 0 ) throw std::runtime_error("SingleDataReader --> Empty Map!"); }
+
 	void Read() override
 	{
 		Init_Map();
@@ -152,6 +156,12 @@ struct SingleDataReader	:	DataReader
 	{
 		if (Map.size() == 0)	std::runtime_error("SingleDataReader: No MAP!?");
 		return Map.at(s);
+	}
+
+	std::map< TString, std::vector<double> > GetMap()	const
+	{
+		CheckMap();
+		return Map;
 	}
 	
 private:

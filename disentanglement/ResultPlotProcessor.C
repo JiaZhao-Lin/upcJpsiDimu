@@ -51,8 +51,14 @@ struct ResultPlotProcessor
 		case PlotStrategyList::Sigma_ALICE_2019:
 			plots.push_back( std::make_unique<	Sigma_ALICE_2019_Strategy	>(data_) );
 			break;
+		case PlotStrategyList::DSigmaDy_CMS:
+			plots.push_back( std::make_unique<	DSigmaDy_CMS_Strategy		>(data_) );
+			break;
+		case PlotStrategyList::DSigmaDy_ALICE_2019:
+			plots.push_back( std::make_unique<	DSigmaDy_ALICE_2019_Strategy>(data_) );
+			break;
 		default:
-			std::runtime_error("PlotStrategyList Not Found!");
+			throw std::runtime_error("PlotStrategyList Not Found!");
 			break;
 		}
 	}
