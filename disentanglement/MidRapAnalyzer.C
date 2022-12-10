@@ -1,18 +1,18 @@
-#ifndef FwdRapAnalyzer_H
-#define FwdRapAnalyzer_H
+#ifndef MidRapAnalyzer_H
+#define MidRapAnalyzer_H
 
 #include "ConversionAnalyzer.C"
-#include "DisentangleFwdRapSigmaAnalyzer.C"
+#include "DisentangleMidRapSigmaAnalyzer.C"
 #include "ShadowingRatioAnalyzer.C"
 
-struct FwdRapAnalyzer : Analyzer
+struct MidRapAnalyzer : Analyzer
 {
 	ConversionAnalyzer				cConversionAnalyzer;
-	DisentangleFwdRapSigmaAnalyzer	cDisentangleFwdRapSigmaAnalyzer;
+	DisentangleMidRapSigmaAnalyzer	cDisentangleMidRapSigmaAnalyzer;
 	ShadowingRatioAnalyzer			cShadowingRatioAnalyzer;
 
-    FwdRapAnalyzer(AnalysisData& data_,	TString inFileDir_,	TString subCase_) : Analyzer{data_},	cConversionAnalyzer{data_},	
-																					cDisentangleFwdRapSigmaAnalyzer{data_, inFileDir_,	subCase_},	cShadowingRatioAnalyzer{data_}	{};
+    MidRapAnalyzer(AnalysisData& data_,	TString inFileDir_,	TString subCase_) : Analyzer{data_},	cConversionAnalyzer{data_},	
+																					cDisentangleMidRapSigmaAnalyzer{data_, inFileDir_,	subCase_},	cShadowingRatioAnalyzer{data_}	{};
 
 	void PrintHandling() const
 	{
@@ -25,7 +25,7 @@ struct FwdRapAnalyzer : Analyzer
         PrintHandling();
         
 		this->Add(&cConversionAnalyzer);
-		this->Add(&cDisentangleFwdRapSigmaAnalyzer);
+		this->Add(&cDisentangleMidRapSigmaAnalyzer);
 		this->Add(&cShadowingRatioAnalyzer);
 		cShadowingRatioAnalyzer.Set_Simple_R_SysErr(true);
 

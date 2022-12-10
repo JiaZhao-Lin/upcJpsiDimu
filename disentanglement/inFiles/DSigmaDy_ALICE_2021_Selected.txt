@@ -1,4 +1,2 @@
 Dy			Dy_Err		DSigmaDy_AnAn		DSigmaDy_AnAn_Err		DSigmaDy_AnAn_SysErr
--0.575		0.225		3.870				0.110					0.220
--0.250		0.100		4.210				0.110					0.240
 -0.075		0.075		4.070				0.110					0.230

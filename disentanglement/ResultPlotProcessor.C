@@ -11,7 +11,8 @@ struct ResultPlotProcessor
 	void Process()
 	{
 		frame->Apply();
-		for(auto &plot : plots) {	plot->Apply();	}
+		for(auto &plot : plots) {	plot->Apply(frame->leg);	}
+		frame->DrawLegend();
 	}
 
 	void SetFigureFrame(FigureFrameStrategyList frame_)
@@ -51,11 +52,37 @@ struct ResultPlotProcessor
 		case PlotStrategyList::Sigma_ALICE_2019:
 			plots.push_back( std::make_unique<	Sigma_ALICE_2019_Strategy	>(data_) );
 			break;
+		case PlotStrategyList::Sigma_ALICE_2021:
+			plots.push_back( std::make_unique<	Sigma_ALICE_2021_Strategy	>(data_) );
+			break;
+		case PlotStrategyList::Sigma_LHCb_2022:
+			plots.push_back( std::make_unique<	Sigma_LHCb_2022_Strategy	>(data_) );
+			break;
+
+		case PlotStrategyList::R_CMS:
+			plots.push_back( std::make_unique<	R_CMS_Strategy				>(data_) );
+			break;
+		case PlotStrategyList::R_ALICE_2019:
+			plots.push_back( std::make_unique<	R_ALICE_2019_Strategy		>(data_) );
+			break;
+		case PlotStrategyList::R_ALICE_2021:
+			plots.push_back( std::make_unique<	R_ALICE_2021_Strategy		>(data_) );
+			break;
+		case PlotStrategyList::R_LHCb_2022:
+			plots.push_back( std::make_unique<	R_LHCb_2022_Strategy		>(data_) );
+			break;
+
 		case PlotStrategyList::DSigmaDy_CMS:
 			plots.push_back( std::make_unique<	DSigmaDy_CMS_Strategy		>(data_) );
 			break;
 		case PlotStrategyList::DSigmaDy_ALICE_2019:
 			plots.push_back( std::make_unique<	DSigmaDy_ALICE_2019_Strategy>(data_) );
+			break;
+		case PlotStrategyList::DSigmaDy_ALICE_2021:
+			plots.push_back( std::make_unique<	DSigmaDy_ALICE_2021_Strategy>(data_) );
+			break;
+		case PlotStrategyList::DSigmaDy_LHCb_2022:
+			plots.push_back( std::make_unique<	DSigmaDy_LHCb_2022_Strategy	>(data_) );
 			break;
 		default:
 			throw std::runtime_error("PlotStrategyList Not Found!");

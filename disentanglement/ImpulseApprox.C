@@ -1,13 +1,8 @@
-#ifndef ImpulseApproxAnalyzer_H
-#define ImpulseApproxAnalyzer_H
+#ifndef ImpulseApprox_H
+#define ImpulseApprox_H
 
-#include "Analyzer.h"
-
-struct ImpulseApproxAnalyzer : Analyzer
+struct ImpulseApprox
 {
-    ImpulseApproxAnalyzer(AnalysisData& data_) : Analyzer{data_} {};
-
-
     static double NuclearFormFactor(Double_t *t, Double_t *par)
     {
         const double hbarc    = 0.1973269718;
@@ -27,12 +22,12 @@ struct ImpulseApproxAnalyzer : Analyzer
         return ff*ff;
     }
 
-    void GetImpulseApprox()
+    static std::pair<std::vector<double>, std::vector<double>> GetImpulseApprox(std::vector<double> W)
     {
         //constants
         const double    JpsiMass    = 3.096916;
         const double    M_N         = (0.93827+0.93957) / 2;
-        const int       n_data      = data.GetSize("W");
+        const int       n_data      = W.size();
         std::vector<double> IAs     = {},
                             IAs_Err = {};
 
@@ -49,7 +44,7 @@ struct ImpulseApproxAnalyzer : Analyzer
         DSigmaDt->GetXaxis()->SetTitle("W_{#gamma p} (GeV)");
 
         //nuclear Form Factor squared 
-        TF1* NuclearFF = new TF1("NuclearFF", ImpulseApproxAnalyzer::NuclearFormFactor, 1e-8, 0.2, 3);
+        TF1* NuclearFF = new TF1("NuclearFF", ImpulseApprox::NuclearFormFactor, 1e-8, 0.2, 3);
 
         NuclearFF->SetParameter(0,208);
         NuclearFF->SetParameter(1,6.62);
@@ -57,7 +52,7 @@ struct ImpulseApproxAnalyzer : Analyzer
 
         for (int i = 0; i < n_data; ++i)
         {
-            const double w          = data.Get("W", i);
+            const double w          = W[i];
             const double gammaP_xs  = DSigmaDt->Eval(w);
             const double t_min      = (TMath::Power(JpsiMass,4)*M_N*M_N) / TMath::Power(w,4);
             const double Phi_A      = NuclearFF->Integral(t_min,0.2);//integrate from t_min to infinity. Original: 0.2
@@ -70,18 +65,7 @@ struct ImpulseApproxAnalyzer : Analyzer
             IAs.push_back(IA);
             IAs_Err.push_back(IA_Err);
         }
-
-        data.Add("Sigma_IA",        IAs     );
-        data.Add("Sigma_IA_Err",    IAs_Err );
-    }
-
-    void Handle() override
-    {
-        cout << endl << "+++ImpulseApproxAnalyzer::Handling..." <<endl;
-        GetImpulseApprox();
-
-        //Moving to the next Analyzer
-        Analyzer::Handle();
+        return std::make_pair(IAs, IAs_Err);
     }
 };
 

@@ -20,11 +20,11 @@ struct Fit2DAnalyzer: PhotonFluxAnalyzer
         std::vector< std::pair<double, double> > fluxCoefficients_0n0n, fluxCoefficients_0nXnSum, fluxCoefficients_XnXn;
 
         int n_data = data.GetSize("Rap");
-        for (int i = 0; i < n_data ; i+=2)
+        for (int i = 0; i < n_data/2 ; i++)
         {
-            fluxCoefficients_0n0n       .push_back( {data.Get("dNdy_0n0n"       ,i )    ,data.Get("dNdy_0n0n"       ,i+1 )} );
-            fluxCoefficients_0nXnSum    .push_back( {data.Get("dNdy_0nXnSum"    ,i )    ,data.Get("dNdy_0nXnSum"    ,i+1 )} );
-            fluxCoefficients_XnXn       .push_back( {data.Get("dNdy_XnXn"       ,i )    ,data.Get("dNdy_XnXn"       ,i+1 )} );
+            fluxCoefficients_0n0n       .push_back( {data.Get("dNdy_0n0n"       ,i )    ,data.Get("dNdy_0n0n"       ,n_data - 1 - i )} );
+            fluxCoefficients_0nXnSum    .push_back( {data.Get("dNdy_0nXnSum"    ,i )    ,data.Get("dNdy_0nXnSum"    ,n_data - 1 - i )} );
+            fluxCoefficients_XnXn       .push_back( {data.Get("dNdy_XnXn"       ,i )    ,data.Get("dNdy_XnXn"       ,n_data - 1 - i )} );
         }
 
         //Start filling points
@@ -81,8 +81,11 @@ struct Fit2DAnalyzer: PhotonFluxAnalyzer
             c->SaveAs(Form("Test_fit2D_%d.pdf",i));
             cout<<endl;
             
-            Sigma      .push_back(f->GetParameter(0));  Sigma      .push_back(f->GetParameter(1));
-            Sigma_Err  .push_back(f->GetParError(0));   Sigma_Err  .push_back(f->GetParError(1));
+            //insert results in the middle of the vector
+            vector<double> Sigma_temp = {f->GetParameter(0),  f->GetParameter(1)};
+            vector<double> Sigma_Err_temp = {f->GetParError(0),  f->GetParError(1)};
+            Sigma      .insert(Sigma.begin() + Sigma.size() / 2 , Sigma_temp.begin(), Sigma_temp.end());
+            Sigma_Err  .insert(Sigma_Err.begin() + Sigma_Err.size() / 2 , Sigma_Err_temp.begin(), Sigma_Err_temp.end());
 
             delete gr; delete c; delete f;delete frame3D;
         }

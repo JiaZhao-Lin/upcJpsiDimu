@@ -137,7 +137,7 @@ struct SingleDataReader	:	DataReader
 					// Add the integers from a line to a 1D array (vector)
 					lineData.push_back(value);
 				}
-
+				
 				if( lineData.size() != ColumnNames_.size() ) throw std::runtime_error("ReadViaIO: Incorrect number of column!!!");
 
 				for (int j = 0; j < ColumnNames_.size(); ++j)

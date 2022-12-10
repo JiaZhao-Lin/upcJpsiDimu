@@ -16,11 +16,11 @@ struct ConversionAnalyzer : Analyzer
 
     void AddRap()
     {
-        std::vector<double> temp;
+        std::vector<double> temp    = data.Get("Dy");
         int n_Dy = data.GetSize("Dy");
         for (int i = 0; i < n_Dy; i++)
         {
-            temp.push_back(data.Get("Dy", i)); temp.push_back( -data.Get("Dy", i) );
+            temp.push_back( -data.Get("Dy", n_Dy - 1 - i) );
         }
         data.Add("Rap", temp);
     }

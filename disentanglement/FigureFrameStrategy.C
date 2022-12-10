@@ -14,11 +14,14 @@ struct FigureFrameStrategy
 {
 	std::unique_ptr< TCanvas > c = std::make_unique< TCanvas >	();
 	std::unique_ptr< TH1 > htemp;
+	TLegend* leg;
 
 	virtual void Apply() = 0;
 	virtual ~FigureFrameStrategy() = default;
 
-	void SaveAs(TString fileName){	c->SaveAs(fileName);	};
+	void cd()						{	c->cd();	};
+	void DrawLegend()				{	leg->Draw("same");	};
+	void SaveAs(TString fileName)	{	c->SaveAs(fileName);	delete leg;};
 };
 
 struct Sigma_Log_Strategy : FigureFrameStrategy
@@ -30,6 +33,11 @@ struct Sigma_Log_Strategy : FigureFrameStrategy
 		gPad->SetTopMargin(0.08);
 		gPad->SetBottomMargin(0.12);
 		gPad->SetRightMargin(0.05);
+
+		leg = new TLegend	(0.20, 0.17, 0.50, 0.37);
+		leg	->SetFillStyle(0);
+		leg	->SetFillColor(0);
+		leg	->SetTextSize(0.04);
 
 		htemp = std::make_unique< TH2D >	("SigmaVsW", ";W_{#gammaN}^{Pb} (GeV);#sigma(#gamma Pb #rightarrow J/#psi Pb) (mb);", 10,0,420, 10, 0.004, 0.19);
 		htemp->GetYaxis()->CenterTitle();
@@ -67,6 +75,11 @@ struct Sigma_LogLog_Strategy : FigureFrameStrategy
 		gPad->SetBottomMargin(0.12);
 		gPad->SetRightMargin(0.05);
 
+		leg = new TLegend	(0.14, 0.66, 0.37, 0.82);
+		leg	->SetFillStyle(0);
+		leg	->SetFillColor(0);
+		leg	->SetTextSize(0.04);
+
 		htemp = std::make_unique< TH2D >	("SigmaVsW", ";W_{#gammaN}^{Pb} (GeV);#sigma(#gamma Pb #rightarrow J/#psi Pb) (mb);", 10,14,520, 10, 0.004, 0.13);
 		htemp->GetYaxis()->CenterTitle();
 		htemp->GetXaxis()->CenterTitle();
@@ -103,8 +116,13 @@ struct R_Strategy : FigureFrameStrategy
 		//gPad->SetLeftMargin(0.05);
 		gPad->SetRightMargin(0.05);
 
+		leg = new TLegend	(0.13, 0.62, 0.40, 0.8);
+		leg	->SetFillStyle(0);
+		leg	->SetFillColor(0);
+		leg	->SetTextSize(0.04);
+
 		//htemp = std::make_unique< TH2D >	("htemp", "", 10,3.0e-5,5.0e-2, 10, 0, 1);
-		htemp = std::make_unique< TH2D >	("RvsX", ";R^{Pb}_{g}(x, #mu^{2}=2.4 GeV^{2});x;", 10,1.0e-5,5e-2, 10, 0.2, 1.05);
+		htemp = std::make_unique< TH2D >	("RvsX", ";x;R^{Pb}_{g}(x, #mu^{2}=2.4 GeV^{2});", 10,1.0e-5,5e-2, 10, 0.2, 1.05);
 		htemp->GetYaxis()->SetTitleSize(0.06);
 		htemp->GetYaxis()->SetTitleOffset(0.85);
 		htemp->GetYaxis()->SetLabelSize(0.04);
@@ -128,6 +146,11 @@ struct DSigmaDy_Strategy : FigureFrameStrategy
 	void Apply()
 	{
 		setPad(0.12, 0.08, 0.07, 0.13);
+
+		leg = new TLegend	(0.14, 0.60, 0.55, 0.82);
+		leg->SetFillStyle(0);
+		leg->SetFillColor(0);
+		leg->SetTextSize(0.050);
 
 		//htemp = std::make_unique< TH2D >	("htemp", "", 10, -4.1, 1.0, 10, 0, 14.0);
 		htemp = std::make_unique< TH2D >	("AnAn", "AnAn;y;d#sigma_{J/#psi}/dy (mb);", 10, -4.5, 0, 10, 0, 8.0);
@@ -155,6 +178,12 @@ struct DSigmaDy_mini_Strategy : FigureFrameStrategy
 
 	void Apply()
 	{
+		leg = new TLegend	(0.14, 0.60, 0.55, 0.82);
+		leg->SetFillStyle(0);
+		leg->SetFillColor(0);
+		leg->SetTextSize(0.050);
+
+
 		TString n = "htemp_" + frameName;
 		htemp = std::make_unique< TH2D >	(n, n + ";y;d#sigma_{J/#psi}/dy (mb)", 10, -4.1, 0, 10, 0.0, 7.0);
 		htemp ->GetYaxis()->CenterTitle();

@@ -22,13 +22,12 @@ protected:
 public:
     TString inFileDir;
     TString subCase;
+    std::vector<TString> CasesName = {"AnAn",	"0n0n", "0nXnSum", "XnXn"};
 
     PhotonFluxAnalyzer(AnalysisData& data_, TString inFileDir_, TString subCase_) : Analyzer{data_}, inFileDir(inFileDir_), subCase(subCase_) {};
 
     void LoadPhotonFlux()
     {
-        std::vector<TString> CasesName = {"AnAn", "0n0n", "0nXnSum", "XnXn"};
-
         for (int i = 0; i < CasesName.size(); ++i)
         {
             TString FluxFileName  = Form("Flux_%s%s.txt", CasesName[i].Data(), subCase.Data());
@@ -118,8 +117,6 @@ public:
 
     void InterpolateFlux()
     {
-        std::vector<TString> CasesName = {"AnAn",	"0n0n", "0nXnSum", "XnXn"};
-
         // if (PhotonFluxMap.at("Energy_Table_AnAn").size() == 0){	loadPhotonFlux(inFileDir, subCase);	}
         PhotonFluxMap = PhotonFluxMapTemp;
         LoadPhotonFlux();
