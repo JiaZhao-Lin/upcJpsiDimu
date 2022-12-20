@@ -23,6 +23,7 @@ public:
 	Analyzer(AnalysisData& data_)	:	data(data_) {};
 	virtual ~Analyzer() = default;
 	
+	AnalysisData GetAnaData() const { return data; }
 	void Add(Analyzer* ana)
 	{
 		if	(next)	{	next->Add(ana);     }

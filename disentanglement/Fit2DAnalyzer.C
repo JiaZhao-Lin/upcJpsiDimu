@@ -4,6 +4,7 @@
 #include "PhotonFluxAnalyzer.C"
 #include "../common/function.C"
 
+//Fit Sigma from 2D data point of DSigmaDy and dNdy
 struct Fit2DAnalyzer: PhotonFluxAnalyzer
 {
     bool    print               = false;
@@ -13,8 +14,6 @@ struct Fit2DAnalyzer: PhotonFluxAnalyzer
 
     void Fit2D()
     {
-        InterpolateFlux();
-
         std::vector<double> Sigma, Sigma_Err;
         std::vector<std::vector<double>> X_RapBin, Y_RapBin, Z_RapBin, Z_Err_RapBin;
         std::vector< std::pair<double, double> > fluxCoefficients_0n0n, fluxCoefficients_0nXnSum, fluxCoefficients_XnXn;
@@ -78,7 +77,7 @@ struct Fit2DAnalyzer: PhotonFluxAnalyzer
                                     f->GetParameter(0), f->GetParError(0), f->GetParameter(1), f->GetParError(1)),      42,       0.04,      1);
             drawLatex(0.1, 0.90, Form("#chi^{2}/ndf: %.2f/1", fitResults->Chi2()),      42,       0.04,      1);
 
-            c->SaveAs(Form("Test_fit2D_%d.pdf",i));
+            // c->SaveAs(Form("Test_fit2D_%d.pdf",i));
             cout<<endl;
             
             //insert results in the middle of the vector
@@ -97,6 +96,7 @@ struct Fit2DAnalyzer: PhotonFluxAnalyzer
     void Handle()
     {
         cout << endl << "+++Fit2DAnalyzer::Handling..." <<endl;
+        PhotonFluxAnalyzer::Handle();
         Fit2D();
 
         Analyzer::Handle();

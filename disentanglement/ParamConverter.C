@@ -3,6 +3,7 @@
 
 #include "../common/constants.h"
 
+// This file contains some useful functions to convert between different variables
 struct ParamConverter
 {
     static constexpr double Sqrt_s     = 5020;
@@ -11,6 +12,16 @@ struct ParamConverter
     // the effective Lorentz factor in the rest frame of the collision partner A. It is related to that in the c.m. system of the two colliding heavy ions
     // Eq.4.2 Prog. Parr. Nucl. Phys.. Vol. 39, pp. 503-564. 1997
     static constexpr double Gamma_eff  = 2 * Gamma_beam * Gamma_beam -1;
+
+	static double x2W(const double x)
+	{
+		return sqrt( pow(mJpsi_PDG,2 ) / x );
+	}
+
+	static double W2x(const double W)
+	{
+		return pow(mJpsi_PDG,2 ) / pow(W,2);
+	}
 
 	static double y2x(const double y)
 	{

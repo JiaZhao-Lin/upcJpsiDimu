@@ -1,6 +1,7 @@
 #ifndef DisentangleMidRapSigmaAnalyzer_H
 #define DisentangleMidRapSigmaAnalyzer_H
 
+// Use to disentangle the mid-rapidity sigma from the DSigmaDy
 struct DisentangleMidRapSigmaAnalyzer: PhotonFluxAnalyzer
 {
 	bool    print               = false;
@@ -16,9 +17,7 @@ struct DisentangleMidRapSigmaAnalyzer: PhotonFluxAnalyzer
 
 	void Calculate()
 	{
-		InterpolateFlux();
-
-		std::vector<double> Sigma, Sigma_Err, Sigma_SysErr, Flux_dNdy_AnAn;
+		std::vector<double> Sigma, Sigma_Err, Sigma_SysErrLow, Sigma_SysErrHigh, Flux_dNdy_AnAn;
 		Flux_dNdy_AnAn  = data.Get("dNdy_AnAn");
 
 		for (int i = 0; i < data.GetSize("Dy"); ++i)
@@ -29,19 +28,24 @@ struct DisentangleMidRapSigmaAnalyzer: PhotonFluxAnalyzer
 		for (int i = 0; i < data.GetSize("Dy"); ++i)
 		{
 			Sigma_Err	.push_back(	Sigma[i] * data.Get("DSigmaDy_AnAn_Err", i) / data.Get("DSigmaDy_AnAn", i)	);
-			Sigma_SysErr.push_back(	Sigma[i] * TMath::Hypot(	data.Get("DSigmaDy_AnAn_Err", 	i)	/ data.Get("DSigmaDy_AnAn", i),	
-																0.05	)	);
+			Sigma_SysErrLow.push_back(	Sigma[i] * TMath::Hypot(	data.Get("DSigmaDy_AnAn_SysErrLow", 	i)	/ data.Get("DSigmaDy_AnAn", i),	
+																	data.Get("dNdy_AnAn_Uncer", i) / 100.0	)	);	// flux err from dNdy Uncer, Converting from % to fraction
+			Sigma_SysErrHigh.push_back(	Sigma[i] * TMath::Hypot(	data.Get("DSigmaDy_AnAn_SysErrHigh", 	i)	/ data.Get("DSigmaDy_AnAn", i),	
+																	data.Get("dNdy_AnAn_Uncer", i) / 100.0	)	);	// flux err from dNdy Uncer, Converting from % to fraction
 		}		
 
-		data.Add("Sigma"        ,Sigma);
-		data.Add("Sigma_Err"    ,Sigma_Err);
-		data.Add("Sigma_SysErr" ,Sigma_SysErr);
+		data.Add("Sigma"        	,Sigma);
+		data.Add("Sigma_Err"    	,Sigma_Err);
+		data.Add("Sigma_SysErrLow" 	,Sigma_SysErrLow);
+		data.Add("Sigma_SysErrHigh" ,Sigma_SysErrHigh);
 	}
 
 	void Handle()	override
 	{
 		PrintHandling();
 
+		SetFluxErr(true);
+		PhotonFluxAnalyzer::Handle();
 		Calculate();
 
 		Analyzer::Handle();

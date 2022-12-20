@@ -3,7 +3,7 @@
 
 struct MapIO
 {
-	static void WriteToRoot(std::map<TString, std::vector<double>> map, TString fileName)
+	static void WriteToRoot(const std::map<TString, std::vector<double>> map, TString fileName)
 	{
 		cout << Form("WriteToRoot-------->Saving Map To The RootFile------->%s",	fileName.Data()) << endl;
 		TFile *file = TFile::Open(fileName.Data(), "RECREATE");
@@ -41,29 +41,29 @@ struct MapIO
 		return map;
 	}
 
-	static void WriteToText(std::map<TString, std::vector<double>> map, TString fileName)
-	{
-		cout << Form("WriteToText-------->Saving Map To The TextFile------->%s",	fileName.Data()) << endl;
-		TFile *file = TFile::Open(fileName.Data(), "RECREATE");
-		std::vector<TString> keys;
+	// static void WriteToText(std::map<TString, std::vector<double>> map, TString fileName)
+	// {
+	// 	cout << Form("WriteToText-------->Saving Map To The TextFile------->%s",	fileName.Data()) << endl;
+	// 	TFile *file = TFile::Open(fileName.Data(), "RECREATE");
+	// 	std::vector<TString> keys;
 
-		for (auto it = map.begin(); it != map.end(); ++it)
-		{
-			TString key 	=	it->first;
-			std::cout << "Saving the key:	" << key << endl;
-			keys.push_back(key);
-			std::vector<double> 	value	=	it->second;
-			file->WriteObject(&value, key.Data()); // I store the vector in the TFile
-		}
-		file->WriteObject(&keys, "keys");
-		file->Close();
-		cout << Form("WriteToRoot-------->DONE SAVING The RootFile------->%s",	fileName.Data()) << endl << endl;
-	}
+	// 	for (auto it = map.begin(); it != map.end(); ++it)
+	// 	{
+	// 		TString key 	=	it->first;
+	// 		std::cout << "Saving the key:	" << key << endl;
+	// 		keys.push_back(key);
+	// 		std::vector<double> 	value	=	it->second;
+	// 		file->WriteObject(&value, key.Data()); // I store the vector in the TFile
+	// 	}
+	// 	file->WriteObject(&keys, "keys");
+	// 	file->Close();
+	// 	cout << Form("WriteToRoot-------->DONE SAVING The RootFile------->%s",	fileName.Data()) << endl << endl;
+	// }
 };
 
-void MapIO()
-{
-	cout<< MapIO::FormatVector( {1,2} ) <<endl;
-}
+// void MapIO()
+// {
+// 	cout<< MapIO::FormatVector( {1,2} ) <<endl;
+// }
 
 #endif

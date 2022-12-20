@@ -8,7 +8,7 @@ Example Usage:
 struct AnalysisData a("CMS");
 AnalysisDataObserver obs;
 a.Subscribe(&obs);
-a.LoadMap(map); // a.LoadHist(".root");
+a.LoadMap(map); // a.File(".root");
 a.ClearMap();
 -----------------------------------------
 
@@ -25,6 +25,7 @@ JiaZhao Lin
 #include "Observer.h"
 #include "../common/LoadSignal.C"
 #include "../common/DataReader.C"
+#include "../common/MapIO.C"
 
 class AnalysisData: public Observable<AnalysisData>
 {
@@ -34,6 +35,7 @@ private:
 public:
 	const TString data_name;
 	AnalysisData(TString name): data_name(name) {}
+	AnalysisData(TString name, TString inFileDir): data_name(name) { LoadHistFile(inFileDir); }	// Load from DSigmaDy file !!!
 
 	bool IsMapEmpty()					const	{ return !data_map.size(); }
 	bool IsMapKeyExist(TString param)	const	{ return data_map.find(param) != data_map.end(); }
@@ -44,20 +46,44 @@ public:
 	
 	void LoadMap(std::map< TString, std::vector<double> > map)
 	{
+		//Load a map into the data
 		if (!IsMapEmpty()) ClearMap();
 		data_map = map;
 		Notify(*this, "Loaded");
 	}
 
-	void LoadHist(TString inFileDir)
+	void LoadMapFile(TString inFileDir)
 	{
+		//Read a map from a file containing a map
+		auto temp = MapIO::ReadFromRoot(inFileDir);
+		LoadMap( temp );
+	}
+
+	void WriteMapFile(TString outFileDir)
+	{
+		//Write the map to a file
+		if( IsMapEmpty() ) throw std::runtime_error("AnalysisData::WriteMapFile --> Writing a Empty Map!");
+		MapIO::WriteToRoot(data_map, outFileDir);
+	}
+
+	void LoadHistFile(TString inFileDir)
+	{
+		//Load a map from a file containing histograms
 		LoadDSigmaDy cLoadDSigmaDy(inFileDir);
 		LoadMap(	cLoadDSigmaDy.GetMap()	);
 	}
 
-	void LoadFile(TString inFileDir)
+	void LoadTextFile(TString inFileDir)
 	{
+		//Load a collumnlized file into a map
 		SingleDataReader dataReader( inFileDir );
+		LoadMap(	dataReader.GetMap()	);
+	}
+
+	void LoadTextFile(TString inFileDir,	std::vector<TString> ColumnNames_)
+	{
+		//Load a collumnlized file into a map without column header
+		SingleDataReader dataReader( inFileDir, ColumnNames_ );
 		LoadMap(	dataReader.GetMap()	);
 	}
 
@@ -101,6 +127,16 @@ public:
 		Notify(*this, param);
 	}
 
+	void Combine(AnalysisData& second_data)
+	{
+		//Combine the second data into the data
+		auto temp = second_data.GetMap();
+		for (auto& it: temp)
+		{
+			Add(it.first, it.second);
+		}
+	}
+
 	double Get(TString param, int i)	const
 	{
 		CheckParam(param);
@@ -136,7 +172,7 @@ struct AnalysisDataObserver: Observer<AnalysisData>
 {
 	void PrintKeyValues(TString key, std::vector<double> values) const
 	{
-		cout << std::left << std::setw(25) << key;
+		cout << std::left << std::setw(28) << key;
 		for (int i = 0; i < values.size(); i++) { cout << std::setw(15) << values[i]; }
 		cout << endl;
 	}

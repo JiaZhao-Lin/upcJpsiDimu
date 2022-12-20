@@ -1,6 +1,7 @@
-#include "AnalysisData.C"
 
-enum class PlotStrategyList
+#include "../common/PlotStrategy.h"
+
+enum class ResultPlotStrategyList
 {
 	DSigmaDy_CMS,
 	DSigmaDy_ALICE_2019,
@@ -21,53 +22,69 @@ enum class PlotStrategyList
 	R_LHCb_2022
 };
 
-struct ResultPlotStrategy
-{
-	const AnalysisData& 					data;
-	TGraphErrors* 		ge;
-	TGraphAsymmErrors*	gae;
-
-	ResultPlotStrategy(const AnalysisData& data_) : data{data_} {};
-
-	virtual void Apply(TLegend*	leg) = 0;
-	virtual ~ResultPlotStrategy() = default;
-};
-
-struct Sigma_PlotStrategy : ResultPlotStrategy
+struct Sigma_PlotStrategy : PlotStrategy
 {
 	std::vector<double> X_AXIS_ERR		= std::vector<double>(data.GetSize("W"), 3.8);
 
-	Sigma_PlotStrategy(const AnalysisData& data_) :     ResultPlotStrategy{data_} {}
+	Sigma_PlotStrategy(const AnalysisData& data_) :     PlotStrategy{data_} {}
 
 	void Apply(TLegend*	leg)	override
 	{
+		std::vector<double> SysErrLow, SysErrHigh;
+
+		if(data.IsMapKeyExist("Sigma_SysErrLow") && data.IsMapKeyExist("Sigma_SysErrHigh"))	//If the data has AsymmErr
+		{
+			SysErrLow  = data.Get("Sigma_SysErrLow");
+			SysErrHigh = data.Get("Sigma_SysErrHigh");
+		}
+		else
+		{
+			SysErrLow  = data.Get("Sigma_SysErr");
+			SysErrHigh = data.Get("Sigma_SysErr");
+		}
+
 		ge 		= new TGraphErrors		(data.GetSize("Sigma"),	data.Get("W").data(),	data.Get("Sigma").data(),	nullptr,	data.Get("Sigma_Err").data()	);
-		// gae 	= std::make_unique< TGraphAsymmErrors >		(data.GetSize("Sigma"),
-															// data.Get("W").data(),        	data.Get("Sigma").data(),
-															// X_AXIS_ERR.data(),  			X_AXIS_ERR.data(),
-															// data.Get("Sigma_SysErr").data(), data.Get("Sigma_SysErr").data());
+		gae 	= new TGraphAsymmErrors (data.GetSize("Sigma"),
+										data.Get("W").data(),        	data.Get("Sigma").data(),
+										X_AXIS_ERR.data(),  			X_AXIS_ERR.data(),
+										SysErrLow.data(), 				SysErrHigh.data());
 	}
 };
 
-struct R_PlotStrategy : ResultPlotStrategy
+struct R_PlotStrategy : PlotStrategy
 {
 	std::vector<double> X_AXIS_ERR		= std::vector<double>(data.GetSize("X"), 4.5e-4);
 
-	R_PlotStrategy(const AnalysisData& data_) :     ResultPlotStrategy{data_} {}
+	R_PlotStrategy(const AnalysisData& data_) :     PlotStrategy{data_} {}
 
 	void Apply(TLegend*	leg)	override
 	{
+		std::vector<double> SysErrLow, SysErrHigh;
+
+		if(data.IsMapKeyExist("R_SysErrLow") && data.IsMapKeyExist("R_SysErrHigh"))	//If the data has AsymmErr
+		{
+			SysErrLow  = data.Get("R_SysErrLow");
+			SysErrHigh = data.Get("R_SysErrHigh");
+		}
+		else
+		{
+			SysErrLow  = data.Get("R_SysErr");
+			SysErrHigh = data.Get("R_SysErr");
+		}
+
 		ge 		= new TGraphErrors		(data.GetSize("R"),	data.Get("X").data(),	data.Get("R").data(),	nullptr,	data.Get("R_Err").data()	);
-		// gae 	= std::make_unique< TGraphAsymmErrors >		(data.GetSize("R"),
-															// data.Get("X").data(),        	data.Get("R").data(),
-															// X_AXIS_ERR.data(),  			X_AXIS_ERR.data(),
-															// data.Get("R_SysErr").data(), data.Get("R_SysErr").data());
+		gae 	= new TGraphAsymmErrors	(data.GetSize("R"),
+										data.Get("X").data(),        	data.Get("R").data(),
+										X_AXIS_ERR.data(),  			X_AXIS_ERR.data(),
+										SysErrLow.data(), 				SysErrHigh.data());
 	}
 };
 
-struct DSigmaDy_PlotStrategy : ResultPlotStrategy
+struct DSigmaDy_PlotStrategy : PlotStrategy
 {
-	DSigmaDy_PlotStrategy(const AnalysisData& data_) :     ResultPlotStrategy{data_} {}
+	TString NeuConfig;
+
+	DSigmaDy_PlotStrategy(const AnalysisData& data_,	TString NeuConfig_ = "AnAn") :     PlotStrategy{data_},	NeuConfig{NeuConfig_}	{}
 
 	void Apply(TLegend*	leg)	override
 	{
@@ -81,11 +98,25 @@ struct DSigmaDy_PlotStrategy : ResultPlotStrategy
 			}	
 		}
 
-		ge  	= new TGraphErrors		(temp.size(),		temp.data(),	data.Get("DSigmaDy_AnAn").data(),
-														data.Get("Dy_Err").data(),	data.Get("DSigmaDy_AnAn_Err").data());
-		// gae 	= std::make_unique< TGraphAsymmErrors >	(data.GetSize("Dy"),		data.Get("Dy").data(),	data.Get("DSigmaDy_AnAn").data(),
-														// data.Get("Dy_Err").data(),	data.Get("Dy_Err").data(),
-														// data.Get("DSigmaDy_AnAn_SysErr").data(),	data.Get("DSigmaDy_AnAn_SysErr").data());
+		std::vector<double> SysErrLow, SysErrHigh;
+		TString TempName = "DSigmaDy_"+NeuConfig;
+
+		if(data.IsMapKeyExist(TempName+"_SysErrLow") && data.IsMapKeyExist(TempName+"_SysErrHigh"))	//If the data has AsymmErr
+		{
+			SysErrLow  = data.Get(TempName+"_SysErrLow");
+			SysErrHigh = data.Get(TempName+"_SysErrHigh");
+		}
+		else
+		{
+			SysErrLow  = data.Get(TempName+"_SysErr");
+			SysErrHigh = data.Get(TempName+"_SysErr");
+		}
+
+		ge  	= new TGraphErrors		(temp.size(),				temp.data(),					data.Get(TempName).data(),
+																	data.Get("Dy_Err").data(),		data.Get(TempName+"_Err").data());
+		gae 	= new TGraphAsymmErrors	(data.GetSize("Dy"),		temp.data(),					data.Get(TempName).data(),
+																	data.Get("Dy_Err").data(),		data.Get("Dy_Err").data(),
+																	SysErrLow.data(), 				SysErrHigh.data());
 	}
 };
 
@@ -96,14 +127,14 @@ struct Sigma_CMS_PlotStrategy : Sigma_PlotStrategy
 	void Apply(TLegend*	leg)	override
 	{
 		Sigma_PlotStrategy::Apply(leg);
-		leg->AddEntry((TObject *)ge,	"CMS",	"p");
+		leg->AddEntry(ge,	"CMS",	"p");
 
-		// gae ->SetMarkerStyle(24);
-		// gae ->SetFillColorAlpha(16, 0.7);
-		// gae ->SetFillStyle(1001);
-		// gae ->Draw("2same");
+		gae ->SetMarkerStyle(24);
+		gae ->SetFillColorAlpha(16, 0.7);
+		gae ->SetFillStyle(1001);
+		gae ->Draw("2same");
 		ge  ->SetMarkerStyle(20);
-		ge  ->SetMarkerSize(1.6);
+		ge  ->SetMarkerSize(1.5);
 		ge  ->SetMarkerColor(2);
 		ge  ->SetLineColor(2);
 		ge  ->SetLineWidth(2);
@@ -118,12 +149,12 @@ struct Sigma_ALICE_2019_Strategy : Sigma_PlotStrategy
 	void Apply(TLegend*	leg)	override
 	{
 		Sigma_PlotStrategy::Apply(leg);
-		leg->AddEntry((TObject *)ge,	"ALICE* (-4 < y < -3.5)",	"p");
+		leg->AddEntry(ge,	"ALICE* (-4 < y < -3.5)",	"p");
 
-		// gae	->SetMarkerStyle(24);
-		// gae	->SetFillColorAlpha(16, 0.7);
-		// gae	->SetFillStyle(1001);
-		// gae	->Draw("2same");
+		gae	->SetMarkerStyle(24);
+		gae	->SetFillColorAlpha(16, 0.7);
+		gae	->SetFillStyle(1001);
+		gae	->Draw("2same");
 		ge	->SetMarkerStyle(25);
 		ge	->SetMarkerColor(4);
 		ge	->SetMarkerSize(1.5);
@@ -140,15 +171,15 @@ struct Sigma_ALICE_2021_Strategy : Sigma_PlotStrategy
 	void Apply(TLegend*	leg)	override
 	{
 		Sigma_PlotStrategy::Apply(leg);
-		leg->AddEntry((TObject *)ge,	"ALICE* (|y| < 0.15)",	"p");
+		leg->AddEntry(ge,	"ALICE* (|y| < 0.15)",	"p");
 
-		// gae ->SetMarkerStyle(24);
-		// gae ->SetFillColorAlpha(16, 0.7);
-		// gae ->SetFillStyle(1001);
-		// gae ->Draw("2same");
+		gae ->SetMarkerStyle(24);
+		gae ->SetFillColorAlpha(16, 0.7);
+		gae ->SetFillStyle(1001);
+		gae ->Draw("2same");
 		ge	->SetMarkerStyle(24);
 		ge	->SetMarkerColor(4);
-		ge	->SetMarkerSize(1.6);
+		ge	->SetMarkerSize(1.5);
 		ge	->SetLineColor(4);
 		ge	->SetLineWidth(2);
 		ge	->Draw("pezsame");
@@ -162,12 +193,12 @@ struct Sigma_LHCb_2022_Strategy : Sigma_PlotStrategy
 	void Apply(TLegend*	leg)	override
 	{
 		Sigma_PlotStrategy::Apply(leg);
-		leg->AddEntry((TObject *)ge,	"LHCb* (-4.5 < y < -3.5)",	"p");
+		leg->AddEntry(ge,	"LHCb* (-4.5 < y < -3.5)",	"p");
 
-		// gae ->SetMarkerStyle(24);
-		// gae ->SetFillColorAlpha(16, 0.7);
-		// gae ->SetFillStyle(1001);
-		// gae ->Draw("2same");
+		gae ->SetMarkerStyle(24);
+		gae ->SetFillColorAlpha(16, 0.7);
+		gae ->SetFillStyle(1001);
+		gae ->Draw("2same");
 		ge->SetMarkerStyle(26);
 		ge->SetMarkerColor(4);
 		ge->SetMarkerSize(1.5);
@@ -179,21 +210,22 @@ struct Sigma_LHCb_2022_Strategy : Sigma_PlotStrategy
 
 struct DSigmaDy_CMS_Strategy : DSigmaDy_PlotStrategy
 {
-	DSigmaDy_CMS_Strategy(const AnalysisData& data_)	: DSigmaDy_PlotStrategy{data_} {}
+	DSigmaDy_CMS_Strategy(const AnalysisData& data_,	TString NeuConfig_ = "AnAn",	int index_ = 0)	: DSigmaDy_PlotStrategy{data_, NeuConfig_} {	index = index_;	}
 	
 	void Apply(TLegend*	leg)	override
 	{
 		DSigmaDy_PlotStrategy::Apply(leg);
-		leg->AddEntry((TObject *)ge,	"CMS",	"lpf");
+		leg->AddEntry(gae,	"CMS",	"lpf");
 
-		// gae ->SetMarkerStyle(20);
-		// gae ->SetMarkerColor(2);
-		// gae ->SetLineColor(2);
-		// gae ->SetFillColorAlpha(16, 0.5);
-		// gae ->SetFillStyle(1001);
-		// gae ->Draw("2same");
+		gae ->SetMarkerStyle(20);
+		gae ->SetMarkerColor(2);
+		gae ->SetLineColor(2);
+		gae ->SetFillColorAlpha(16, 0.5);
+		gae ->SetFillStyle(1001);
+		gae ->Draw("2same");
+
 		ge  ->SetMarkerStyle(20);
-		ge  ->SetMarkerSize(1.);
+		ge  ->SetMarkerSize(1.5);
 		ge  ->SetMarkerColor(2);
 		ge  ->SetLineColor(2);
 		ge  ->SetLineWidth(2);
@@ -203,57 +235,69 @@ struct DSigmaDy_CMS_Strategy : DSigmaDy_PlotStrategy
 
 struct DSigmaDy_ALICE_2019_Strategy : DSigmaDy_PlotStrategy
 {
-	DSigmaDy_ALICE_2019_Strategy(const AnalysisData& data_)	: DSigmaDy_PlotStrategy{data_} {}
+	DSigmaDy_ALICE_2019_Strategy(const AnalysisData& data_,	TString NeuConfig_ = "AnAn",	int index_ = 0)	: DSigmaDy_PlotStrategy{data_, NeuConfig_} {	index = index_;	}
 	
 	void Apply(TLegend*	leg)	override
 	{
 		DSigmaDy_PlotStrategy::Apply(leg);
-		leg->AddEntry((TObject *)ge,	"ALICE 2019",	"lpf");
+		leg->AddEntry(gae,	"ALICE 2019",	"lpf");
 
-		// gae  ->SetMarkerStyle(21);
-		// gae ->SetFillColor(8);
-		// gae ->SetFillStyle(3001);
-		// gae ->Draw("2same");
-		ge  ->SetMarkerStyle(21);
-		ge  ->SetMarkerSize(1.);
+		gae ->SetMarkerStyle(25);
+		gae ->SetMarkerColor(4);
+		gae ->SetLineColor(4);
+		gae ->SetFillColor(kGray);
+		gae ->SetFillStyle(3001);
+		gae ->Draw("2same");
+
+		ge  ->SetMarkerStyle(25);
+		ge  ->SetMarkerSize(1.5);
+		ge  ->SetMarkerColor(4);
+		ge  ->SetLineColor(4);
 		ge  ->Draw("pezsame");
 	}
 };
 
 struct	DSigmaDy_ALICE_2021_Strategy : DSigmaDy_PlotStrategy
 {
-	DSigmaDy_ALICE_2021_Strategy(const AnalysisData& data_)	: DSigmaDy_PlotStrategy{data_} {}
+	DSigmaDy_ALICE_2021_Strategy(const AnalysisData& data_,	TString NeuConfig_ = "AnAn",	int index_ = 0)	: DSigmaDy_PlotStrategy{data_, NeuConfig_} {	index = index_;	}
 	
 	void Apply(TLegend*	leg)	override
 	{
 		DSigmaDy_PlotStrategy::Apply(leg);
-		leg->AddEntry((TObject *)ge,	"ALICE 2021",	"lpf");
+		leg->AddEntry(gae,	"ALICE 2021",	"lpf");
 
-		// gae  ->SetMarkerStyle(21);
-		// gae ->SetFillColor(kGreen);
-		// gae ->SetFillStyle(3001);
-		// gae ->Draw("2same");
-		ge  ->SetMarkerStyle(21);
-		ge  ->SetMarkerSize(1.);
+		gae ->SetMarkerStyle(24);
+		gae ->SetMarkerColor(4);
+		gae ->SetLineColor(4);
+		gae ->SetFillColor(kGray);
+		gae ->SetFillStyle(3001);
+		gae ->Draw("2same");
+
+		ge  ->SetMarkerStyle(24);
+		ge  ->SetMarkerSize(1.5);
+		ge  ->SetMarkerColor(4);
+		ge  ->SetLineColor(4);
 		ge  ->Draw("pezsame");
 	}
 };
 
 struct DSigmaDy_LHCb_2022_Strategy : DSigmaDy_PlotStrategy
 {
-	DSigmaDy_LHCb_2022_Strategy(const AnalysisData& data_)	: DSigmaDy_PlotStrategy{data_} {}
+	DSigmaDy_LHCb_2022_Strategy(const AnalysisData& data_,	TString NeuConfig_ = "AnAn",	int index_ = 0)	: DSigmaDy_PlotStrategy{data_, NeuConfig_} {	index = index_;	}
 	
 	void Apply(TLegend*	leg)	override
 	{
 		DSigmaDy_PlotStrategy::Apply(leg);
-		leg->AddEntry((TObject *)ge,	"LHCb 2022",	"lpf");
+		leg->AddEntry(gae,	"LHCb  2022",	"lpf");
 
-		// gae  ->SetMarkerStyle(24);
-		// gae ->SetFillColor(kGray);
-		// gae ->SetFillStyle(3001);
-		// gae ->Draw("2same");
+
+		gae ->SetMarkerStyle(26);
+		gae ->SetFillColor(kGray);
+		gae ->SetFillStyle(3001);
+		gae ->Draw("2same");
+
 		ge  ->SetMarkerStyle(26);
-		ge  ->SetMarkerSize(1.);
+		ge  ->SetMarkerSize(1.5);
 		ge  ->Draw("pezsame");
 	}
 };
@@ -264,17 +308,17 @@ struct R_CMS_Strategy : R_PlotStrategy
 	
 	void Apply(TLegend*	leg)	override
 	{
-		std::vector<double> X_AXIS_ERR = {8e-6,3e-4,7e-6,4e-4,5e-6,4.5e-4};
+		X_AXIS_ERR = {8e-6,	7e-6,	5e-6,	4.5e-4,	4e-4,	3e-4};
 		R_PlotStrategy::Apply(leg);
-		leg->AddEntry((TObject *)ge,	"CMS",	"p");
+		leg->AddEntry(ge,	"CMS",	"p");
 		
-		// gae ->SetMarkerStyle(24);
-		// gae ->SetFillColorAlpha(16, 0.7);
-		// gae ->SetFillStyle(1001);
-		// gae ->Draw("2same");
+		gae ->SetMarkerStyle(24);
+		gae ->SetFillColorAlpha(16, 0.7);
+		gae ->SetFillStyle(1001);
+		gae ->Draw("2same");
 		ge->SetMarkerStyle(20);
 		ge->SetMarkerColor(2);
-		ge->SetMarkerSize(1.6);
+		ge->SetMarkerSize(1.5);
 		ge->SetLineColor(2);
 		ge->SetLineWidth(2);
 		ge->Draw("pezsame");
@@ -289,15 +333,15 @@ struct R_ALICE_2019_Strategy : R_PlotStrategy
 	{
 		X_AXIS_ERR = {2.5e-3,2e-3};
 		R_PlotStrategy::Apply(leg);
-		leg->AddEntry((TObject *)ge,	"ALICE* (-4 < y < -3.5)",	"p");
+		leg->AddEntry(ge,	"ALICE* (-4 < y < -3.5)",	"p");
 
-		// gae ->SetMarkerStyle(24);
-		// gae ->SetFillColorAlpha(16, 0.7);
-		// gae ->SetFillStyle(1001);
-		// gae ->Draw("2same");
+		gae ->SetMarkerStyle(24);
+		gae ->SetFillColorAlpha(16, 0.7);
+		gae ->SetFillStyle(1001);
+		gae ->Draw("2same");
 		ge->SetMarkerStyle(25);
 		ge->SetMarkerColor(4);
-		ge->SetMarkerSize(1.6);
+		ge->SetMarkerSize(1.5);
 		ge->SetLineColor(4);
 		ge->SetLineWidth(2);
 		ge->Draw("pezsame");
@@ -312,15 +356,15 @@ struct R_ALICE_2021_Strategy : R_PlotStrategy
 	{
 		X_AXIS_ERR = {5e-5};
 		R_PlotStrategy::Apply(leg);
-		leg->AddEntry((TObject *)ge,	"ALICE* (|y| < 0.15)",	"p");
+		leg->AddEntry(ge,	"ALICE* (|y| < 0.15)",	"p");
 
-		// gae ->SetMarkerStyle(24);
-		// gae ->SetFillColorAlpha(16, 0.7);
-		// gae ->SetFillStyle(1001);
-		// gae ->Draw("2same");
+		gae ->SetMarkerStyle(24);
+		gae ->SetFillColorAlpha(16, 0.7);
+		gae ->SetFillStyle(1001);
+		gae ->Draw("2same");
 		ge->SetMarkerStyle(24);
 		ge->SetMarkerColor(4);
-		ge->SetMarkerSize(1.6);
+		ge->SetMarkerSize(1.5);
 		ge->SetLineColor(4);
 		ge->SetLineWidth(2);
 		ge->Draw("pezsame");
@@ -335,15 +379,15 @@ struct R_LHCb_2022_Strategy : R_PlotStrategy
 	{
 		X_AXIS_ERR = {2.5e-3,2e-3};
 		R_PlotStrategy::Apply(leg);
-		leg->AddEntry((TObject *)ge,	"LHCb* (-4.5 < y < -3.5)",	"p");
+		leg->AddEntry(ge,	"LHCb* (-4.5 < y < -3.5)",	"p");
 
-		// gae ->SetMarkerStyle(24);
-		// gae ->SetFillColorAlpha(16, 0.7);
-		// gae ->SetFillStyle(1001);
-		// gae ->Draw("2same");
+		gae ->SetMarkerStyle(24);
+		gae ->SetFillColorAlpha(16, 0.7);
+		gae ->SetFillStyle(1001);
+		gae ->Draw("2same");
 		ge->SetMarkerStyle(26);
 		ge->SetMarkerColor(4);
-		ge->SetMarkerSize(1.6);
+		ge->SetMarkerSize(1.5);
 		ge->SetLineColor(4);
 		ge->SetLineWidth(2);
 		ge->Draw("pezsame");

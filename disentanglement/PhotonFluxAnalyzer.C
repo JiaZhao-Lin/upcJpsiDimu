@@ -7,7 +7,7 @@
 struct PhotonFluxAnalyzer : Analyzer
 {
 protected:
-    std::map<TString, std::vector<double>> PhotonFluxMap	=
+    std::map<TString, std::vector<double>> PhotonFluxMap	=   //map template for loading flux
     {
         {"Energy_Table_AnAn"    ,{}}    ,{"Rap_Table_AnAn"      ,{}}    ,{"dNdk_Table_AnAn"     ,{}}    ,{"dNdy_Table_AnAn"     ,{}},
         {"Energy_Table_0n0n"    ,{}}    ,{"Rap_Table_0n0n"      ,{}}    ,{"dNdk_Table_0n0n"     ,{}}    ,{"dNdy_Table_0n0n"     ,{}},
@@ -17,7 +17,9 @@ protected:
         {"biter_0nXnSum"        ,{}}    ,{"PofPhotonB_0nXnSum"  ,{}}    ,{"PofHadronB_0nXnSum"  ,{}}    ,{"PofB_0nXnSum"        ,{}},
         {"biter_XnXn"           ,{}}    ,{"PofPhotonB_XnXn"     ,{}}    ,{"PofHadronB_XnXn"     ,{}}    ,{"PofB_XnXn"           ,{}}
     };
-    std::map<TString, std::vector<double>> PhotonFluxMapTemp = PhotonFluxMap;
+    std::map<TString, std::vector<double>> PhotonFluxMapClean = PhotonFluxMap;   //remember this template and use it to reset the map
+    std::map<TString, std::vector<double>> InterPhotonFluxMap;   //use this map to remember the interpolated flux based on the rap
+    bool getFluxErr = false;
 
 public:
     TString inFileDir;
@@ -26,15 +28,15 @@ public:
 
     PhotonFluxAnalyzer(AnalysisData& data_, TString inFileDir_, TString subCase_) : Analyzer{data_}, inFileDir(inFileDir_), subCase(subCase_) {};
 
-    void LoadPhotonFlux()
+    void LoadPhotonFlux(TString inFileDir_, TString subCase_)
     {
         for (int i = 0; i < CasesName.size(); ++i)
         {
-            TString FluxFileName  = Form("Flux_%s%s.txt", CasesName[i].Data(), subCase.Data());
-            TString PofBFileName  = Form("PofB_%s%s.txt", CasesName[i].Data(), subCase.Data());
-            cout<<"LoadPhotonFlux-------->Loading Photon Flux From " + FluxFileName + " in the Dir:"<<inFileDir<<endl;
+            TString FluxFileName  = Form("Flux_%s%s.txt", CasesName[i].Data(), subCase_.Data());
+            TString PofBFileName  = Form("PofB_%s%s.txt", CasesName[i].Data(), subCase_.Data());
+            cout<<"LoadPhotonFlux-------->Loading Photon Flux From " + FluxFileName + " in the Dir:"<<inFileDir_<<endl;
 
-            ifstream myfile(Form("%s%s", inFileDir.Data(), FluxFileName.Data()));
+            ifstream myfile(Form("%s%s", inFileDir_.Data(), FluxFileName.Data()));
 
             if (myfile.is_open())
             {
@@ -64,7 +66,7 @@ public:
             else throw std::runtime_error( "ERROR!!! Unable to open Flux file!!!");
 
             if (i == 0) continue;
-            ifstream myfile1(Form("%s%s", inFileDir.Data(), PofBFileName.Data()));
+            ifstream myfile1(Form("%s%s", inFileDir_.Data(), PofBFileName.Data()));
             if (myfile1.is_open())
             {
                 std::string line;
@@ -115,11 +117,19 @@ public:
         return flux_r;
     }
 
-    void InterpolateFlux()
+
+    // calculate the photon flux from the rap given in the data.
+    // Will add the flux result to the data if it is not there already, otherwise it will do NOTHING
+    // This way the function can be called multiple times without any problem and be used to calculate the flux for uncertainty
+    void InterpolateFlux(TString inFileDir_, TString subCase_)
     {
         // if (PhotonFluxMap.at("Energy_Table_AnAn").size() == 0){	loadPhotonFlux(inFileDir, subCase);	}
-        PhotonFluxMap = PhotonFluxMapTemp;
-        LoadPhotonFlux();
+
+        //Reset the photon flux map to the clean one
+        PhotonFluxMap.clear();
+        InterPhotonFluxMap.clear();
+        PhotonFluxMap = PhotonFluxMapClean;
+        LoadPhotonFlux( inFileDir_, subCase_);
 
         //Calculate photon energy from the rap
         int n_data = data.GetSize("Rap");
@@ -129,7 +139,9 @@ public:
             double w = ParamConverter::y2w( data.Get("Rap", j) );
             w_temp      .push_back( w );
         }
-        data.Add("w", w_temp);
+
+        //Add the photon energy if it is not in the map already
+        if ( !data.IsMapKeyExist("w") ) data.Add("w", w_temp);
 
         //Calculate photon flux from the rap
         for (int i = 0; i < CasesName.size(); ++i)
@@ -142,18 +154,68 @@ public:
                 double w = data.Get("w", j);
                 dNdy_temp   .push_back(	w * Interpolate(w, Case)	);
             }
-            data.Add("dNdy_" + Case, dNdy_temp);
+
+            //Remember this interpolated flux
+            InterPhotonFluxMap["dNdy_" + Case] = dNdy_temp;
+
+            //Add the photon flux if it is not in the map already
+            if ( !data.IsMapKeyExist("dNdy_" + Case) )  data.Add("dNdy_" + Case, dNdy_temp);
+        }
+        
+        cout<<"InterpolateFlux-------->DONE"<<endl<<endl;
+    }
+
+    //Calculate the error of photon flux based on the file given by the simulation
+    void CalculateFluxErr()
+    {
+        std::vector<TString> inFileDirList  = {"../simulation/flux/", "../simulation/flux/", "../simulation/flux/", "../simulation/flux/",};
+        std::vector<TString> subCaseList    = {"_SigNN68p3R6p70a0p59", "_SigNN68p3R6p64a0p53", "_SigNN68p3R6p70a0p53", "_SigNN68p3R6p64a0p59"};
+        std::vector<std::vector<double>> dNdy_Errs  (CasesName.size(),    std::vector<double> (data.GetSize("Rap"),   0)  );
+        std::vector<std::vector<double>> dNdy_Uncers(CasesName.size(),    std::vector<double> (data.GetSize("Rap"),   0)  );
+
+        assert(inFileDirList.size() == subCaseList.size());
+        for (int i = 0; i < inFileDirList.size(); ++i)
+        {
+            TString inFileDir_  = inFileDirList[i];
+            TString subCase_    = subCaseList[i];
+
+            InterpolateFlux(inFileDir_,  subCase_);
+
+            for (int j = 0; j < CasesName.size(); ++j)
+            {
+                TString Case = CasesName[j];
+
+                for (int k = 0; k < data.GetSize("Rap"); ++k)
+                {
+                    auto temp_flux = InterPhotonFluxMap.at("dNdy_" + Case)[k];
+                    auto temp_flux_default = data.Get("dNdy_" + Case, k);
+                    auto temp_err = abs(temp_flux - temp_flux_default);
+                    dNdy_Errs[j][k] = max(dNdy_Errs[j][k],  temp_err);
+                    dNdy_Uncers[j][k] = dNdy_Errs[j][k] / temp_flux_default * 100.0;
+                }
+            }
         }
 
-        cout<<"InterpolateFlux-------->DONE"<<endl<<endl;
+        for (int i = 0; i < CasesName.size(); ++i)
+        {
+            data.Add("dNdy_" + CasesName[i] + "_Err", dNdy_Errs[i]);
+            data.Add("dNdy_" + CasesName[i] + "_Uncer", dNdy_Uncers[i]);
+        }
+    }
+
+    void SetFluxErr(const bool getFluxErr_ = false)
+    {
+        getFluxErr = getFluxErr_;
     }
 
     void Handle() override
     {
         cout << endl << "+++PhotonFluxAnalyzer::Handling..." <<endl;
-        InterpolateFlux();
+        InterpolateFlux(inFileDir, subCase);
 
-        Analyzer::Handle();
+        if (getFluxErr) CalculateFluxErr();
+
+        // Analyzer::Handle();
     }
 };
 

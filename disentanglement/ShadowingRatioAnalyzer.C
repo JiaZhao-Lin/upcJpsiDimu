@@ -4,6 +4,7 @@
 #include "Analyzer.h"
 #include "ImpulseApprox.C"
 
+// Use to Calculate Shadowing Ratio R
 struct ShadowingRatioAnalyzer : Analyzer
 {
     bool Simple_R_SysErr = false;
@@ -42,14 +43,33 @@ struct ShadowingRatioAnalyzer : Analyzer
 
     void Calculate_Simple_R_SysErr()
     {
+        //Use for Fwd and Mid Rapidity only. It calculate the R systematic error by combining the Sigma systematic error and IA systematic error.
         int n_data = data.GetSize("Sigma");
-        std::vector<double> temp;
-        for (int i = 0; i < n_data; ++i)
+
+        //Check if the systematic error is Aymmetric or Symmetric.
+        if(data.IsMapKeyExist("Sigma_SysErrLow") && data.IsMapKeyExist("Sigma_SysErrHigh"))
         {
-            temp.push_back( 0.5 * data.Get("R", i) * TMath::Hypot( data.Get("Sigma_SysErr", i)/data.Get("Sigma", i),
-																data.Get("Sigma_IA_Err", i)/data.Get("Sigma_IA", i) ) );
+            std::vector<double> tempLow,   tempHigh;
+            for (int i = 0; i < n_data; ++i)
+            {
+                tempLow .push_back( 0.5 * data.Get("R", i) * TMath::Hypot( data.Get("Sigma_SysErrLow", i)/data.Get("Sigma", i),
+                                                                data.Get("Sigma_IA_Err", i)/data.Get("Sigma_IA", i) ) );
+                tempHigh.push_back( 0.5 * data.Get("R", i) * TMath::Hypot( data.Get("Sigma_SysErrHigh", i)/data.Get("Sigma", i),
+                                                                data.Get("Sigma_IA_Err", i)/data.Get("Sigma_IA", i) ) );
+            }
+            data.Add("R_SysErrLow", tempLow);
+            data.Add("R_SysErrHigh", tempHigh);
         }
-        data.Add("R_SysErr", temp);
+        else
+        {
+            std::vector<double> temp;
+            for (int i = 0; i < n_data; ++i)
+            {
+                temp.push_back( 0.5 * data.Get("R", i) * TMath::Hypot( data.Get("Sigma_SysErr", i)/data.Get("Sigma", i),
+                                                                data.Get("Sigma_IA_Err", i)/data.Get("Sigma_IA", i) ) );
+            }
+            data.Add("R_SysErr", temp);
+        }
     }
     
     void Handle() override

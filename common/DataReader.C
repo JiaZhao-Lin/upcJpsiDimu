@@ -8,6 +8,10 @@
 	Dec. 2022
 */
 
+#ifndef DATAREADER_H
+#define DATAREADER_H
+
+
 enum class ReadColumnFileStrategy
 {
 	ReadViaIO,
@@ -127,8 +131,12 @@ struct SingleDataReader	:	DataReader
 			// Read one line at a time into the variable line:
 			while(std::getline(inFile, line))
 			{
+				//skip empty lines
+				if(line.empty()) 	continue;
+				
 				std::vector<double>   	lineData;
 				std::stringstream  		lineStream(line);
+
 
 				double value;
 				// Read an integer at a time from the line
@@ -137,8 +145,7 @@ struct SingleDataReader	:	DataReader
 					// Add the integers from a line to a 1D array (vector)
 					lineData.push_back(value);
 				}
-				
-				if( lineData.size() != ColumnNames_.size() ) throw std::runtime_error("ReadViaIO: Incorrect number of column!!!");
+				if( lineData.size() != ColumnNames_.size() ) throw std::runtime_error(Form("ReadViaIO: Incorrect number of column: LineSize: %d vs ColumnSize: %d",(int)lineData.size(), (int)ColumnNames_.size()));
 
 				for (int j = 0; j < ColumnNames_.size(); ++j)
 				{
@@ -147,7 +154,7 @@ struct SingleDataReader	:	DataReader
 				// cout<<line<<endl;
 			}
 		}
-		else throw std::runtime_error( "ReadViaIO: ERROR!!! Unable to open file!!!");
+		else throw std::runtime_error( "ReadViaIO: ERROR!!! Unable to open file: " + FileDir_);
 
 		return outMap;
 	}
@@ -181,12 +188,15 @@ struct MultiDataReader : DataReader
 };
 
 
-void DataReader(){
-	//Testing
-	// ColumnPrototype("../disentanglement/inFiles/DSigmaDy_ALICE_2019.txt");
-	// SingleDataReader a("../disentanglement/inFiles/DSigmaDy_ALICE_2019.txt");
-	// cout<<a.cp.getHeader().Data()<<endl;
-	// MultiDataReader b({"../physicsFigures/inputfiles/LTA_Jpsi_weak_shadowing.dat", "../physicsFigures/inputfiles/LTA_Jpsi_strong_shadowing.dat"}, {"y", "AnAn", "0n0n", "0nXnSum", "XnXn"});
-	// cout<<a.GetVec("y")[2]<<endl;
-	// cout<<b.GetVec(0,"y")[7]<<endl;
-}
+// void DataReader(){
+// 	//Testing
+// 	// ColumnPrototype("../disentanglement/inFiles/DSigmaDy_ALICE_2019.txt");
+// 	// SingleDataReader a("../disentanglement/inFiles/DSigmaDy_ALICE_2019.txt");
+// 	// cout<<a.cp.getHeader().Data()<<endl;
+// 	// MultiDataReader b({"../physicsFigures/inputfiles/LTA_Jpsi_weak_shadowing.dat", "../physicsFigures/inputfiles/LTA_Jpsi_strong_shadowing.dat"}, {"y", "AnAn", "0n0n", "0nXnSum", "XnXn"});
+// 	// cout<<a.GetVec("y")[2]<<endl;
+// 	// cout<<b.GetVec(0,"y")[7]<<endl;
+// }
+
+
+#endif
