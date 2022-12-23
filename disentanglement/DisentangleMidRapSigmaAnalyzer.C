@@ -2,12 +2,13 @@
 #define DisentangleMidRapSigmaAnalyzer_H
 
 // Use to disentangle the mid-rapidity sigma from the DSigmaDy
-struct DisentangleMidRapSigmaAnalyzer: PhotonFluxAnalyzer
+struct DisentangleMidRapSigmaAnalyzer: Analyzer
 {
 	bool    print               = false;
 	double  fluxScaleFactor    	= 1.0;
+	PhotonFluxReader cPhotonFluxReader;
 
-	DisentangleMidRapSigmaAnalyzer(AnalysisData& data_, TString inFileDir_, TString subCase_) : PhotonFluxAnalyzer(data_, inFileDir_, subCase_) {};
+	DisentangleMidRapSigmaAnalyzer(AnalysisData& data_, TString inFileDir_, TString subCase_) : Analyzer{data_}, cPhotonFluxReader{data_, inFileDir_, subCase_} {};
 
 	void PrintHandling() const
 	{
@@ -44,8 +45,8 @@ struct DisentangleMidRapSigmaAnalyzer: PhotonFluxAnalyzer
 	{
 		PrintHandling();
 
-		SetFluxErr(true);
-		PhotonFluxAnalyzer::Handle();
+		cPhotonFluxReader.SetFluxErr(true);
+		cPhotonFluxReader.Handle();
 		Calculate();
 
 		Analyzer::Handle();

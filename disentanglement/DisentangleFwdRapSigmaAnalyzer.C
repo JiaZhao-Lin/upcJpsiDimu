@@ -2,12 +2,13 @@
 #define DisentangleFwdRapSigmaAnalyzer_H
 
 //For the disentanglement of the forward rapidity cross section
-struct DisentangleFwdRapSigmaAnalyzer: PhotonFluxAnalyzer
+struct DisentangleFwdRapSigmaAnalyzer: Analyzer
 {
 	bool    print               = false;
 	double  fluxScaleFactor    	= 1.0;
+	PhotonFluxReader cPhotonFluxReader;
 
-	DisentangleFwdRapSigmaAnalyzer(AnalysisData& data_, TString inFileDir_, TString subCase_) : PhotonFluxAnalyzer(data_, inFileDir_, subCase_) {};
+	DisentangleFwdRapSigmaAnalyzer(AnalysisData& data_, TString inFileDir_, TString subCase_) : Analyzer{data_}, cPhotonFluxReader{data_, inFileDir_, subCase_} {};
 
 	void PrintHandling() const
 	{
@@ -44,8 +45,8 @@ struct DisentangleFwdRapSigmaAnalyzer: PhotonFluxAnalyzer
 	{
 		PrintHandling();
 
-		SetFluxErr(true);
-		PhotonFluxAnalyzer::Handle();
+		cPhotonFluxReader.SetFluxErr(true);
+		cPhotonFluxReader.Handle();
 		Calculate();
 
 		Analyzer::Handle();

@@ -1,12 +1,13 @@
-#ifndef PhotonFluxAnalyzer_H
-#define PhotonFluxAnalyzer_H
+#ifndef PhotonFluxReader_H
+#define PhotonFluxReader_H
 
-#include "Analyzer.h"
 #include "ParamConverter.C"
+#include "AnalysisData.C"
 
-struct PhotonFluxAnalyzer : Analyzer
+struct PhotonFluxReader
 {
 protected:
+    AnalysisData& data;
     std::map<TString, std::vector<double>> PhotonFluxMap	=   //map template for loading flux
     {
         {"Energy_Table_AnAn"    ,{}}    ,{"Rap_Table_AnAn"      ,{}}    ,{"dNdk_Table_AnAn"     ,{}}    ,{"dNdy_Table_AnAn"     ,{}},
@@ -26,7 +27,7 @@ public:
     TString subCase;
     std::vector<TString> CasesName = {"AnAn",	"0n0n", "0nXnSum", "XnXn"};
 
-    PhotonFluxAnalyzer(AnalysisData& data_, TString inFileDir_, TString subCase_) : Analyzer{data_}, inFileDir(inFileDir_), subCase(subCase_) {};
+    PhotonFluxReader(AnalysisData& data_, TString inFileDir_, TString subCase_) : data{data_}, inFileDir(inFileDir_), subCase(subCase_) {};
 
     void LoadPhotonFlux(TString inFileDir_, TString subCase_)
     {
@@ -208,26 +209,24 @@ public:
         getFluxErr = getFluxErr_;
     }
 
-    void Handle() override
+    void Handle()
     {
-        cout << endl << "+++PhotonFluxAnalyzer::Handling..." <<endl;
+        cout << endl << "+++PhotonFluxReader::Handling..." <<endl;
         InterpolateFlux(inFileDir, subCase);
 
         if (getFluxErr) CalculateFluxErr();
-
-        // Analyzer::Handle();
     }
 };
 
 
-// void PhotonFluxAnalyzer()
+// void PhotonFluxReader()
 // {
 // 	//------------------Standard Test-------------------------------------------
 //     // AnalysisData data("Test");
 //     // AnalysisDataObserver obs;
 //     // data.Subscribe(&obs);
 //     // data.Add("Rap",         {1.75, -1.75, 2, -2, 2.25, -2.25});
-// 	// struct PhotonFluxAnalyzer ana(data, "../simulation/flux/", "_SigNN68p3R6p67a0p56");
+// 	// struct PhotonFluxReader ana(data, "../simulation/flux/", "_SigNN68p3R6p67a0p56");
 //     // ana.Handle();
 
 // 	// plotFlux(TestMap,	"0n0n");

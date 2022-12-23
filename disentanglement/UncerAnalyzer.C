@@ -277,11 +277,6 @@ struct UncerAnalyzer : Analyzer
 
 		AnaData.LoadMap(TotalSysUncer.GetMap());
 		AddConsSysUncer();	//Add the constant systematic uncertainty
-		auto temp = AnaData.Get("DSigmaDy_0n0n_SysUncer");
-		for ( auto i = 0; i < temp.size(); i++ )
-			{
-				cout<<temp[i]<<endl;
-			}
 	}
 
 	//caculate the total systematic error, must be done after all the systematic uncertainty is calculated

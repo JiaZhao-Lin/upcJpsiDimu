@@ -1,16 +1,17 @@
 #ifndef Fit2DAnalyzer_H
 #define Fit2DAnalyzer_H
 
-#include "PhotonFluxAnalyzer.C"
+#include "PhotonFluxReader.C"
 #include "../common/function.C"
 
 //Fit Sigma from 2D data point of DSigmaDy and dNdy
-struct Fit2DAnalyzer: PhotonFluxAnalyzer
+struct Fit2DAnalyzer: Analyzer
 {
     bool    print               = false;
     double  fluxScaleFactor    = 1.0;
+    PhotonFluxReader cPhotonFluxReader;
 
-    Fit2DAnalyzer(AnalysisData& data_, TString inFileDir_, TString subCase_) : PhotonFluxAnalyzer(data_, inFileDir_, subCase_) {};
+    Fit2DAnalyzer(AnalysisData& data_, TString inFileDir_, TString subCase_) : Analyzer{data_}, cPhotonFluxReader{data_, inFileDir_, subCase_} {};
 
     void Fit2D()
     {
@@ -96,7 +97,7 @@ struct Fit2DAnalyzer: PhotonFluxAnalyzer
     void Handle()
     {
         cout << endl << "+++Fit2DAnalyzer::Handling..." <<endl;
-        PhotonFluxAnalyzer::Handle();
+        cPhotonFluxReader.Handle();
         Fit2D();
 
         Analyzer::Handle();
