@@ -35,7 +35,8 @@ private:
 public:
 	const TString data_name;
 	AnalysisData(TString name): data_name(name) {}
-	AnalysisData(TString name, TString inFileDir): data_name(name) { LoadHistFile(inFileDir); }	// Load from DSigmaDy file !!!
+	AnalysisData(TString name, TString inFileDir): data_name{name} { LoadHistFile(inFileDir); }	// Load from DSigmaDy file !!!
+	AnalysisData( const AnalysisData& other ): data_name{other.data_name},	data_map{other.data_map} {}	// Copy constructor only copies the map and the name but not the observers
 
 	bool IsMapEmpty()					const	{ return !data_map.size(); }
 	bool IsMapKeyExist(TString param)	const	{ return data_map.find(param) != data_map.end(); }

@@ -32,10 +32,26 @@ struct PairUncer
 
 		UncerAnaData.Add( Form("%s_SysUncer", param.Data()), Relative_Uncer );
 	}
+	static void SqrtUncer(const AnalysisData& DefaultAnaData, AnalysisData& UncerAnaData, const TString param)
+	{
+		std::vector<double> Sqrt_Uncer;
+
+		//Calculate Relative Uncertainty
+		auto Default = DefaultAnaData.Get(param);
+		auto Uncer = UncerAnaData.Get(param);
+		auto Sq   = UncerAnaData.Get("Sigma_SysUncer");	//Important	!! use the uncertainty of Sigma to calculate uncertainty of R
+
+		for ( auto i = 0; i < Default.size(); i++ )
+		{
+			Sqrt_Uncer.	push_back(	0.5 * Sq[i]	);
+		}
+
+		UncerAnaData.Add( Form("%s_SysUncer", param.Data()), Sqrt_Uncer );
+	}
 	static void Calculate(const AnalysisData& DefaultAnaData, AnalysisData& UncerAnaData)
 	{
 		RelativeUncer(	DefaultAnaData,	UncerAnaData,	"Sigma"				);
-		RelativeUncer(	DefaultAnaData,	UncerAnaData,	"R"					);
+		SqrtUncer	 (	DefaultAnaData,	UncerAnaData,	"R"					);	//Important	!! use the uncertainty of Sigma to calculate uncertainty of R
 
 		RelativeUncer(	DefaultAnaData,	UncerAnaData,	"DSigmaDy_AnAn"		);
 		RelativeUncer(	DefaultAnaData,	UncerAnaData,	"DSigmaDy_0n0n"		);
@@ -124,9 +140,11 @@ struct UncerAnalyzer : Analyzer
 {
 	//analyze uncertainties of the AnalysisData.
 	//the result will be added to the new AnalysisData: AnaData, containing only the sys uncertainties
-
 	AnalysisDataObserver obs;
 	AnalysisData AnaData{"SysUncer"};
+
+	//use this to record the breakdown of uncertainties
+	std::map<TString, AnalysisData> AnaData_Breakdown;
 
 	// those parameters must be in the same order
 	std::vector<TString> paramList 			= {"Sigma", "R", "DSigmaDy_AnAn", "DSigmaDy_0n0n", "DSigmaDy_0nXnSum", "DSigmaDy_XnXn"};
@@ -229,6 +247,11 @@ struct UncerAnalyzer : Analyzer
 	//only do this once
 	void AddConsSysUncer()
 	{
+		//check if it is called the first time
+		static bool called = false;
+		if (called) throw std::runtime_error("AddConsSysUncer: called twice!");
+		called = true;
+
 		std::vector<double> v_Lumi_Uncer;
 		std::vector<double> v_BR_Uncer;
 
@@ -248,6 +271,15 @@ struct UncerAnalyzer : Analyzer
 			AddToSysUncer(v_BR_Uncer, SysUncer_paramList.at(i));
 		}
 
+		//Add Lumi and BR uncertainty to the breakdown uncertainty
+		AnalysisData AnaData_Lumi {"Lumi"};
+		AnalysisData AnaData_BR   {"BR"};
+		AnalysisData AnaData_IA   {"IA_Uncer"};
+		AnaData_Lumi.Add("Lumi_SysUncer", 	std::vector<double>	(AnaData.GetSize("Sigma_SysUncer"),	Lumi_Uncer*100));
+		AnaData_BR.Add("BR_SysUncer", 	std::vector<double>	(AnaData.GetSize("Sigma_SysUncer"),	br_Jpsi2uu_Uncer*100));
+		AnaData_Lumi.Add("R_Lumi_SysUncer", 		std::vector<double>	(AnaData.GetSize("R_SysUncer"),		0.5*Lumi_Uncer*100));
+		AnaData_BR.Add("R_BR_SysUncer", 		std::vector<double>	(AnaData.GetSize("R_SysUncer"),		0.5*br_Jpsi2uu_Uncer*100));
+
 		//now add the IA uncertainty to the R systematic uncertainty
 		std::vector<double> v_IA_Uncer;
 		for (int i = 0; i < Default_AnaData.GetSize("Sigma_IA"); ++i)
@@ -255,6 +287,18 @@ struct UncerAnalyzer : Analyzer
 			v_IA_Uncer.push_back( 0.5 * 100.0 * Default_AnaData.Get("Sigma_IA_Err", i) / Default_AnaData.Get("Sigma_IA", i) );
 		}
 		AddToSysUncer(v_IA_Uncer, "R_SysUncer");
+
+		//now add the IA uncertainty to the breakdown uncertainty
+		AnaData_IA.Add("R_SysUncer", v_IA_Uncer);
+		AnaData_Breakdown.insert({"IA", AnaData_IA});
+
+		//Add AnaData_Const to AnaData_Breakdown
+		AnaData_Breakdown.insert({"Lumi", AnaData_Lumi});
+		AnaData_Breakdown.insert({"BR", AnaData_BR});
+
+		AnalysisData AnaData_Total{AnaData};
+		AnaData_Breakdown.insert({"Total", AnaData_Total});
+		
 	}
 
 
@@ -263,7 +307,7 @@ struct UncerAnalyzer : Analyzer
 			
 		auto MassFitRangeUncer	= LargestUncer::Calculate({	CB_Poly3_NarrMass_AnaData,	CB_Poly3_WideMass_AnaData	},	SysUncer_paramList);
 
-		auto TotalFitUncer 		= CombineUncer::Calculate({	CB_Poly4_AnaData,			CB_FixCBAN_Poly3_AnaData,	
+		auto FitUncer 			= CombineUncer::Calculate({	CB_Poly4_AnaData,			CB_FixCBAN_Poly3_AnaData,	
 															CBG_Poly3_AnaData,			CB_Poly3_temp_AnaData,
 															CB_Poly3_CohPtCut_AnaData,	CB_Poly3_SdB_AnaData,		
 															MassFitRangeUncer										},	SysUncer_paramList);
@@ -271,12 +315,20 @@ struct UncerAnalyzer : Analyzer
 															CB_Poly3_fluxPM_AnaData,	CB_Poly3_fluxMP_AnaData		},	SysUncer_paramList);
 		auto TnPUncer			= LargestUncer::Calculate({	CB_Poly3_TnP_Low_AnaData,	CB_Poly3_TnP_Hig_AnaData	},	SysUncer_paramList);
 
-		auto TotalSysUncer		= CombineUncer::Calculate({	TotalFitUncer,				FluxUncer,			
+		auto TotalUncer			= CombineUncer::Calculate({	FitUncer,					FluxUncer,			
 															TnPUncer,					CB_Poly3_PU_AnaData,		
 															CB_Poly3_looseHF_AnaData								},	SysUncer_paramList);
 
-		AnaData.LoadMap(TotalSysUncer.GetMap());
+		AnaData.LoadMap(TotalUncer.GetMap());
 		AddConsSysUncer();	//Add the constant systematic uncertainty
+
+		//load the breakdown of systematic uncertainties to AnaData_Breakdown
+		AnaData_Breakdown.insert(	{"Signal Ext",		FitUncer}	);
+		AnaData_Breakdown.insert(	{"PhotonFlux",		FluxUncer}		);
+		AnaData_Breakdown.insert(	{"TnP",				TnPUncer}		);
+		AnaData_Breakdown.insert(	{"HFveto",			CB_Poly3_looseHF_AnaData}	); // HF veto used loose HF cut for now, may update later
+		AnaData_Breakdown.insert(	{"n-PileUp",		CB_Poly3_PU_AnaData}		);
+
 	}
 
 	//caculate the total systematic error, must be done after all the systematic uncertainty is calculated
