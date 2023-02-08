@@ -48,4 +48,5 @@
 
 # *** 6. Signal extraction ***
   6-1) cd jpsiAnaCode/signalExt
-  6-2) root -l -b -q decoupleJpsi.C+ to decouple different contributions by fitting mass and pt distributions
+  6-2) root -l -b -q  getJpsiPsi_nsns.C to decouple different contributions by fitting mass and pt distributions, all the corrections are applied for the final cross section calculations, as described in the ANALYSIS note.
+  (The basic idea of the Raw Signal fitting is based on ALICE 2021 EPJC).
