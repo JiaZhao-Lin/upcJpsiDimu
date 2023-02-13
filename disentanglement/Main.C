@@ -85,6 +85,17 @@ void Main()
 //-------------------------------------------------------------------------------------------------
 	struct ResultPlotProcessor p;
 //------------------------------------DSigmaDy------------------------------------------------------
+	p.SetFigureFrame(ResultFrameStrategyList::DSigmaDy);
+	p.AddPlot		(Data_CMS,			ResultPlotStrategyList::DSigmaDy_CMS,		"AnAn");
+	// p.AddPlot		(Data_CMS,	ResultPlotStrategyList::Empty,	"AnAn");
+	p.AddPlot		(Data_ALICE_2019,	ResultPlotStrategyList::DSigmaDy_ALICE_2019,	"AnAn");
+	p.AddPlot		(Data_ALICE_2021,	ResultPlotStrategyList::DSigmaDy_ALICE_2021,	"AnAn");
+	p.AddPlot		(Data_LHCb_2022,	ResultPlotStrategyList::DSigmaDy_LHCb_2022,		"AnAn");
+	p.AddTheory		(TheoryList::DSigmaDy_LTA, "AnAn");
+	p.AddTheory		(TheoryList::DSigmaDy_Sigma_R_CD, "AnAn");
+	p.Process		();
+	p.SaveAs		("./outFigures/DSigmaDy_AnAn.pdf");
+
 	p.SetFigureFrame(ResultFrameStrategyList::DSigmaDy_NeuConfig);
 	p.AddPlot		(Data_CMS,			ResultPlotStrategyList::DSigmaDy_CMS,		"0n0n",		1);
 	p.AddPlot		(Data_CMS,			ResultPlotStrategyList::DSigmaDy_CMS,		"0nXnSum",	2);
@@ -101,6 +112,28 @@ void Main()
 	p.Process		();
 	p.SaveAs		("./outFigures/DSigmaDy.pdf");
 //------------------------------------Sigma----------------------------------------------------------
+	p.SetFigureFrame(ResultFrameStrategyList::Sigma_Log);
+	p.AddPlot		(Data_ALICE_2019_Selected,	ResultPlotStrategyList::Sigma_ALICE_2019);
+	p.AddPlot		(Data_ALICE_2021_Selected,	ResultPlotStrategyList::Sigma_ALICE_2021);
+	p.AddPlot		(Data_LHCb_2022_Selected,	ResultPlotStrategyList::Sigma_LHCb_2022);
+	p.AddTheory		(TheoryList::Sigma_IA, 				"Sigma");
+	p.Process		();
+	p.SaveAs		("./outFigures/Sigma_Init.pdf");
+
+	p.SetFigureFrame(ResultFrameStrategyList::Sigma_Log);
+	p.AddPlot		(Data_CMS,	ResultPlotStrategyList::Empty,	"AnAn");
+	p.AddPlot		(Data_ALICE_2019_Selected,	ResultPlotStrategyList::Sigma_ALICE_2019);
+	p.AddPlot		(Data_ALICE_2021_Selected,	ResultPlotStrategyList::Sigma_ALICE_2021);
+	p.AddPlot		(Data_LHCb_2022_Selected,	ResultPlotStrategyList::Sigma_LHCb_2022);
+	p.AddTheory		(TheoryList::Sigma_IA, 				"Sigma");
+	p.AddTheory		(TheoryList::Sigma_R_CGC, 			"Sigma");
+	p.AddTheory		(TheoryList::Sigma_R_GG, 			"Sigma");
+	p.AddTheory		(TheoryList::Sigma_R_LTA, 			"Sigma");
+	p.AddTheory		(TheoryList::DSigmaDy_Sigma_R_bBK,	"Sigma");
+	p.AddTheory		(TheoryList::DSigmaDy_Sigma_R_CD, 	"Sigma");
+	p.Process		();
+	p.SaveAs		("./outFigures/Sigma_NoCMS.pdf");
+	
 	p.SetFigureFrame(ResultFrameStrategyList::Sigma_Log);
 	p.AddPlot		(Data_CMS,			ResultPlotStrategyList::Sigma_CMS);
 	p.AddPlot		(Data_ALICE_2019_Selected,	ResultPlotStrategyList::Sigma_ALICE_2019);

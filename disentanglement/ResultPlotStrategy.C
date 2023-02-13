@@ -3,6 +3,8 @@
 
 enum class ResultPlotStrategyList
 {
+	Empty,
+
 	DSigmaDy_CMS,
 	DSigmaDy_ALICE_2019,
 	DSigmaDy_ALICE_2021,
@@ -20,6 +22,17 @@ enum class ResultPlotStrategyList
 	R_ALICE_2019,
 	R_ALICE_2021,
 	R_LHCb_2022
+};
+
+struct Empty_PlotStrategy : PlotStrategy
+{
+	Empty_PlotStrategy(const AnalysisData& data_) :     PlotStrategy{data_} {}
+
+	void Apply(TLegend*	leg)	override
+	{
+		ge 		= new TGraphErrors		();
+		leg->AddEntry(ge,	"",	"");
+	}
 };
 
 struct Sigma_PlotStrategy : PlotStrategy

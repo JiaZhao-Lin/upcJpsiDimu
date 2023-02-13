@@ -579,7 +579,7 @@ void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4
 				//	leg->AddEntry(frameMass->findObject( curveName[icv]), curveTitle[icv], "l");
 				//}
 				drawLatex(0.69, 0.945, "#bf{CMS} #it{Preliminary}",  42,        0.045,      mTextColor );
-				drawLatex(0.16, 0.86, "Pb-Pb #sqrt{s_{NN}} = 5.02 TeV UPC ( "+nCasesName[i_ncase]+" )",  42,        0.055,      mTextColor );
+				drawLatex(0.16, 0.86, "Pb-Pb #sqrt{s_{NN}} = 5.02 TeV UPC ("+nCasesName[i_ncase]+")",  42,        0.055,      mTextColor );
 
 				//drawLatex(0.15, 0.86, nCasesName[i_ncase], mTextFont, 0.06, mTextColor);
 				drawLatex(.16, 0.79, yName,                mTextFont, 0.05, mTextColor);
@@ -1120,7 +1120,7 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			gPad->SetLogx(0);
 			framePt->GetYaxis()->SetRangeUser(0.5, hPt->GetMaximum()*5);
 			framePt->Draw() ;
-			drawLatex(0.15, 0.92, "CMS Pb-Pb #sqrt{s_{NN}} = 5.02 TeV UPC ( "+nCasesName[i_ncase]+" )",  42,        0.06,      mTextColor );
+			drawLatex(0.15, 0.92, "CMS Pb-Pb #sqrt{s_{NN}} = 5.02 TeV UPC ("+nCasesName[i_ncase]+")",  42,        0.06,      mTextColor );
 			drawLatex(0.62, 0.82, yName,                                                                 mTextFont, 0.05,      mTextColor );
 			const double textDy2 = 0.05;
 			drawLatex(0.25, 0.80+textDy2, Form("For p_{T}<%.2f GeV:",              mPtCut4Coh),                                   mTextFont, 0.035, mTextColor);
@@ -1228,7 +1228,7 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 				framePt->GetYaxis()->SetRangeUser(1.5, hPt->GetMaximum()*5);
 				framePt->Draw() ;
 				drawLatex(0.69, 0.945, "#bf{CMS} #it{Preliminary}",  42,        0.045,     mTextColor );
-				drawLatex(0.16, 0.86, "Pb-Pb #sqrt{s_{NN}} = 5.02 TeV UPC ( "+nCasesName[i_ncase]+" )",  42,        0.055,     mTextColor );
+				drawLatex(0.16, 0.86, "Pb-Pb #sqrt{s_{NN}} = 5.02 TeV UPC ("+nCasesName[i_ncase]+")",  42,        0.055,     mTextColor );
 				drawLatex(0.60, 0.76, yName,                                                                 mTextFont, 0.05,      mTextColor );
 				//drawLatex(0.18, 0.70+textDy2, Form("For p_{T} < %.2f GeV/c:",              mPtCut4Coh),                                   mTextFont, 0.035, mTextColor);
 				//drawLatex(0.18, 0.65+textDy2, Form("f_{I} = (N^{All}_{InCoh}/N^{Coh}_{J/#psi}) = %.3f #pm %.3f", fI_Value, fI_Error),     mTextFont, 0.035, mTextColor);

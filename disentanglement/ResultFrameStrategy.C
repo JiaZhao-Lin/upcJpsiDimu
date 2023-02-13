@@ -187,31 +187,43 @@ struct DSigmaDy_Strategy : FrameStrategy
 	{
 		setPad(0.12, 0.08, 0.07, 0.13);
 
-		legends[0] = new TLegend	(0.14, 0.60, 0.55, 0.82);
+		legends[0] = new TLegend	(0.14, 0.55, 0.55, 0.82);
 		legends[0]	->	SetFillStyle(0);
 		legends[0]	->	SetFillColor(0);
-		legends[0]	->	SetTextSize(0.050);
+		legends[0]	->	SetTextSize(0.045);
 
+		//For LTA
 		legends[1] = new TLegend	(0.48, 0.18, 0.70, 0.34);
 		legends[1]	->	SetFillStyle(0);
 		legends[1]	->	SetFillColor(0);
-		legends[1]	->	SetTextSize(0.050);
+		legends[1]	->	SetTextSize(0.045);
+	
+		//For CD
+		legends[2] =  new TLegend	(0.68, 0.15, 0.97, 0.35);
+		legends[2]	->	SetFillStyle(0);
+		legends[2]	->	SetFillColor(0);
+		legends[2]	->	SetTextSize(0.045);
 
 		//htemp = std::make_unique< TH2D >	("htemp", "", 10, -4.1, 1.0, 10, 0, 14.0);
 		htemp = std::make_unique< TH2D >	("AnAn", "AnAn;y;d#sigma_{J/#psi}/dy (mb);", 10, -4.5, 0, 10, 0, 8.0);
+
 		htemp ->GetYaxis()->CenterTitle();
-		//htemp ->GetYaxis()->SetNdivisions(6);
-		htemp ->GetYaxis()->SetTitleSize(0.07);
-		htemp ->GetYaxis()->SetTitleOffset(0.63);
-		htemp ->GetYaxis()->SetLabelSize(0.06);
+		htemp ->GetYaxis()->SetNdivisions(6);
+		htemp ->GetXaxis()->SetNdivisions(6);
+		htemp ->GetYaxis()->SetTitleSize(0.065);
+		htemp ->GetYaxis()->SetTitleOffset(0.6);
+		htemp ->GetYaxis()->SetLabelSize(0.05);
 		htemp ->GetXaxis()->CenterTitle();
-		htemp ->GetXaxis()->SetTitleSize(0.07);
+		htemp ->GetXaxis()->SetTitleSize(0.065);
 		htemp ->GetXaxis()->SetTitleOffset(0.75);
-		htemp ->GetXaxis()->SetLabelSize(0.06);
+		htemp ->GetXaxis()->SetLabelSize(0.05);
 		//htemp ->SetTickLength(0.08);
 		htemp->Draw();
 
-		drawLatex(0.15, 0.85, "Pb+Pb #rightarrow Pb+Pb+J/#psi #sqrt{s_{NN}} = 5.02 TeV",      42,       0.06,      1);
+		drawLatex(0.15, 0.85, "Pb+Pb #rightarrow Pb'+Pb'+J/#psi",	42,		0.053,		1);
+		drawLatex(0.7, 0.8, "#bf{AnAn}",      42,       0.075,      1);
+		drawLatex(0.53,0.94,"PbPb 1.52 nb^{-1} (5.02 TeV)",42, 0.05, 1);
+		drawLatex(0.13,0.94,"#bf{CMS} #it{Preliminary}",42, 0.05, 1);
 
 	}
 };

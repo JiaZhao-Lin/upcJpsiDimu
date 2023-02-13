@@ -21,6 +21,17 @@ struct ResultPlotProcessor
 		// Switching between different way for drawing legends. this is a bad design, but I don't know how to do it better.
 		switch (currentFrameStrategy)
 		{
+		case ResultFrameStrategyList::DSigmaDy:
+			for(int i = 0; i < theories.size(); i++)
+			{
+				if		( i<1 )	theories[i]->Draw(frame->legends[1]);
+				else			theories[i]->Draw(frame->legends[2]);
+			}
+			for(int i = 0; i < plots.size(); i++)
+			{
+				plots[i]->Apply(frame->legends[0]);
+			}
+			break;
 		case ResultFrameStrategyList::DSigmaDy_NeuConfig:
 			for(int i = 0; i < theories.size(); i++)
 			{
@@ -105,6 +116,10 @@ struct ResultPlotProcessor
 	{
 		switch (plot_)
 		{
+		case ResultPlotStrategyList::Empty:
+			plots.push_back( std::make_unique<	Empty_PlotStrategy					>(data_) );
+			break;
+		
 		case ResultPlotStrategyList::DSigmaDy_CMS:
 			plots.push_back( std::make_unique<	DSigmaDy_CMS_Strategy			>(data_,NeuConfig_,index_) );
 			break;
