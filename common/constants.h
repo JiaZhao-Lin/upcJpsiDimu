@@ -26,6 +26,8 @@ const TString trigName = "SingleMuUPC";
 const int mRunNbCut = 326776;     // get this number from Quan (L = 1570.6796 ub^{-1} for runID >= 326776)
 // const double mCMSLum = 1570.6796;  // ub^{-1} for HLT_HIUPC_SingleMuOpen_NotMBHF2AND_v with runID >= 326776
 const double mCMSLum = 1520.3;  // ub^{-1} for HLT_HIUPC_SingleMuOpen_NotMBHF2AND_v with runID >= 326776
+const double Lumi_Uncer = 0.015;    // 1.5% uncertainty on luminosity
+
 const int  mCentralityCut = 180;
 const int  mNtrkofflineCut = 2;
 
@@ -110,6 +112,7 @@ const double mJpsi_PDG = 3.0969; const double  mPsi_PDG = 3.686097;
 const double br_Jpsi2uu  = 0.05961;
 const double br_Psi2uu   = 0.0080;
 const double br_Psi2Jpsi = 0.6140;
+const double br_Jpsi2uu_Uncer = 0.033/5.961;    // branching ratio uncertainty fraction
 
 
 #endif
