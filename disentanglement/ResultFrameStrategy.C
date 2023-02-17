@@ -70,9 +70,9 @@ struct Sigma_Log_Strategy : FrameStrategy
 		drawLatex(0.67,0.86,"x~1.1#times10^{-4}",42, 0.025, 1);
 		drawLatex(0.87,0.86,"x~6.0#times10^{-5}",42, 0.025, 1);
 
-		drawLatex(0.15, 0.80, "Pb+Pb #rightarrow Pb'+Pb'+J/#psi",  42,        0.05,      1 );
+		drawLatex(0.15, 0.80, "Pb+Pb #rightarrow Pb+Pb+J/#psi",  42,        0.05,      1 );
 		drawLatex(0.56,0.94,"PbPb 1.52 nb^{-1} (5.02 TeV)",42, 0.05, 1);
-		drawLatex(0.15,0.94,"#bf{CMS} #it{Preliminary}",42, 0.05, 1);
+		drawLatex(0.15,0.94,"#bf{CMS}",42, 0.05, 1);
 
 	}
 };
@@ -111,9 +111,9 @@ struct Sigma_LogLog_Strategy : FrameStrategy
 		drawLatex(0.67,0.86,"x~1.1#times10^{-4}",42, 0.025, 1);
 		drawLatex(0.87,0.86,"x~6.0#times10^{-5}",42, 0.025, 1);
 
-		drawLatex(0.15, 0.80, "Pb+Pb #rightarrow Pb'+Pb'+J/#psi",  42,        0.05,      1 );
+		drawLatex(0.15, 0.80, "Pb+Pb #rightarrow Pb+Pb+J/#psi",  42,        0.05,      1 );
 		drawLatex(0.56,0.94,"PbPb 1.52 nb^{-1} (5.02 TeV)",42, 0.05, 1);
-		drawLatex(0.15,0.94,"#bf{CMS} #it{Preliminary}",42, 0.05, 1);
+		drawLatex(0.15,0.94,"#bf{CMS}",42, 0.05, 1);
 
 	}
 };
@@ -174,10 +174,9 @@ struct R_Strategy : FrameStrategy
 		htemp->SetTickLength(0.04);
 		htemp->Draw();
 
-		drawLatex(0.15, 0.84, "Pb+Pb #rightarrow Pb'+Pb'+J/#psi",  42,        0.05,      1 );
-		drawLatex(0.56,0.94,"PbPb 1.52 nb^{-1} (5.02 TeV)",42, 0.05, 1);
-		drawLatex(0.15,0.94,"#bf{CMS} #it{Preliminary}",42, 0.05, 1);
-
+		drawLatex(0.15, 0.84, "Pb+Pb #rightarrow Pb+Pb+J/#psi",  42, 0.05, 1 );
+		drawLatex(0.56, 0.94, "PbPb 1.52 nb^{-1} (5.02 TeV)",    42, 0.05, 1);
+		drawLatex(0.15, 0.94, "#bf{CMS}",       42, 0.05, 1);
 	}
 };
 
@@ -220,10 +219,10 @@ struct DSigmaDy_Strategy : FrameStrategy
 		//htemp ->SetTickLength(0.08);
 		htemp->Draw();
 
-		drawLatex(0.15, 0.85, "Pb+Pb #rightarrow Pb'+Pb'+J/#psi",	42,		0.053,		1);
+		drawLatex(0.15, 0.85, "Pb+Pb #rightarrow Pb+Pb+J/#psi",	42,		0.053,		1);
 		drawLatex(0.7, 0.8, "#bf{AnAn}",      42,       0.075,      1);
 		drawLatex(0.53,0.94,"PbPb 1.52 nb^{-1} (5.02 TeV)",42, 0.05, 1);
-		drawLatex(0.13,0.94,"#bf{CMS} #it{Preliminary}",42, 0.05, 1);
+		drawLatex(0.13,0.94,"#bf{CMS}",42, 0.05, 1);
 
 	}
 };
@@ -273,12 +272,12 @@ struct DSigmaDy_Sub_Strategy : FrameStrategy
 		htemp->Draw();
 
 		if 		(frameName == "0n0n") 		drawLatex(0.15, 0.85, "Pb+Pb #rightarrow Pb+Pb+J/#psi",		42,		0.053,		1);
-		else if	(frameName == "0nXn") 		drawLatex(0.15, 0.85, "Pb+Pb #rightarrow Pb+Pb'+J/#psi",	42,		0.053,		1);
-		else								drawLatex(0.15, 0.85, "Pb+Pb #rightarrow Pb'+Pb'+J/#psi",	42,		0.053,		1);
+		else if	(frameName == "0nXn") 		drawLatex(0.15, 0.85, "Pb+Pb #rightarrow Pb+Pb+J/#psi",	42,		0.053,		1);
+		else								drawLatex(0.15, 0.85, "Pb+Pb #rightarrow Pb+Pb+J/#psi",	42,		0.053,		1);
 		
 		drawLatex(0.8, 0.8, Form("#bf{%s}", frameName.Data()),      42,       0.075,      1);
 		drawLatex(0.58,0.94,"PbPb 1.52 nb^{-1} (5.02 TeV)",42, 0.05, 1);
-		drawLatex(0.15,0.94,"#bf{CMS} #it{Preliminary}",42, 0.05, 1);
+		drawLatex(0.15,0.94,"#bf{CMS}",42, 0.05, 1);
 	}
 };
 

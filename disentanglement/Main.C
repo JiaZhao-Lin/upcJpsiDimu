@@ -1,7 +1,7 @@
 /*
-Use this work space to calculate everything you need for the disentanglement analysis.
-Draw the figures and save them to the output directory.
-*/
+   Use this work space to calculate everything you need for the disentanglement analysis.
+   Draw the figures and save them to the output directory.
+   */
 
 #include "UncerAnalyzer.C"
 #include "FwdRapAnalyzer.C"
@@ -46,6 +46,8 @@ void DoAnalysis()
 
 void Main()
 {
+	system("mkdir -p out4PaperFigures");
+
 	AnalysisData Data_CMS("CMS");
 	AnalysisData Data_ALICE_2019_Selected("ALICE_2019_Selected");
 	AnalysisData Data_ALICE_2021_Selected("ALICE_2021_Selected");
@@ -54,15 +56,15 @@ void Main()
 	AnalysisData Data_ALICE_2021("ALICE_2021");
 	AnalysisData Data_LHCb_2022("LHCb_2022");
 
-//------------------------------------REDO Analysis------------------------------------------------
-//-------------------------------------------------------------------------------------------------
+	//------------------------------------REDO Analysis------------------------------------------------
+	//-------------------------------------------------------------------------------------------------
 	// DoAnalysis();
 	// UncerAnalyzer();
-//-------------------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------------------
 
 
-//------------------------------------Load From Root-----------------------------------------------
-//-------------------------------------------------------------------------------------------------
+	//------------------------------------Load From Root-----------------------------------------------
+	//-------------------------------------------------------------------------------------------------
 	Data_CMS.LoadMapFile("outFiles/Result_CMS.root");
 	Data_ALICE_2019_Selected.LoadMapFile("outFiles/Result_ALICE_2019_Selected.root");
 	Data_ALICE_2021_Selected.LoadMapFile("outFiles/Result_ALICE_2021_Selected.root");
@@ -70,31 +72,31 @@ void Main()
 	Data_ALICE_2019.LoadTextFile("inFiles/DSigmaDy_ALICE_2019.txt");
 	Data_ALICE_2021.LoadTextFile("inFiles/DSigmaDy_ALICE_2021.txt");
 	Data_LHCb_2022.LoadTextFile("inFiles/DSigmaDy_LHCb_2022.txt");
-//-------------------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------------------
 
 	// Data_CMS.Print();
 	// Data_ALICE_2019.Print();
 	// Data_ALICE_2021.Print();
 	// Data_LHCb_2022.Print();
-	
+
 	AnalysisData Data_CMS_SysUncer("CMS_SysUncer");	Data_CMS_SysUncer.LoadMapFile("outFiles/Result_CMS_SysUncer.root");
 	Data_CMS.Combine(Data_CMS_SysUncer);
 
 
-//------------------------------------Plotting------------------------------------------------------
-//-------------------------------------------------------------------------------------------------
+	//------------------------------------Plotting------------------------------------------------------
+	//-------------------------------------------------------------------------------------------------
 	struct ResultPlotProcessor p;
-//------------------------------------DSigmaDy------------------------------------------------------
+	//------------------------------------DSigmaDy------------------------------------------------------
 	p.SetFigureFrame(ResultFrameStrategyList::DSigmaDy);
 	p.AddPlot		(Data_CMS,			ResultPlotStrategyList::DSigmaDy_CMS,		"AnAn");
 	// p.AddPlot		(Data_CMS,	ResultPlotStrategyList::Empty,	"AnAn");
 	p.AddPlot		(Data_ALICE_2019,	ResultPlotStrategyList::DSigmaDy_ALICE_2019,	"AnAn");
 	p.AddPlot		(Data_ALICE_2021,	ResultPlotStrategyList::DSigmaDy_ALICE_2021,	"AnAn");
 	p.AddPlot		(Data_LHCb_2022,	ResultPlotStrategyList::DSigmaDy_LHCb_2022,		"AnAn");
-	p.AddTheory		(TheoryList::DSigmaDy_LTA, "AnAn");
+	p.AddTheory		(TheoryList::DSigmaDy_LTA,        "AnAn");
 	p.AddTheory		(TheoryList::DSigmaDy_Sigma_R_CD, "AnAn");
 	p.Process		();
-	p.SaveAs		("./outFigures/DSigmaDy_AnAn.pdf");
+	p.SaveAs		("./out4PaperFigures/DSigmaDy_AnAn.pdf");
 
 	p.SetFigureFrame(ResultFrameStrategyList::DSigmaDy_NeuConfig);
 	p.AddPlot		(Data_CMS,			ResultPlotStrategyList::DSigmaDy_CMS,		"0n0n",		1);
@@ -110,15 +112,15 @@ void Main()
 	p.AddTheory		(TheoryList::DSigmaDy_LTA, "AnAn");
 	p.AddTheory		(TheoryList::DSigmaDy_Sigma_R_CD, "AnAn");
 	p.Process		();
-	p.SaveAs		("./outFigures/DSigmaDy.pdf");
-//------------------------------------Sigma----------------------------------------------------------
+	p.SaveAs		("./out4PaperFigures/DSigmaDy_injn.pdf");
+	//------------------------------------Sigma----------------------------------------------------------
 	p.SetFigureFrame(ResultFrameStrategyList::Sigma_Log);
 	p.AddPlot		(Data_ALICE_2019_Selected,	ResultPlotStrategyList::Sigma_ALICE_2019);
 	p.AddPlot		(Data_ALICE_2021_Selected,	ResultPlotStrategyList::Sigma_ALICE_2021);
 	p.AddPlot		(Data_LHCb_2022_Selected,	ResultPlotStrategyList::Sigma_LHCb_2022);
 	p.AddTheory		(TheoryList::Sigma_IA, 				"Sigma");
 	p.Process		();
-	p.SaveAs		("./outFigures/Sigma_Init.pdf");
+	p.SaveAs		("./out4PaperFigures/Sigma_vs_W_LogY_0.pdf");
 
 	p.SetFigureFrame(ResultFrameStrategyList::Sigma_Log);
 	p.AddPlot		(Data_CMS,	ResultPlotStrategyList::Empty,	"AnAn");
@@ -132,8 +134,8 @@ void Main()
 	p.AddTheory		(TheoryList::DSigmaDy_Sigma_R_bBK,	"Sigma");
 	p.AddTheory		(TheoryList::DSigmaDy_Sigma_R_CD, 	"Sigma");
 	p.Process		();
-	p.SaveAs		("./outFigures/Sigma_NoCMS.pdf");
-	
+	p.SaveAs		("./out4PaperFigures/Sigma_vs_W_LogY_1.pdf");
+
 	p.SetFigureFrame(ResultFrameStrategyList::Sigma_Log);
 	p.AddPlot		(Data_CMS,			ResultPlotStrategyList::Sigma_CMS);
 	p.AddPlot		(Data_ALICE_2019_Selected,	ResultPlotStrategyList::Sigma_ALICE_2019);
@@ -146,19 +148,19 @@ void Main()
 	p.AddTheory		(TheoryList::DSigmaDy_Sigma_R_bBK,	"Sigma");
 	p.AddTheory		(TheoryList::DSigmaDy_Sigma_R_CD, 	"Sigma");
 	p.Process		();
-	p.SaveAs		("./outFigures/Sigma.pdf");
-//------------------------------------R--------------------------------------------------------------
+	p.SaveAs		("./out4PaperFigures/Sigma_vs_W_LogY_2.pdf");
+	//------------------------------------R--------------------------------------------------------------
 	p.SetFigureFrame(ResultFrameStrategyList::R);
 	p.AddPlot		(Data_CMS,			ResultPlotStrategyList::R_CMS);
 	p.AddPlot		(Data_ALICE_2019_Selected,	ResultPlotStrategyList::R_ALICE_2019);
 	p.AddPlot		(Data_ALICE_2021_Selected,	ResultPlotStrategyList::R_ALICE_2021);
 	p.AddPlot		(Data_LHCb_2022_Selected,	ResultPlotStrategyList::R_LHCb_2022);
-	// p.AddTheory		(TheoryList::Sigma_R_CGC, 			"R");	//too short
+	p.AddTheory		(TheoryList::Sigma_R_CGC, 			"R");	//too short
 	p.AddTheory		(TheoryList::Sigma_R_GG, 			"R");
 	p.AddTheory		(TheoryList::Sigma_R_LTA, 			"R");
 	p.AddTheory		(TheoryList::DSigmaDy_Sigma_R_bBK,	"R");
 	p.AddTheory		(TheoryList::DSigmaDy_Sigma_R_CD, 	"R");
 	p.Process		();
-	p.SaveAs		("./outFigures/R.pdf");
-//-------------------------------------------------------------------------------------------------
+	p.SaveAs		("./out4PaperFigures/Rg_vs_x.pdf");
+	//-------------------------------------------------------------------------------------------------
 }
