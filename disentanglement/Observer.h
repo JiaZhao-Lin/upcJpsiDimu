@@ -25,12 +25,15 @@ struct Observable
 		for (auto obs : observers)
 			obs->FieldChanged(source, name);
 	}
+
 	void Subscribe	(Observer< T >* obs) { observers.push_back(obs); }
+	
 	void Unsubscribe(Observer< T >* obs)
 	{
 		auto remove_status = remove(observers.begin(), observers.end(), obs);
 		cout<< "The Observer Unsubscribed..." <<endl;
 	}
+
 private:
 	std::vector< Observer< T > * > observers;
 };

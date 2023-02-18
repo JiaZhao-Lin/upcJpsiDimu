@@ -19,6 +19,7 @@ struct FrameStrategy
 	{
 		for (auto* leg : legends)	if(leg)	leg->Draw("same");
 	};
+
 	void SaveAs(TString fileName)
 	{
 		c->SaveAs(fileName);

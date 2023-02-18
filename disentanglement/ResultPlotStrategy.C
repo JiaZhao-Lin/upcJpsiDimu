@@ -6,6 +6,8 @@ enum class ResultPlotStrategyList
 	Empty,
 
 	DSigmaDy_CMS,
+	DSigmaDy_00_0X_XX_CMS,
+
 	DSigmaDy_ALICE_2019,
 	DSigmaDy_ALICE_2021,
 	DSigmaDy_LHCb_2022,
@@ -245,6 +247,35 @@ struct DSigmaDy_CMS_Strategy : DSigmaDy_PlotStrategy
 		ge  ->Draw("pezsame");
 	}
 };
+
+
+struct DSigmaDy_00_0X_XX_CMS_Strategy : DSigmaDy_PlotStrategy
+{
+	TString legName; int color; int mstyle;
+	DSigmaDy_00_0X_XX_CMS_Strategy(const AnalysisData& data_,	TString NeuConfig_ = "AnAn", int index_ = 0, TString legName="", int color=1, int mstyle=1 )	: DSigmaDy_PlotStrategy{data_, NeuConfig_},legName{legName},color{color},mstyle{mstyle} {	index = index_;	}
+	
+	void Apply(TLegend*	leg)	override
+	{
+		DSigmaDy_PlotStrategy::Apply(leg);
+		leg->AddEntry(gae,	legName,	"pf");
+
+		gae ->SetMarkerStyle(mstyle);
+		gae ->SetMarkerColor(color);
+		gae ->SetLineColor(color);
+		gae ->SetFillColorAlpha(16, 0.5);
+		gae ->SetFillStyle(1001);
+		gae ->Draw("2same");
+
+		ge  ->SetMarkerStyle(mstyle);
+		ge  ->SetMarkerSize(1.5);
+		ge  ->SetMarkerColor(color);
+		ge  ->SetLineColor(color);
+		ge  ->SetLineWidth(2);
+		ge  ->Draw("pezsame");
+	}
+};
+
+
 
 struct DSigmaDy_ALICE_2019_Strategy : DSigmaDy_PlotStrategy
 {

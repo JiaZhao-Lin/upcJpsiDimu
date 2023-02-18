@@ -86,17 +86,48 @@ void Main()
 	//------------------------------------Plotting------------------------------------------------------
 	//-------------------------------------------------------------------------------------------------
 	struct ResultPlotProcessor p;
-	//------------------------------------DSigmaDy------------------------------------------------------
+
+
+
+
+
+
+	//------------------------------------DSigmaDy--AnAn only----------------------------------------------------
 	p.SetFigureFrame(ResultFrameStrategyList::DSigmaDy);
 	p.AddPlot		(Data_CMS,			ResultPlotStrategyList::DSigmaDy_CMS,		"AnAn");
 	// p.AddPlot		(Data_CMS,	ResultPlotStrategyList::Empty,	"AnAn");
 	p.AddPlot		(Data_ALICE_2019,	ResultPlotStrategyList::DSigmaDy_ALICE_2019,	"AnAn");
 	p.AddPlot		(Data_ALICE_2021,	ResultPlotStrategyList::DSigmaDy_ALICE_2021,	"AnAn");
 	p.AddPlot		(Data_LHCb_2022,	ResultPlotStrategyList::DSigmaDy_LHCb_2022,		"AnAn");
+	
+
 	p.AddTheory		(TheoryList::DSigmaDy_LTA,        "AnAn");
 	p.AddTheory		(TheoryList::DSigmaDy_Sigma_R_CD, "AnAn");
 	p.Process		();
 	p.SaveAs		("./out4PaperFigures/DSigmaDy_AnAn.pdf");
+
+
+
+
+	//------------------------------------DSigmaDy--0n0n, 0nXn, XnXn----------------------------------------------------
+	p.SetFigureFrame(ResultFrameStrategyList::DSigmaDy_00_0X_XX);
+	p.AddPlot		(Data_CMS, 			ResultPlotStrategyList::DSigmaDy_00_0X_XX_CMS,		"0n0n",    0, " ", 1, 20);
+	p.AddPlot		(Data_CMS, 			ResultPlotStrategyList::DSigmaDy_00_0X_XX_CMS,		"0nXnSum", 0, " ", 2, 24);
+	p.AddPlot		(Data_CMS, 			ResultPlotStrategyList::DSigmaDy_00_0X_XX_CMS,		"XnXn",    0, " ", 4, 21);
+	
+	p.AddTheory		(TheoryList::DSigmaDy_LTA, "0n0n");
+	p.AddTheory		(TheoryList::DSigmaDy_LTA, "0nXnSum");
+	p.AddTheory		(TheoryList::DSigmaDy_LTA, "XnXn");
+
+	p.Process		();
+	p.SaveAs		("./out4PaperFigures/DSigmaDy_00_0X_XX.pdf");
+
+
+
+
+
+
+
 
 	p.SetFigureFrame(ResultFrameStrategyList::DSigmaDy_NeuConfig);
 	p.AddPlot		(Data_CMS,			ResultPlotStrategyList::DSigmaDy_CMS,		"0n0n",		1);
@@ -113,6 +144,8 @@ void Main()
 	p.AddTheory		(TheoryList::DSigmaDy_Sigma_R_CD, "AnAn");
 	p.Process		();
 	p.SaveAs		("./out4PaperFigures/DSigmaDy_injn.pdf");
+	
+
 	//------------------------------------Sigma----------------------------------------------------------
 	p.SetFigureFrame(ResultFrameStrategyList::Sigma_Log);
 	p.AddPlot		(Data_ALICE_2019_Selected,	ResultPlotStrategyList::Sigma_ALICE_2019);
@@ -149,6 +182,8 @@ void Main()
 	p.AddTheory		(TheoryList::DSigmaDy_Sigma_R_CD, 	"Sigma");
 	p.Process		();
 	p.SaveAs		("./out4PaperFigures/Sigma_vs_W_LogY_2.pdf");
+
+
 	//------------------------------------R--------------------------------------------------------------
 	p.SetFigureFrame(ResultFrameStrategyList::R);
 	p.AddPlot		(Data_CMS,			ResultPlotStrategyList::R_CMS);

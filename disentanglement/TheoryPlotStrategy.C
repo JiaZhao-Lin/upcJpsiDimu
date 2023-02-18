@@ -57,7 +57,7 @@ struct DSigmaDy_XnXn_TheoryPlotStrategy : PlotStrategy
 };
 
 
-//----------------------------------------------LTA SS START----------------------------------------------
+//----------------------------------------------LTA_SS START----------------------------------------------
 struct DSigmaDy_AnAn_LTA_SS_Strategy : DSigmaDy_AnAn_TheoryPlotStrategy
 {
 	DSigmaDy_AnAn_LTA_SS_Strategy(const AnalysisData& data_) :     DSigmaDy_AnAn_TheoryPlotStrategy{data_} {}
@@ -65,7 +65,7 @@ struct DSigmaDy_AnAn_LTA_SS_Strategy : DSigmaDy_AnAn_TheoryPlotStrategy
 	void Apply(TLegend*	leg)	override
 	{
 		DSigmaDy_AnAn_TheoryPlotStrategy::Apply(leg);
-		leg->AddEntry(gr,	"LTA SS",		"l" );
+		leg->AddEntry(gr,	"LTA_SS",		"l" );
 
 		gr->SetLineColor(2);
 		gr->SetLineStyle(1);
@@ -82,7 +82,7 @@ struct DSigmaDy_0n0n_LTA_SS_Strategy : DSigmaDy_0n0n_TheoryPlotStrategy
 	void Apply(TLegend*	leg)	override
 	{
 		DSigmaDy_0n0n_TheoryPlotStrategy::Apply(leg);
-		leg->AddEntry(gr,	"LTA SS",		"l" );
+		leg->AddEntry(gr,	"LTA_SS",		"l" );
 
 		gr->SetLineColor(2);
 		gr->SetLineStyle(1);
@@ -99,7 +99,7 @@ struct DSigmaDy_0nXnSum_LTA_SS_Strategy : DSigmaDy_0nXnSum_TheoryPlotStrategy
 	void Apply(TLegend*	leg)	override
 	{
 		DSigmaDy_0nXnSum_TheoryPlotStrategy::Apply(leg);
-		leg->AddEntry(gr,	"LTA SS",		"l" );
+		leg->AddEntry(gr,	"LTA_SS",		"l" );
 
 		gr->SetLineColor(2);
 		gr->SetLineStyle(1);
@@ -116,7 +116,7 @@ struct DSigmaDy_XnXn_LTA_SS_Strategy : DSigmaDy_XnXn_TheoryPlotStrategy
 	void Apply(TLegend*	leg)	override
 	{
 		DSigmaDy_XnXn_TheoryPlotStrategy::Apply(leg);
-		leg->AddEntry(gr,	"LTA SS",		"l" );
+		leg->AddEntry(gr,	"LTA_SS",		"l" );
 
 		gr->SetLineColor(2);
 		gr->SetLineStyle(1);
@@ -133,7 +133,7 @@ struct Sigma_LTA_SS_Strategy : Sigma_TheoryPlotStrategy
 	void Apply(TLegend*	leg)	override
 	{
 		Sigma_TheoryPlotStrategy::Apply(leg);
-		leg->AddEntry(gr,	"LTA SS",		"l" );
+		leg->AddEntry(gr,	"LTA_SS",		"l" );
 
 		gr->SetLineColor(2);
 		gr->SetLineStyle(1);
@@ -150,7 +150,7 @@ struct R_LTA_SS_Strategy : R_TheoryPlotStrategy
 	void Apply(TLegend*	leg)	override
 	{
 		R_TheoryPlotStrategy::Apply(leg);
-		leg->AddEntry(gr,	"LTA SS",		"l" );
+		leg->AddEntry(gr,	"LTA_SS",		"l" );
 
 		gr->SetLineColor(2);
 		gr->SetLineStyle(1);
@@ -159,10 +159,10 @@ struct R_LTA_SS_Strategy : R_TheoryPlotStrategy
 
 	}
 };
-//----------------------------------------------LTA SS END----------------------------------------------
+//----------------------------------------------LTA_SS END----------------------------------------------
 
 
-//----------------------------------------------LTA WS START----------------------------------------------
+//----------------------------------------------LTA_WS START----------------------------------------------
 struct DSigmaDy_AnAn_LTA_WS_Strategy : DSigmaDy_AnAn_TheoryPlotStrategy
 {
 	DSigmaDy_AnAn_LTA_WS_Strategy(const AnalysisData& data_) :     DSigmaDy_AnAn_TheoryPlotStrategy{data_} {}
@@ -170,7 +170,7 @@ struct DSigmaDy_AnAn_LTA_WS_Strategy : DSigmaDy_AnAn_TheoryPlotStrategy
 	void Apply(TLegend*	leg)	override
 	{
 		DSigmaDy_AnAn_TheoryPlotStrategy::Apply(leg);
-		leg->AddEntry(gr,	"LTA WS",		"l" );
+		leg->AddEntry(gr,	"LTA_WS",		"l" );
 
 		gr->SetLineColor(2);
 		gr->SetLineStyle(7);
@@ -187,7 +187,7 @@ struct DSigmaDy_0n0n_LTA_WS_Strategy : DSigmaDy_0n0n_TheoryPlotStrategy
 	void Apply(TLegend*	leg)	override
 	{
 		DSigmaDy_0n0n_TheoryPlotStrategy::Apply(leg);
-		leg->AddEntry(gr,	"LTA WS",		"l" );
+		leg->AddEntry(gr,	"LTA_WS",		"l" );
 
 		gr->SetLineColor(2);
 		gr->SetLineStyle(7);
@@ -204,7 +204,7 @@ struct DSigmaDy_0nXnSum_LTA_WS_Strategy : DSigmaDy_0nXnSum_TheoryPlotStrategy
 	void Apply(TLegend*	leg)	override
 	{
 		DSigmaDy_0nXnSum_TheoryPlotStrategy::Apply(leg);
-		leg->AddEntry(gr,	"LTA WS",		"l" );
+		leg->AddEntry(gr,	"LTA_WS",		"l" );
 
 		gr->SetLineColor(2);
 		gr->SetLineStyle(7);
@@ -221,7 +221,7 @@ struct DSigmaDy_XnXn_LTA_WS_Strategy : DSigmaDy_XnXn_TheoryPlotStrategy
 	void Apply(TLegend*	leg)	override
 	{
 		DSigmaDy_XnXn_TheoryPlotStrategy::Apply(leg);
-		leg->AddEntry(gr,	"LTA WS",		"l" );
+		leg->AddEntry(gr,	"LTA_WS",		"l" );
 
 		gr->SetLineColor(2);
 		gr->SetLineStyle(7);
@@ -238,7 +238,7 @@ struct Sigma_LTA_WS_Strategy : Sigma_TheoryPlotStrategy
 	void Apply(TLegend*	leg)	override
 	{
 		Sigma_TheoryPlotStrategy::Apply(leg);
-		leg->AddEntry(gr,	"LTA WS",		"l" );
+		leg->AddEntry(gr,	"LTA_WS",		"l" );
 
 		gr->SetLineColor(2);
 		gr->SetLineStyle(7);
@@ -255,7 +255,7 @@ struct R_LTA_WS_Strategy : R_TheoryPlotStrategy
 	void Apply(TLegend*	leg)	override
 	{
 		R_TheoryPlotStrategy::Apply(leg);
-		leg->AddEntry(gr,	"LTA WS",		"l" );
+		leg->AddEntry(gr,	"LTA_WS",		"l" );
 
 		gr->SetLineColor(2);
 		gr->SetLineStyle(7);
@@ -264,7 +264,7 @@ struct R_LTA_WS_Strategy : R_TheoryPlotStrategy
 
 	}
 };
-//----------------------------------------------LTA WS END----------------------------------------------
+//----------------------------------------------LTA_WS END----------------------------------------------
 
 
 //----------------------------------------------CD START----------------------------------------------

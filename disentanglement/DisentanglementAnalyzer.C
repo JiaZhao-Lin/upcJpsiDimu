@@ -1,25 +1,25 @@
 /*
-Main analysis chain for disentangling cross sections
-Use Analyzer for connecting each analysis step 
-Use AnalysisData for convenient manipulation of the data 
-Use AnalysisDataObserver to notify each data change
+   Main analysis chain for disentangling cross sections
+   Use Analyzer for connecting each analysis step 
+   Use AnalysisData for convenient manipulation of the data 
+   Use AnalysisDataObserver to notify each data change
 
-Example Usage:
------------------------------------------
-AnalysisData Data_CMS("CMS");
-AnalysisDataObserver obs;
-Data_CMS.Subscribe(&obs);
+   Example Usage:
+   -----------------------------------------
+   AnalysisData Data_CMS("CMS");
+   AnalysisDataObserver obs;
+   Data_CMS.Subscribe(&obs);
 
-Data_CMS.LoadHistFile(".root");
+   Data_CMS.LoadHistFile(".root");
 
-DisentanglementAnalyzer 	AnaRoot_CMS     (Data_CMS);
------------------------------------------
+   DisentanglementAnalyzer 	AnaRoot_CMS     (Data_CMS);
+   -----------------------------------------
 
-Design pattern used: Chain of Responsibility, Observer
+   Design pattern used: Chain of Responsibility, Observer
 
-Dec. 2022
-JiaZhao Lin
-*/
+   Dec. 2022
+   JiaZhao Lin
+   */
 
 #ifndef DisentanglementAnalyzer_H
 #define DisentanglementAnalyzer_H
@@ -39,8 +39,8 @@ struct DisentanglementAnalyzer : Analyzer
 	Fit2DAnalyzer			cFit2DAnalyzer;
 	ShadowingRatioAnalyzer	cShadowingRatioAnalyzer;
 
-    DisentanglementAnalyzer(AnalysisData& data_,	TString inFileDir_ = "../simulation/flux/",	TString subCase_ = "_SigNN68p3R6p67a0p56") :
-							Analyzer{data_},	cConversionAnalyzer{data_},	cFit2DAnalyzer{data_, inFileDir_,	subCase_},	cShadowingRatioAnalyzer{data_}	{};
+	DisentanglementAnalyzer(AnalysisData& data_,	TString inFileDir_ = "../simulation/flux/",	TString subCase_ = "_SigNN68p3R6p67a0p56") :
+		Analyzer{data_},	cConversionAnalyzer{data_},	cFit2DAnalyzer{data_, inFileDir_,	subCase_},	cShadowingRatioAnalyzer{data_}	{};
 
 	void PrintHandling() const
 	{
@@ -48,16 +48,16 @@ struct DisentanglementAnalyzer : Analyzer
 		cout << setfill(' ');
 	}
 
-    void Handle() override
-    {
-        PrintHandling();
-        
+	void Handle() override
+	{
+		PrintHandling();
+
 		this->Add(&cConversionAnalyzer);
 		this->Add(&cFit2DAnalyzer);
 		this->Add(&cShadowingRatioAnalyzer);
 
-        Analyzer::Handle();
-    }
+		Analyzer::Handle();
+	}
 };
 
 

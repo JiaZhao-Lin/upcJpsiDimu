@@ -527,7 +527,7 @@ void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4
 			}
 			else                								   yName = Form("%1.1f < |y^{#mu#mu}| < %1.1f", mDiffRapLow[nDiffRapBins/2], mDiffRapHi[nDiffRapBins-1]);
 	
-			const TString ptName = Form("%1.0f< p_{T}^{#mu#mu}<%1.1f GeV",  0.0,   mPtCut4Coh);
+			const TString ptName = Form("%1.0f < p_{T}^{#mu#mu} < %1.1f GeV",  0.0,   mPtCut4Coh);
 
 			drawLatex(0.15, 0.86, nCasesName[i_ncase], mTextFont, 0.06, mTextColor);
 			drawLatex(.55, 0.86, yName,                mTextFont, 0.05, mTextColor);
@@ -555,6 +555,7 @@ void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4
 			if(draw4Paper_flag==1)
 			{
 
+				frameMass->GetYaxis()->SetRangeUser(0.5, hCohMass->GetMaximum()*1.2);
 				frameMass->Draw() ;
 
 				//frame_mMass_7fef6c828bd0[mMass] = (RooHist::h_dataMass,RooCurve::totMassPdf_Norm[mMass],RooCurve::totMassPdf_Norm[mMass]_Comp[jpsiCrystalBallPdf],RooCurve::totMassPdf_Norm[mMass]_Comp[psiCrystalBallPdf],RooCurve::totMassPdf_Norm[mMass]_Comp[qedPdf])
@@ -578,12 +579,16 @@ void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4
 				//{
 				//	leg->AddEntry(frameMass->findObject( curveName[icv]), curveTitle[icv], "l");
 				//}
-				drawLatex(0.69, 0.945, "#bf{CMS} #it{Preliminary}",  42,        0.045,      mTextColor );
-				drawLatex(0.16, 0.86, "Pb-Pb #sqrt{s_{NN}} = 5.02 TeV UPC ("+nCasesName[i_ncase]+")",  42,        0.055,      mTextColor );
+				
+				//drawLatex(0.69, 0.945, "#bf{CMS} #it{Preliminary}",  42,        0.045,      mTextColor );
+				//drawLatex(0.16, 0.86, "Pb-Pb #sqrt{s_{NN}} = 5.02 TeV UPC ("+nCasesName[i_ncase]+")",  42,        0.055,      mTextColor );
+
+				drawLatex(0.25, 0.950, "#bf{CMS}", 42,        0.050,      mTextColor );
+				drawLatex(0.40, 0.950, "Pb-Pb #sqrt{s_{NN}} = 5.02 TeV UPC ("+nCasesName[i_ncase]+")", 42,        0.045,      mTextColor );
 
 				//drawLatex(0.15, 0.86, nCasesName[i_ncase], mTextFont, 0.06, mTextColor);
-				drawLatex(.16, 0.79, yName,                mTextFont, 0.05, mTextColor);
-				drawLatex(.45, 0.79, ptName,               mTextFont, 0.05, mTextColor);
+				drawLatex(.18, 0.86, yName,                mTextFont, 0.05, mTextColor);
+				drawLatex(.56, 0.86, ptName,               mTextFont, 0.05, mTextColor);
 				
 				//drawLatex(.55, 0.65+textDy, Form("N_{J/#psi} = %d #pm %d",   TMath::Nint(nJpsi.getVal()), TMath::Nint(nJpsi.getError())), mTextFont, mTextSize, mTextColor);
 				drawLatex(.58, 0.40+textDy, Form("R_{N} = %.3f #pm %.4f",   nPsi.getVal()/nJpsi.getVal(), RNErr ), mTextFont, mTextSize-0.005, mTextColor);
@@ -1079,7 +1084,7 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 
 			RooPlot *framePt = mPt.frame(Range(ptLow4Fit, ptHig4Fit), Title(""), Bins(nFramePtBins));
 
-			dataPt  .plotOn(framePt, MarkerStyle(20), MarkerSize(1.0), MarkerColor(2), LineColor(2), LineWidth(mLineWidth), DrawOption("pz"));
+			dataPt  .plotOn(framePt, MarkerStyle(20), MarkerSize(1.2), MarkerColor(2), LineColor(2), LineWidth(mLineWidth), DrawOption("pz"));
 			totPtPdf.plotOn(framePt, LineColor(1), LineStyle(1), LineWidth(mLineWidth));
 			totPtPdf.plotOn(framePt, Components(RooArgSet(cohJpsiPdf)),      LineColor(cohJpsiColor),      LineStyle(cohJpsiStyle),      LineWidth(mLineWidth));
 			totPtPdf.plotOn(framePt, Components(RooArgSet(feeddownJpsiPdf)), LineColor(feeddownJpsiColor), LineStyle(feeddownJpsiStyle), LineWidth(mLineWidth));
@@ -1138,7 +1143,7 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			leg->AddEntry(framePt->findObject("totPtPdf_Norm[mPt]"),   Form("Fit: #chi^{2}/ndf = %1.1f/%1.f = %1.1f", Pt_chi2, Pt_ndf, Pt_chi2/Pt_ndf),   "l");
 			//(RooHist::h_dataPt,RooCurve::totPtPdf_Norm[mPt],RooCurve::totPtPdf_Norm[mPt]_Comp[cohJpsiPdf],RooCurve::totPtPdf_Norm[mPt]_Comp[feeddownJpsiPdf],RooCurve::totPtPdf_Norm[mPt]_Comp[incohJpsiPdf],RooCurve::totPtPdf_Norm[mPt]_Comp[dissoJpsiPdf],RooCurve::totPtPdf_Norm[mPt]_Comp[qedPtPdf])
 			const TString curveName[5]  = {"totPtPdf_Norm[mPt]_Comp[cohJpsiPdf]","totPtPdf_Norm[mPt]_Comp[incohJpsiPdf]", "totPtPdf_Norm[mPt]_Comp[dissoJpsiPdf]", "totPtPdf_Norm[mPt]_Comp[feeddownJpsiPdf]","totPtPdf_Norm[mPt]_Comp[qedPtPdf]"};
-			const TString curveTitle[5] = {"Coherent J/#psi", "Incoherent J/#psi", "Incoherent J/#psi with nucleon dissociation", "Coherent #psi(2S) #rightarrow J/#psi+X", "#gamma#gamma #rightarrow #mu#mu"};
+			const TString curveTitle[5] = {"Coherent J/#psi", "Incoherent J/#psi w/o N dissociation", "Incoherent J/#psi w. N dissociation", "Coherent #psi(2S) #rightarrow J/#psi+X", "(QED continuum) #gamma#gamma #rightarrow #mu#mu"};
 			for(int icv=0; icv<5; icv++) 
 			{
 				//if(icv==0||icv==3) continue;
@@ -1225,20 +1230,24 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 				c3->cd();
 				gPad->SetLogy(1);
 
-				framePt->GetYaxis()->SetRangeUser(1.5, hPt->GetMaximum()*5);
+				framePt->GetYaxis()->SetRangeUser(1.5, hPt->GetMaximum()*3);
 				framePt->Draw() ;
-				drawLatex(0.69, 0.945, "#bf{CMS} #it{Preliminary}",  42,        0.045,     mTextColor );
-				drawLatex(0.16, 0.86, "Pb-Pb #sqrt{s_{NN}} = 5.02 TeV UPC ("+nCasesName[i_ncase]+")",  42,        0.055,     mTextColor );
-				drawLatex(0.60, 0.76, yName,                                                                 mTextFont, 0.05,      mTextColor );
+				//drawLatex(0.69, 0.945, "#bf{CMS} #it{Preliminary}",                                    42,        0.045,     mTextColor );
+				//drawLatex(0.16, 0.86, "Pb-Pb #sqrt{s_{NN}} = 5.02 TeV UPC ("+nCasesName[i_ncase]+")",  42,        0.055,     mTextColor );
+				drawLatex(0.12, 0.950, "#bf{CMS}" ,     42,        0.050,     mTextColor );
+				drawLatex(0.40, 0.950, "Pb-Pb #sqrt{s_{NN}} = 5.02 TeV UPC ("+nCasesName[i_ncase]+")",     42,        0.045,     mTextColor );
+				drawLatex(0.18, 0.86,  yName,                                                           mTextFont,  0.050,      mTextColor );
+				drawLatex(0.53, 0.86,  Form("%.2f < m_{#mu#mu} < %.2f GeV", mJpsiMassLow, mJpsiMassHi), mTextFont,  0.050,      mTextColor );
+
 				//drawLatex(0.18, 0.70+textDy2, Form("For p_{T} < %.2f GeV/c:",              mPtCut4Coh),                                   mTextFont, 0.035, mTextColor);
 				//drawLatex(0.18, 0.65+textDy2, Form("f_{I} = (N^{All}_{InCoh}/N^{Coh}_{J/#psi}) = %.3f #pm %.3f", fI_Value, fI_Error),     mTextFont, 0.035, mTextColor);
 				//drawLatex(0.18, 0.55+textDy2, Form("#frac{#sigma^{Coh}_{J/#psi}}{dy} = %.3f #pm %.3f (mb)", xsecValue[i_ncase][iy], xsecError[i_ncase][iy] ),                                     mTextFont, 0.035, mTextColor);
 
-				TLegend  *leg_4paper =  new TLegend(0.23, 0.51, 0.50, 0.82);
+				TLegend  *leg_4paper =  new TLegend(0.27, 0.49, 0.60, 0.82);
 				leg_4paper->SetFillStyle(0);
 				leg_4paper->SetFillColor(0);
 				leg_4paper->SetTextFont(mTextFont);
-				leg_4paper->SetTextSize(0.040);
+				leg_4paper->SetTextSize(0.045);
 				leg_4paper->AddEntry(framePt->findObject("h_dataPt"),            "Data",        "p");
 				leg_4paper->AddEntry(framePt->findObject("totPtPdf_Norm[mPt]"),   Form("Fit: #chi^{2}/ndf = %1.1f", Pt_chi2/Pt_ndf),   "l");
 				

@@ -44,7 +44,7 @@ struct Sigma_IA : Theory
 		gr_Sigma_IA	->SetLineWidth(2);
 		gr_Sigma_IA	->Draw("lsame");
 
-		leg->AddEntry(gr_Sigma_IA,	"Impulse Approx.",	"l");
+		leg->AddEntry(gr_Sigma_IA,	"Impulse Approximation",	"l");
 	}
 };
 
@@ -139,9 +139,9 @@ struct DSigmaDy_LTA : Theory
 
 	virtual void Draw(TLegend * leg) override
 	{
-		std::vector<TString> Name = {"LTA SS", "LTA WS", "EPS09 central"};
-		std::vector<int> colors = {2,2,2};
-		std::vector<int> styles = {1,7,3};
+		std::vector<TString> Name = {"LTA_SS", "LTA_WS", "EPS09 central"};
+		std::vector<int> colors = {1,2,1};
+		std::vector<int> styles = {2,5,3};
 
 		MultiDataReader MDR({"./inFiles/LTA_Jpsi_strong_shadowing.dat", "./inFiles/LTA_Jpsi_weak_shadowing.dat", "./inFiles/EPS09_central_Jpsi.dat"},
 							{"Dy", "AnAn", "0n0n", "0nXnSum", "XnXn"});
@@ -153,33 +153,40 @@ struct DSigmaDy_LTA : Theory
 			gr_0nXnSum 	= new TGraph(MDR.GetVec(i, "Dy").size(),	MDR.GetVec(i, "Dy").data(),	MDR.GetVec(i, "0nXnSum").data());
 			gr_XnXn 	= new TGraph(MDR.GetVec(i, "Dy").size(),	MDR.GetVec(i, "Dy").data(),	MDR.GetVec(i, "XnXn").data());
 		
-			if (Case == "AnAn"){
+			if (Case == "AnAn")
+			{
 				gr_AnAn->SetLineColor(colors[i]);
 				gr_AnAn->SetLineStyle(styles[i]);
 				gr_AnAn->SetLineWidth(2);
 				gr_AnAn->Draw("lsame");
 				leg->AddEntry(gr_AnAn,	Name[i].Data(),		"l" );
 			}
-			else if (Case == "0n0n"){
-				gr_0n0n->SetLineColor(colors[i]);
+			else if (Case == "0n0n")
+			{
+				gr_0n0n->SetLineColor(1);
 				gr_0n0n->SetLineStyle(styles[i]);
 				gr_0n0n->SetLineWidth(2);
 				gr_0n0n->Draw("lsame");
-				leg->AddEntry(gr_0n0n,	Name[i].Data(),		"l" );
+				leg->AddEntry(gr_0n0n,	" ",		"l" );
+				//leg->AddEntry(gr_0n0n,	Name[i].Data(),		"l" );
 			}
-			else if (Case == "0nXnSum"){
-				gr_0nXnSum->SetLineColor(colors[i]);
+			else if (Case == "0nXnSum")
+			{
+				gr_0nXnSum->SetLineColor(2);
 				gr_0nXnSum->SetLineStyle(styles[i]);
 				gr_0nXnSum->SetLineWidth(2);
 				gr_0nXnSum->Draw("lsame");
-				leg->AddEntry(gr_0nXnSum,	Name[i].Data(),	"l" );
+				leg->AddEntry(gr_0nXnSum,	" ",	"l" );
+				//leg->AddEntry(gr_0nXnSum,	Name[i].Data(),	"l" );
 			}
-			else if (Case == "XnXn"){
-				gr_XnXn->SetLineColor(colors[i]);
+			else if (Case == "XnXn")
+			{
+				gr_XnXn->SetLineColor(4);
 				gr_XnXn->SetLineStyle(styles[i]);
 				gr_XnXn->SetLineWidth(2);
 				gr_XnXn->Draw("lsame");
-				leg->AddEntry(gr_XnXn,	Name[i].Data(),		"l" );
+				leg->AddEntry(gr_XnXn,	" ",		"l" );
+				//leg->AddEntry(gr_XnXn,	Name[i].Data(),		"l" );
 			}
 		}
 	}
