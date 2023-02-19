@@ -544,6 +544,7 @@ photonNucleusCrossSection::photonFlux(const double Egamma, const int beam)
     myfile<< energy << " " << integratedflux <<" " << dide[j] << endl;                                
 	}//end loop over photon energy 
 	myfile.close();
+	cout<<"Flux.txt------>DONE"<<endl;
 	//  for 2nd and subsequent calls, use lookup table immediately
   
  L1000f:

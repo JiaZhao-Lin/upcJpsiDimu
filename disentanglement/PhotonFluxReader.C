@@ -3,8 +3,9 @@
 
 #include "ParamConverter.C"
 #include "AnalysisData.C"
+#include "../common/function.C"
 
-struct PhotonFluxReader
+class PhotonFluxReader
 {
 protected:
     AnalysisData& data;
@@ -31,6 +32,11 @@ public:
 
     void LoadPhotonFlux(TString inFileDir_, TString subCase_)
     {
+		//Reset the photon flux map to the clean one
+        PhotonFluxMap.clear();
+        InterPhotonFluxMap.clear();
+        PhotonFluxMap = PhotonFluxMapClean;
+
         for (int i = 0; i < CasesName.size(); ++i)
         {
             TString FluxFileName  = Form("Flux_%s%s.txt", CasesName[i].Data(), subCase_.Data());
@@ -126,10 +132,6 @@ public:
     {
         // if (PhotonFluxMap.at("Energy_Table_AnAn").size() == 0){	loadPhotonFlux(inFileDir, subCase);	}
 
-        //Reset the photon flux map to the clean one
-        PhotonFluxMap.clear();
-        InterPhotonFluxMap.clear();
-        PhotonFluxMap = PhotonFluxMapClean;
         LoadPhotonFlux( inFileDir_, subCase_);
 
         //Calculate photon energy from the rap
@@ -166,19 +168,30 @@ public:
         cout<<"InterpolateFlux-------->DONE"<<endl<<endl;
     }
 
+	std::vector<double> GetFluxUncer(std::vector<double> Default, std::vector<double> Diff)
+	{
+		std::vector<double> Uncer{};
+		for (int i = 0; i < Default.size(); ++i)
+		{
+			Uncer.push_back( abs( Default[i]-Diff[i] ) / Default[i] * 100.0);
+		}
+		return Uncer;
+	}
+
     //Calculate the error of photon flux based on the file given by the simulation
     void CalculateFluxErr()
     {
-        std::vector<TString> inFileDirList  = {"../simulation/flux/", "../simulation/flux/", "../simulation/flux/", "../simulation/flux/",};
-        std::vector<TString> subCaseList    = {"_SigNN68p3R6p70a0p59", "_SigNN68p3R6p64a0p53", "_SigNN68p3R6p70a0p53", "_SigNN68p3R6p64a0p59"};
-        std::vector<std::vector<double>> dNdy_Errs  (CasesName.size(),    std::vector<double> (data.GetSize("Rap"),   0)  );
-        std::vector<std::vector<double>> dNdy_Uncers(CasesName.size(),    std::vector<double> (data.GetSize("Rap"),   0)  );
+        TString inFileDir_  = "../simulation/flux/";
+        std::vector<TString> subCaseNucleusList	= {"_SigNN68p3R6p70a0p59", "_SigNN68p3R6p64a0p53", "_SigNN68p3R6p70a0p53", "_SigNN68p3R6p64a0p59"};
+        std::vector<TString> subCaseEMDList	= {"_SigNN68p3R6p67a0p56EMD1p055", "_SigNN68p3R6p67a0p56EMD0p945"};
+        std::vector<std::vector<double>> dNdy_Errs  (CasesName.size(),    std::vector<double> (data.GetSize("Rap"),   0.0)  );
+        std::vector<std::vector<double>> dNdy_Uncers(CasesName.size(),    std::vector<double> (data.GetSize("Rap"),   0.0)  );
+        std::vector<std::vector<double>> dNdy_EMD_Errs  (CasesName.size(),    std::vector<double> (data.GetSize("Rap"),   0.0)  );
 
-        assert(inFileDirList.size() == subCaseList.size());
-        for (int i = 0; i < inFileDirList.size(); ++i)
+		//First calculate the error of the flux from the nucleus parmeters
+        for (int i = 0; i < subCaseNucleusList.size(); ++i)
         {
-            TString inFileDir_  = inFileDirList[i];
-            TString subCase_    = subCaseList[i];
+            TString subCase_    = subCaseNucleusList[i];
 
             InterpolateFlux(inFileDir_,  subCase_);
 
@@ -192,10 +205,41 @@ public:
                     auto temp_flux_default = data.Get("dNdy_" + Case, k);
                     auto temp_err = abs(temp_flux - temp_flux_default);
                     dNdy_Errs[j][k] = max(dNdy_Errs[j][k],  temp_err);
-                    dNdy_Uncers[j][k] = dNdy_Errs[j][k] / temp_flux_default * 100.0;
                 }
             }
         }
+
+		//Then calculate the error of the flux from the EMD
+		for (int i = 0; i < subCaseEMDList.size(); ++i)
+		{
+			TString subCase_    = subCaseEMDList[i];
+
+			InterpolateFlux(inFileDir_,  subCase_);
+
+			for (int j = 0; j < CasesName.size(); ++j)
+			{
+				TString Case = CasesName[j];
+
+				for (int k = 0; k < data.GetSize("Rap"); ++k)
+				{
+					auto temp_flux = InterPhotonFluxMap.at("dNdy_" + Case)[k];
+					auto temp_flux_default = data.Get("dNdy_" + Case, k);
+					auto temp_err = abs(temp_flux - temp_flux_default);
+					dNdy_EMD_Errs[j][k] = max(dNdy_EMD_Errs[j][k],  temp_err);
+				}
+			}
+		}
+
+		//Calculate the final error of the flux
+		for (int i = 0; i < CasesName.size(); ++i)
+		{
+			TString Case = CasesName[i];
+			for (int j = 0; j < dNdy_Errs.size(); ++j)
+			{
+				dNdy_Errs[i][j] = TMath::Hypot(dNdy_Errs[i][j], dNdy_EMD_Errs[i][j]);
+				dNdy_Uncers[i][j] = dNdy_Errs[i][j] / data.Get("dNdy_" + Case, j) * 100.0;
+			}
+		}
 
         for (int i = 0; i < CasesName.size(); ++i)
         {
@@ -209,6 +253,83 @@ public:
         getFluxErr = getFluxErr_;
     }
 
+    void Draw( TString Case)
+    {	
+        TCanvas *c = new TCanvas();
+        c->SetLogy();
+
+        TH2D* htem2d = new TH2D("htem2d_"+Case, ";y;dN/dy", 10,-4,4, 10, 1e-2, 1e3);
+
+        TGraph* gr = new TGraph(PhotonFluxMap.at("Rap_Table_"+Case).size(), & PhotonFluxMap.at("Rap_Table_"+Case)[0], & PhotonFluxMap.at("dNdy_Table_"+Case)[0]);
+        TGraph* points = new TGraph();
+
+        for (int i = 0; i < data.Get("Rap").size(); ++i)
+        {
+            points->SetPoint(i,data.Get("Rap")[i],data.Get("dNdy_"+Case)[i]);
+        }
+        gr->SetLineColor(kBlack);
+        gr->SetLineWidth(3);
+        points->SetMarkerStyle(kFullCircle);
+        points->SetMarkerColor(kRed);
+
+        htem2d->Draw();
+        gr->Draw("SAME l");
+        points->Draw("SAME P");
+
+        drawLatex(0.3, 0.85, "UPC Pb+Pb #sqrt{s_{NN}} = 5.02 TeV (" + Case +")",      42,       0.05,      1);
+        // drawLatex(0.3, 0.80, Form("Emin = %.0e GeV to Emax = %.f GeV (CM frame)", Emin, Emax),      42,       0.04,      1);
+        for (int i = 0; i < data.Get("Rap").size(); ++i)
+        {
+            drawLatex(0.15, 0.35-i*0.04, Form("y = %.2f, E = %.2f GeV, dN/dy = %.3f ",data.Get("Rap")[i],data.Get("w")[i],data.Get("dNdy_"+Case)[i]),      42,       0.04,      1);
+        }
+
+        // c->SaveAs( "outFigures/Flux_" + Case + "_dNdy.png" );
+        c->SaveAs( "outFigures/Flux_" + Case + "_dNdy.pdf" );
+        delete c;
+        delete gr;
+        delete points;
+        delete htem2d;
+    }
+
+    void DrawComparison(TString Case,	std::vector<TString> subCases, std::vector<TString> legendName, TString inFileDir_ = "../simulation/flux/")
+    {
+        std::vector<int> colors{1,2,3,4};
+
+        LoadPhotonFlux( inFileDir, subCase);
+		auto PhotonFluxMap_Default = PhotonFluxMap;
+
+        TCanvas *c = new TCanvas();
+        // c->SetLogy();
+        TH2D* htem2d = new TH2D("htem2d_"+Case, "_Uncer;y;dN/dy Uncer. (%)", 10,-4,4, 10, 0, 20);
+        htem2d->Draw();
+        auto legend = new TLegend(0.2, 0.6, 0.5, 0.8);
+
+        for (int i = 0; i < subCases.size(); ++i)
+        {
+            auto subCase_ = subCases[i];
+            LoadPhotonFlux(inFileDir_, subCase_);
+            auto PhotonFluxMap_subCase = PhotonFluxMap;
+            PhotonFluxMap = PhotonFluxMapClean;
+
+            auto Uncer_subCase = GetFluxUncer(PhotonFluxMap_Default.at("dNdy_Table_"+Case),	PhotonFluxMap_subCase.at("dNdy_Table_"+Case));
+            TGraph* gr_subCase = new TGraph(PhotonFluxMap_subCase.at("Rap_Table_"+Case).size(), PhotonFluxMap_subCase.at("Rap_Table_"+Case).data(), Uncer_subCase.data());
+            
+            gr_subCase->SetLineColor(colors[i]);
+            gr_subCase->SetLineWidth(3);
+
+            gr_subCase->Draw("SAME l");
+            legend->AddEntry(gr_subCase, 	legendName[i],	"l");
+        }
+
+        drawLatex(0.3, 0.85, "UPC Pb+Pb #sqrt{s_{NN}} = 5.02 TeV (" + Case +")",      42,       0.05,      1);
+        legend->Draw();
+
+        // c->SaveAs( "outFigures/Flux_Comparison_" + Case + "_dNdy.png" );
+        c->SaveAs( "outFigures/Flux_Comparison_" + Case + "_dNdy.pdf" );
+        delete c;
+        delete htem2d;
+    }
+
     void Handle()
     {
         cout << endl << "+++PhotonFluxReader::Handling..." <<endl;
@@ -219,59 +340,40 @@ public:
 };
 
 
-// void PhotonFluxReader()
-// {
-// 	//------------------Standard Test-------------------------------------------
-//     // AnalysisData data("Test");
-//     // AnalysisDataObserver obs;
-//     // data.Subscribe(&obs);
-//     // data.Add("Rap",         {1.75, -1.75, 2, -2, 2.25, -2.25});
-// 	// struct PhotonFluxReader ana(data, "../simulation/flux/", "_SigNN68p3R6p67a0p56");
-//     // ana.Handle();
+void PhotonFluxReader()
+{
+	//------------------Standard Test-------------------------------------------
+    AnalysisData data("Test");
+    AnalysisDataObserver obs;
+    data.Subscribe(&obs);
+    data.Add("Rap",         {1.75, -1.75, 2, -2, 2.25, -2.25});
+	struct PhotonFluxReader cPhotonFluxReader(data, "../simulation/flux/", "_SigNN68p3R6p67a0p56");
+    // cPhotonFluxReader.SetFluxErr(true);
+    cPhotonFluxReader.Handle();
 
-// 	// plotFlux(TestMap,	"0n0n");
-// 	// plotFlux(TestMap,	"0nXnSum");
-// 	// plotFlux(TestMap,	"XnXn");
-// 	// plotFlux(TestMap,	"AnAn");
-// 	// plotPofB();
+	// cPhotonFluxReader.Draw("0n0n");
+	// cPhotonFluxReader.Draw("0nXnSum");
+	// cPhotonFluxReader.Draw("XnXn");
+	// cPhotonFluxReader.Draw("AnAn");
+	// plotPofB();
 // 	//--------------------------------------------------------------------------
 
+	// cPhotonFluxReader.DrawComparison("AnAn",		{"_SigNN68p3R6p64a0p53", "_SigNN68p3R6p70a0p59", "_SigNN68p3R6p64a0p59", "_SigNN68p3R6p70a0p53"},	{"#sigma_{NN} = 68.3, R = 6.64, a = 0.53", "#sigma_{NN} = 68.3, R = 6.70, a = 0.59", "#sigma_{NN} = 68.3, R = 6.64, a = 0.59", "#sigma_{NN} = 68.3, R = 6.70, a = 0.53"});
+	// cPhotonFluxReader.DrawComparison("0n0n",		{"_SigNN68p3R6p64a0p53", "_SigNN68p3R6p70a0p59", "_SigNN68p3R6p64a0p59", "_SigNN68p3R6p70a0p53"},	{"#sigma_{NN} = 68.3, R = 6.64, a = 0.53", "#sigma_{NN} = 68.3, R = 6.70, a = 0.59", "#sigma_{NN} = 68.3, R = 6.64, a = 0.59", "#sigma_{NN} = 68.3, R = 6.70, a = 0.53"});
+	// cPhotonFluxReader.DrawComparison("0nXnSum",		{"_SigNN68p3R6p64a0p53", "_SigNN68p3R6p70a0p59", "_SigNN68p3R6p64a0p59", "_SigNN68p3R6p70a0p53"},	{"#sigma_{NN} = 68.3, R = 6.64, a = 0.53", "#sigma_{NN} = 68.3, R = 6.70, a = 0.59", "#sigma_{NN} = 68.3, R = 6.64, a = 0.59", "#sigma_{NN} = 68.3, R = 6.70, a = 0.53"});
+	// cPhotonFluxReader.DrawComparison("XnXn",		{"_SigNN68p3R6p64a0p53", "_SigNN68p3R6p70a0p59", "_SigNN68p3R6p64a0p59", "_SigNN68p3R6p70a0p53"},	{"#sigma_{NN} = 68.3, R = 6.64, a = 0.53", "#sigma_{NN} = 68.3, R = 6.70, a = 0.59", "#sigma_{NN} = 68.3, R = 6.64, a = 0.59", "#sigma_{NN} = 68.3, R = 6.70, a = 0.53"});
+
+	cPhotonFluxReader.DrawComparison("AnAn",		{"_SigNN68p3R6p67a0p56EMD1p055", "_SigNN68p3R6p67a0p56EMD0p945"},	{"EMD +5.5%", "EMD -5.5%"});
+	cPhotonFluxReader.DrawComparison("0n0n",		{"_SigNN68p3R6p67a0p56EMD1p055", "_SigNN68p3R6p67a0p56EMD0p945"},	{"EMD +5.5%", "EMD -5.5%"});
+	cPhotonFluxReader.DrawComparison("0nXnSum",		{"_SigNN68p3R6p67a0p56EMD1p055", "_SigNN68p3R6p67a0p56EMD0p945"},	{"EMD +5.5%", "EMD -5.5%"});
+	cPhotonFluxReader.DrawComparison("XnXn",		{"_SigNN68p3R6p67a0p56EMD1p055", "_SigNN68p3R6p67a0p56EMD0p945"},	{"EMD +5.5%", "EMD -5.5%"});
+
+
+// 	// DrawComparison("AnAn",		{"_SigNN68p3R6p67a0p56", "_SigNN68p3R6p64a0p53", "_SigNN68p3R6p70a0p59"},	{"#sigma_{NN} = 68.3, R = 6.67, a = 0.56", "#sigma_{NN} = 68.3, R = 6.64, a = 0.53", "#sigma_{NN} = 68.3, R = 6.70, a = 0.59"});
+// 	// DrawComparison("0n0n",		{"_SigNN68p3R6p67a0p56", "_SigNN68p3R6p64a0p53", "_SigNN68p3R6p70a0p59"},	{"#sigma_{NN} = 68.3, R = 6.67, a = 0.56", "#sigma_{NN} = 68.3, R = 6.64, a = 0.53", "#sigma_{NN} = 68.3, R = 6.70, a = 0.59"});
+// 	// DrawComparison("0nXnSum",	{"_SigNN68p3R6p67a0p56", "_SigNN68p3R6p64a0p53", "_SigNN68p3R6p70a0p59"},	{"#sigma_{NN} = 68.3, R = 6.67, a = 0.56", "#sigma_{NN} = 68.3, R = 6.64, a = 0.53", "#sigma_{NN} = 68.3, R = 6.70, a = 0.59"});
+// 	// DrawComparison("XnXn",		{"_SigNN68p3R6p67a0p56", "_SigNN68p3R6p64a0p53", "_SigNN68p3R6p70a0p59"},	{"#sigma_{NN} = 68.3, R = 6.67, a = 0.56", "#sigma_{NN} = 68.3, R = 6.64, a = 0.53", "#sigma_{NN} = 68.3, R = 6.70, a = 0.59"});
 // 	//--------------------------------------------------------------------------
-// 	//------------------Flux For Drawing ALICE and LHCb values------------------
-// 	// std::map<TString, std::vector<double>>	TestMap = 
-// 	// {
-// 	// 	{"Raps",	{ 0, -3.875, -3.625, -4.25, -3.75 }},
-// 	// 	{"dNdy",	{}}
-// 	// };
-
-// 	// auto TestMap1 = TestMap;
-// 	// auto TestMap2 = TestMap;
-// 	// InterpolateFlux(TestMap, "flux/", "_SigNN68p3R6p67a0p56");
-// 	// plotFlux(TestMap,	"0n0n");
-// 	// plotFlux(TestMap,	"0nXnSum");
-// 	// plotFlux(TestMap,	"XnXn");
-// 	// plotFlux(TestMap,	"AnAn");
-
-// 	// InterpolateFlux(TestMap1, "flux/", "_SigNN68p3R6p64a0p53");
-// 	// InterpolateFlux(TestMap2, "flux/", "_SigNN68p3R6p70a0p59");
-// 	// auto v1 = getFluxUncer(TestMap.at("dNdy_AnAn"),	TestMap1.at("dNdy_AnAn"));
-// 	// auto v2 = getFluxUncer(TestMap.at("dNdy_AnAn"),	TestMap2.at("dNdy_AnAn"));
-// 	// for (int i = 0; i < v1.size(); ++i)
-// 	// {
-// 	// 	auto uncer = (v1[i] > v2[i]) ? v1[i]: v2[i];
-// 	// 	cout << "Raps:" << TestMap.at("Raps")[i] << "	Flux:" << TestMap.at("dNdy_AnAn")[i]; cout<< "	Uncer:" << uncer <<endl;
-// 	// }
-
-// 	// CompareFlux("AnAn",		{"_SigNN68p3R6p64a0p53", "_SigNN68p3R6p70a0p59", "_SigNN68p3R6p64a0p59", "_SigNN68p3R6p70a0p53"},	{"#sigma_{NN} = 68.3, R = 6.64, a = 0.53", "#sigma_{NN} = 68.3, R = 6.70, a = 0.59", "#sigma_{NN} = 68.3, R = 6.64, a = 0.59", "#sigma_{NN} = 68.3, R = 6.70, a = 0.53"});
-// 	// CompareFlux("0n0n",		{"_SigNN68p3R6p64a0p53", "_SigNN68p3R6p70a0p59", "_SigNN68p3R6p64a0p59", "_SigNN68p3R6p70a0p53"},	{"#sigma_{NN} = 68.3, R = 6.64, a = 0.53", "#sigma_{NN} = 68.3, R = 6.70, a = 0.59", "#sigma_{NN} = 68.3, R = 6.64, a = 0.59", "#sigma_{NN} = 68.3, R = 6.70, a = 0.53"});
-// 	// CompareFlux("0nXnSum",	{"_SigNN68p3R6p64a0p53", "_SigNN68p3R6p70a0p59", "_SigNN68p3R6p64a0p59", "_SigNN68p3R6p70a0p53"},	{"#sigma_{NN} = 68.3, R = 6.64, a = 0.53", "#sigma_{NN} = 68.3, R = 6.70, a = 0.59", "#sigma_{NN} = 68.3, R = 6.64, a = 0.59", "#sigma_{NN} = 68.3, R = 6.70, a = 0.53"});
-// 	// CompareFlux("XnXn",		{"_SigNN68p3R6p64a0p53", "_SigNN68p3R6p70a0p59", "_SigNN68p3R6p64a0p59", "_SigNN68p3R6p70a0p53"},	{"#sigma_{NN} = 68.3, R = 6.64, a = 0.53", "#sigma_{NN} = 68.3, R = 6.70, a = 0.59", "#sigma_{NN} = 68.3, R = 6.64, a = 0.59", "#sigma_{NN} = 68.3, R = 6.70, a = 0.53"});
-
-// 	// CompareFlux("AnAn",		{"_SigNN68p3R6p67a0p56", "_SigNN68p3R6p64a0p53", "_SigNN68p3R6p70a0p59"},	{"#sigma_{NN} = 68.3, R = 6.67, a = 0.56", "#sigma_{NN} = 68.3, R = 6.64, a = 0.53", "#sigma_{NN} = 68.3, R = 6.70, a = 0.59"});
-// 	// CompareFlux("0n0n",		{"_SigNN68p3R6p67a0p56", "_SigNN68p3R6p64a0p53", "_SigNN68p3R6p70a0p59"},	{"#sigma_{NN} = 68.3, R = 6.67, a = 0.56", "#sigma_{NN} = 68.3, R = 6.64, a = 0.53", "#sigma_{NN} = 68.3, R = 6.70, a = 0.59"});
-// 	// CompareFlux("0nXnSum",	{"_SigNN68p3R6p67a0p56", "_SigNN68p3R6p64a0p53", "_SigNN68p3R6p70a0p59"},	{"#sigma_{NN} = 68.3, R = 6.67, a = 0.56", "#sigma_{NN} = 68.3, R = 6.64, a = 0.53", "#sigma_{NN} = 68.3, R = 6.70, a = 0.59"});
-// 	// CompareFlux("XnXn",		{"_SigNN68p3R6p67a0p56", "_SigNN68p3R6p64a0p53", "_SigNN68p3R6p70a0p59"},	{"#sigma_{NN} = 68.3, R = 6.67, a = 0.56", "#sigma_{NN} = 68.3, R = 6.64, a = 0.53", "#sigma_{NN} = 68.3, R = 6.70, a = 0.59"});
-// 	//--------------------------------------------------------------------------
-// }
+}
 
 #endif

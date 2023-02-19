@@ -20,6 +20,7 @@ struct PairUncer
 	static void RelativeUncer(const AnalysisData& DefaultAnaData, AnalysisData& UncerAnaData, const TString param)
 	{
 		std::vector<double> Relative_Uncer;
+		std::vector<double> Relative_Uncer_Signed;
 
 		//Calculate Relative Uncertainty
 		auto Default = DefaultAnaData.Get(param);
@@ -27,10 +28,12 @@ struct PairUncer
 
 		for ( auto i = 0; i < Default.size(); i++ )
 		{
-			Relative_Uncer.	push_back(	abs(	(Default[i] - Uncer[i]) / Default[i]	) * 100.0	);
+			Relative_Uncer			.push_back(	abs(	(Default[i] - Uncer[i]) / Default[i]	) * 100.0	);
+			Relative_Uncer_Signed	.push_back(	   (	(Default[i] - Uncer[i]) / Default[i]	) * 100.0	);
 		}
 
-		UncerAnaData.Add( Form("%s_SysUncer", param.Data()), Relative_Uncer );
+		UncerAnaData	.Add( Form("%s_SysUncer", param.Data())			, Relative_Uncer );
+		UncerAnaData	.Add( Form("%s_SysUncer_Signed", param.Data())	, Relative_Uncer_Signed );
 	}
 	static void SqrtUncer(const AnalysisData& DefaultAnaData, AnalysisData& UncerAnaData, const TString param)
 	{
@@ -65,7 +68,7 @@ struct CombineUncer
 	//combine uncertainties of multiple AnalysisData
 	//and add the result to a new AnalysisData
 
-	static std::vector<double> Combine(const std::vector< AnalysisData >& AnaDataList,	TString param)
+	static std::vector<double> Combine(const std::vector< AnalysisData >& AnaDataList,	TString param, const bool isSigned = false)
 	{
 		//initialize Combined Uncertainty with 0
 		const int n_data = AnaDataList[0].Get(param).size();
@@ -78,7 +81,14 @@ struct CombineUncer
 
 			for ( auto j = 0; j < temp_param.size(); j++ )
 			{
+				double sign = 1.0;
+				if ( isSigned ) 
+				{
+					//getting the sign of the uncertainty from their sum
+					if (std::signbit( Combined_Uncer[j]+temp_param[j] ))	sign *= -1.0;
+				}
 				Combined_Uncer[j] = TMath::Hypot(	Combined_Uncer[j],	 temp_param[j] );
+				Combined_Uncer[j] *= sign;
 			}
 		}
 		return Combined_Uncer;
@@ -94,6 +104,11 @@ struct CombineUncer
 		{
 			std::vector<double> Combined_Uncer = Combine( AnaDataList,	paramList[i] );
 			AnaData.Add( paramList[i], Combined_Uncer );
+			if( paramList[i] != "R_SysUncer")
+			{
+				std::vector<double> Combined_Uncer_Signed = Combine( AnaDataList,	paramList[i]+"_Signed" , true);
+				AnaData.Add( paramList[i]+"_Signed", Combined_Uncer_Signed );
+			}
 		}
 		return AnaData;
 	}
@@ -104,7 +119,7 @@ struct LargestUncer
 	//find the largest uncertainty of multiple AnalysisData
 	//and add the result to a new AnalysisData
 
-	static std::vector<double> Largest(const std::vector< AnalysisData >& AnaDataList,	TString param)
+	static std::vector<double> Largest(const std::vector< AnalysisData >& AnaDataList,	TString param, const bool isSigned = false)
 	{
 		//initialize Largest Uncertainty with 0
 		const int n_data = AnaDataList[0].Get(param).size();
@@ -117,7 +132,11 @@ struct LargestUncer
 
 			for ( auto j = 0; j < temp_param.size(); j++ )
 			{
-				Largest_Uncer[j] = TMath::Max(	Largest_Uncer[j],	 temp_param[j] );
+				if ( isSigned ) 
+				{
+					if (	abs(Largest_Uncer[j]) <	abs(temp_param[j]) ) Largest_Uncer[j] = temp_param[j];
+				}
+				else			Largest_Uncer[j] = TMath::Max(	Largest_Uncer[j],	 temp_param[j] );
 			}
 		}
 		return Largest_Uncer;
@@ -129,8 +148,14 @@ struct LargestUncer
 
 		for(int i = 0; i < paramList.size(); i++)
 		{
-			std::vector<double> Largest_Uncer = Largest( AnaDataList,	paramList[i] );
+			std::vector<double> Largest_Uncer 			= Largest( AnaDataList,	paramList[i] );
 			AnaData.Add( paramList[i], Largest_Uncer );
+
+			if (paramList[i] != "R_SysUncer") 
+			{
+				std::vector<double> Largest_Uncer_Signed 	= Largest( AnaDataList,	paramList[i]+"_Signed", true );
+				AnaData.Add( paramList[i]+ "_Signed", Largest_Uncer_Signed );
+			}
 		}
 		return AnaData;
 	}
@@ -148,8 +173,20 @@ struct UncerAnalyzer : Analyzer
 
 	// those parameters must be in the same order
 	std::vector<TString> paramList 			= {"Sigma", "R", "DSigmaDy_AnAn", "DSigmaDy_0n0n", "DSigmaDy_0nXnSum", "DSigmaDy_XnXn"};
-	std::vector<TString> SysUncer_paramList = {"Sigma_SysUncer", "R_SysUncer", "DSigmaDy_AnAn_SysUncer", "DSigmaDy_0n0n_SysUncer", "DSigmaDy_0nXnSum_SysUncer", "DSigmaDy_XnXn_SysUncer"};
-	std::vector<TString> SysErr_paramList 	= {"Sigma_SysErr", "R_SysErr", "DSigmaDy_AnAn_SysErr", "DSigmaDy_0n0n_SysErr", "DSigmaDy_0nXnSum_SysErr", "DSigmaDy_XnXn_SysErr"};
+	std::vector<TString> SysUncer_paramList;
+	std::vector<TString> SysUncer_Signed_paramList;
+	std::vector<TString> SysErr_paramList;
+	
+	void Init()
+	{
+		//initialize the paramList
+		for ( auto i = 0; i < paramList.size(); i++ )
+		{
+			SysUncer_paramList.push_back( paramList[i] + "_SysUncer" );
+			SysUncer_Signed_paramList.push_back( paramList[i] + "_SysUncer_Signed" );
+			SysErr_paramList.push_back( paramList[i] + "_SysErr" );
+		}
+	}
 
 	const int template_option  = 1; //0:OldCohJpsi; 1:NewCohJpsi (w R+1fm);
 	const TString template_Name[2] = {"", "_NewCohJpsi"};
@@ -168,6 +205,8 @@ struct UncerAnalyzer : Analyzer
 	AnalysisData CB_Poly3_fluxM_AnaData 	{	"CB_Poly3_fluxM_AnaData"	,	Form("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins%s.appliedTnP.root", template_Name[template_option].Data())				};
 	AnalysisData CB_Poly3_fluxPM_AnaData 	{	"CB_Poly3_fluxPM_AnaData"	,	Form("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins%s.appliedTnP.root", template_Name[template_option].Data())				};
 	AnalysisData CB_Poly3_fluxMP_AnaData 	{	"CB_Poly3_fluxMP_AnaData"	,	Form("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins%s.appliedTnP.root", template_Name[template_option].Data())				};
+	AnalysisData CB_Poly3_fluxEMDP_AnaData 	{	"CB_Poly3_fluxEMDP_AnaData"	,	Form("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins%s.appliedTnP.root", template_Name[template_option].Data())				};
+	AnalysisData CB_Poly3_fluxEMDM_AnaData 	{	"CB_Poly3_fluxEMDM_AnaData"	,	Form("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins%s.appliedTnP.root", template_Name[template_option].Data())				};
 	AnalysisData CB_Poly3_TnP_Low_AnaData 	{	"CB_Poly3_TnP_Low_AnaData"	,	Form("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins%s.appliedTnP_Low.root", template_Name[template_option].Data())			};
 	AnalysisData CB_Poly3_TnP_Hig_AnaData	{	"CB_Poly3_TnP_Hig_AnaData"	,	Form("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins%s.appliedTnP_Hig.root", template_Name[template_option].Data())			};
 	AnalysisData CB_Poly3_PU_AnaData 		{	"CB_Poly3_PU_AnaData"		,	Form("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUATLAS_6RapBins%s.appliedTnP.root", template_Name[template_option].Data())				};
@@ -176,7 +215,7 @@ struct UncerAnalyzer : Analyzer
 
 	const AnalysisData& Default_AnaData = CB_Poly3_AnaData;
 	
-	UncerAnalyzer() : Analyzer{AnaData} {	AnaData.Subscribe(&obs);	};
+	UncerAnalyzer() : Analyzer{AnaData} {	Init();	AnaData.Subscribe(&obs);	};
 	
 	//Uses analysis data, calculate apply dientaglementanlayzer and calculate the uncertainty
 	//The uncertainty is calculated by the difference between the analysis data and the default analysis data
@@ -196,6 +235,8 @@ struct UncerAnalyzer : Analyzer
 		DisentanglementAnalyzer CB_Poly3_fluxM_Ana 		{CB_Poly3_fluxM_AnaData, 	"../simulation/flux/", "_SigNN68p3R6p64a0p53"};	CB_Poly3_fluxM_Ana 		.Handle();
 		DisentanglementAnalyzer CB_Poly3_fluxPM_Ana 	{CB_Poly3_fluxPM_AnaData,	"../simulation/flux/", "_SigNN68p3R6p70a0p53"};	CB_Poly3_fluxPM_Ana 	.Handle();
 		DisentanglementAnalyzer CB_Poly3_fluxMP_Ana 	{CB_Poly3_fluxMP_AnaData,	"../simulation/flux/", "_SigNN68p3R6p64a0p59"};	CB_Poly3_fluxMP_Ana 	.Handle();
+		DisentanglementAnalyzer CB_Poly3_fluxEMDP_Ana 	{CB_Poly3_fluxEMDP_AnaData,	"../simulation/flux/", "_SigNN68p3R6p67a0p56EMD1p055"};	CB_Poly3_fluxEMDP_Ana 	.Handle();
+		DisentanglementAnalyzer CB_Poly3_fluxEMDM_Ana 	{CB_Poly3_fluxEMDM_AnaData,	"../simulation/flux/", "_SigNN68p3R6p67a0p56EMD0p945"};	CB_Poly3_fluxEMDM_Ana 	.Handle();
 		DisentanglementAnalyzer CB_Poly3_TnP_Low_Ana 	{CB_Poly3_TnP_Low_AnaData	};	CB_Poly3_TnP_Low_Ana 	.Handle();
 		DisentanglementAnalyzer CB_Poly3_TnP_Hig_Ana	{CB_Poly3_TnP_Hig_AnaData	};	CB_Poly3_TnP_Hig_Ana 	.Handle();
 		DisentanglementAnalyzer CB_Poly3_PU_Ana 		{CB_Poly3_PU_AnaData		};	CB_Poly3_PU_Ana 		.Handle();
@@ -216,6 +257,8 @@ struct UncerAnalyzer : Analyzer
 		PairUncer::Calculate(	Default_AnaData,	CB_Poly3_fluxM_AnaData		);
 		PairUncer::Calculate(	Default_AnaData,	CB_Poly3_fluxPM_AnaData		);
 		PairUncer::Calculate(	Default_AnaData,	CB_Poly3_fluxMP_AnaData		);
+		PairUncer::Calculate(	Default_AnaData,	CB_Poly3_fluxEMDP_AnaData	);
+		PairUncer::Calculate(	Default_AnaData,	CB_Poly3_fluxEMDM_AnaData	);
 		PairUncer::Calculate(	Default_AnaData,	CB_Poly3_TnP_Low_AnaData	);
 		PairUncer::Calculate(	Default_AnaData,	CB_Poly3_TnP_Hig_AnaData	);
 		PairUncer::Calculate(	Default_AnaData,	CB_Poly3_PU_AnaData			);
@@ -275,10 +318,10 @@ struct UncerAnalyzer : Analyzer
 		AnalysisData AnaData_Lumi {"Lumi"};
 		AnalysisData AnaData_BR   {"BR"};
 		AnalysisData AnaData_IA   {"IA_Uncer"};
-		AnaData_Lumi.Add("Lumi_SysUncer", 	std::vector<double>	(AnaData.GetSize("Sigma_SysUncer"),	Lumi_Uncer*100));
-		AnaData_BR.Add("BR_SysUncer", 	std::vector<double>	(AnaData.GetSize("Sigma_SysUncer"),	br_Jpsi2uu_Uncer*100));
-		AnaData_Lumi.Add("R_Lumi_SysUncer", 		std::vector<double>	(AnaData.GetSize("R_SysUncer"),		0.5*Lumi_Uncer*100));
-		AnaData_BR.Add("R_BR_SysUncer", 		std::vector<double>	(AnaData.GetSize("R_SysUncer"),		0.5*br_Jpsi2uu_Uncer*100));
+		AnaData_Lumi	.Add("Lumi_SysUncer", 	std::vector<double>	(AnaData.GetSize("Sigma_SysUncer"),	Lumi_Uncer*100));
+		AnaData_BR		.Add("BR_SysUncer", 	std::vector<double>	(AnaData.GetSize("Sigma_SysUncer"),	br_Jpsi2uu_Uncer*100));
+		AnaData_Lumi	.Add("R_Lumi_SysUncer", std::vector<double>	(AnaData.GetSize("R_SysUncer"),		0.5*Lumi_Uncer*100));
+		AnaData_BR		.Add("R_BR_SysUncer", 	std::vector<double>	(AnaData.GetSize("R_SysUncer"),		0.5*br_Jpsi2uu_Uncer*100));
 
 		//now add the IA uncertainty to the R systematic uncertainty
 		std::vector<double> v_IA_Uncer;
@@ -311,8 +354,12 @@ struct UncerAnalyzer : Analyzer
 															CBG_Poly3_AnaData,			CB_Poly3_temp_AnaData,
 															CB_Poly3_CohPtCut_AnaData,	CB_Poly3_SdB_AnaData,		
 															MassFitRangeUncer										},	SysUncer_paramList);
-		auto FluxUncer			= LargestUncer::Calculate({	CB_Poly3_fluxM_AnaData,		CB_Poly3_fluxP_AnaData,
+		auto FluxNucleusUncer	= LargestUncer::Calculate({	CB_Poly3_fluxM_AnaData,		CB_Poly3_fluxP_AnaData,
 															CB_Poly3_fluxPM_AnaData,	CB_Poly3_fluxMP_AnaData		},	SysUncer_paramList);
+		
+		auto FluxEMDUncer		= LargestUncer::Calculate({	CB_Poly3_fluxEMDP_AnaData,	CB_Poly3_fluxEMDM_AnaData	},	SysUncer_paramList);
+
+		auto FluxUncer			= CombineUncer::Calculate({	FluxNucleusUncer,			FluxEMDUncer				},	SysUncer_paramList);
 		auto TnPUncer			= LargestUncer::Calculate({	CB_Poly3_TnP_Low_AnaData,	CB_Poly3_TnP_Hig_AnaData	},	SysUncer_paramList);
 
 		auto TotalUncer			= CombineUncer::Calculate({	FitUncer,					FluxUncer,			
@@ -325,6 +372,8 @@ struct UncerAnalyzer : Analyzer
 		//load the breakdown of systematic uncertainties to AnaData_Breakdown
 		AnaData_Breakdown.insert(	{"Signal Ext",		FitUncer}	);
 		AnaData_Breakdown.insert(	{"PhotonFlux",		FluxUncer}		);
+		AnaData_Breakdown.insert(	{"PhotonFluxNucleus",	FluxNucleusUncer}	);
+		AnaData_Breakdown.insert(	{"PhotonFluxEMD",		FluxEMDUncer}		);
 		AnaData_Breakdown.insert(	{"TnP",				TnPUncer}		);
 		AnaData_Breakdown.insert(	{"HFveto",			CB_Poly3_looseHF_AnaData}	); // HF veto used loose HF cut for now, may update later
 		AnaData_Breakdown.insert(	{"n-PileUp",		CB_Poly3_PU_AnaData}		);
@@ -378,7 +427,7 @@ void UncerAnalyzer()
 
 	struct UncerAnalyzer UncerAna;
 	UncerAna.Handle();
-	// UncerAna.SaveResults("outFiles/Result_CMS_SysUncer.root");
+	UncerAna.SaveResults("outFiles/Result_CMS_SysUncer.root");
 
 
 //-------------------------------------TIMER END---------------------------------------------------

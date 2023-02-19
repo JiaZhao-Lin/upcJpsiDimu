@@ -10,6 +10,8 @@ Draw the figures and save them to the output directory.
 
 void DoAnalysis()
 {
+	TString flux_subCase = "_SigNN68p3R6p67a0p56";
+
 	AnalysisData Data_CMS("CMS");
 	AnalysisData Data_ALICE_2019_Selected("ALICE_2019_Selected");
 	AnalysisData Data_ALICE_2021_Selected("ALICE_2021_Selected");
@@ -21,15 +23,15 @@ void DoAnalysis()
 	Data_ALICE_2021_Selected.Subscribe(&obs);
 	Data_LHCb_2022_Selected.Subscribe(&obs);
 
-	Data_CMS.LoadHistFile("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins_NewCohJpsi.appliedTnP.root");
-	Data_ALICE_2019_Selected.LoadTextFile("inFiles/DSigmaDy_ALICE_2019_Selected.txt");
-	Data_ALICE_2021_Selected.LoadTextFile("inFiles/DSigmaDy_ALICE_2021_Selected.txt");
-	Data_LHCb_2022_Selected.LoadTextFile("inFiles/DSigmaDy_LHCb_2022_Selected.txt");
+	Data_CMS					.LoadHistFile("../signalExt/JpsiXsecValues/JpsiXsec_CB_Poly3_PUShuai_6RapBins_NewCohJpsi.appliedTnP.root");
+	Data_ALICE_2019_Selected	.LoadTextFile("inFiles/DSigmaDy_ALICE_2019_Selected.txt");
+	Data_ALICE_2021_Selected	.LoadTextFile("inFiles/DSigmaDy_ALICE_2021_Selected.txt");
+	Data_LHCb_2022_Selected		.LoadTextFile("inFiles/DSigmaDy_LHCb_2022_Selected.txt");
 
-	DisentanglementAnalyzer AnaRoot_CMS(Data_CMS,	"../simulation/flux/",      "_SigNN68p3R6p67a0p56");
-	FwdRapAnalyzer AnaRoot_ALICE_2019_Selected(Data_ALICE_2019_Selected,	"../simulation/flux/",      "_SigNN68p3R6p67a0p56");
-	MidRapAnalyzer AnaRoot_ALICE_2021_Selected(Data_ALICE_2021_Selected,	"../simulation/flux/",      "_SigNN68p3R6p67a0p56");
-	FwdRapAnalyzer AnaRoot_LHCb_2022_Selected(Data_LHCb_2022_Selected,	"../simulation/flux/",      "_SigNN68p3R6p67a0p56");
+	DisentanglementAnalyzer AnaRoot_CMS					(Data_CMS,					"../simulation/flux/",      flux_subCase);
+	FwdRapAnalyzer 			AnaRoot_ALICE_2019_Selected	(Data_ALICE_2019_Selected,	"../simulation/flux/",      flux_subCase);
+	MidRapAnalyzer 			AnaRoot_ALICE_2021_Selected	(Data_ALICE_2021_Selected,	"../simulation/flux/",      flux_subCase);
+	FwdRapAnalyzer 			AnaRoot_LHCb_2022_Selected	(Data_LHCb_2022_Selected,	"../simulation/flux/",      flux_subCase);
 
 	AnaRoot_CMS.Handle();
 	AnaRoot_ALICE_2019_Selected.Handle();
@@ -63,13 +65,13 @@ void Main()
 
 //------------------------------------Load From Root-----------------------------------------------
 //-------------------------------------------------------------------------------------------------
-	Data_CMS.LoadMapFile("outFiles/Result_CMS.root");
-	Data_ALICE_2019_Selected.LoadMapFile("outFiles/Result_ALICE_2019_Selected.root");
-	Data_ALICE_2021_Selected.LoadMapFile("outFiles/Result_ALICE_2021_Selected.root");
-	Data_LHCb_2022_Selected.LoadMapFile("outFiles/Result_LHCb_2022_Selected.root");
-	Data_ALICE_2019.LoadTextFile("inFiles/DSigmaDy_ALICE_2019.txt");
-	Data_ALICE_2021.LoadTextFile("inFiles/DSigmaDy_ALICE_2021.txt");
-	Data_LHCb_2022.LoadTextFile("inFiles/DSigmaDy_LHCb_2022.txt");
+	Data_CMS					.LoadMapFile("outFiles/Result_CMS.root");
+	Data_ALICE_2019_Selected	.LoadMapFile("outFiles/Result_ALICE_2019_Selected.root");
+	Data_ALICE_2021_Selected	.LoadMapFile("outFiles/Result_ALICE_2021_Selected.root");
+	Data_LHCb_2022_Selected		.LoadMapFile("outFiles/Result_LHCb_2022_Selected.root");
+	Data_ALICE_2019				.LoadTextFile("inFiles/DSigmaDy_ALICE_2019.txt");
+	Data_ALICE_2021				.LoadTextFile("inFiles/DSigmaDy_ALICE_2021.txt");
+	Data_LHCb_2022				.LoadTextFile("inFiles/DSigmaDy_LHCb_2022.txt");
 //-------------------------------------------------------------------------------------------------
 
 	// Data_CMS.Print();

@@ -236,6 +236,7 @@ beamBeamSystem::generateBreakupProbabilities()
             myfile<< b << " " << _pPhotonBreakup << " " << _pHadronBreakup << " " << pOfB << endl;   
         } // End while(1)
         myfile.close();
+	cout<<"PofB.txt------>DONE"<<endl;
     }
     
 }
@@ -274,7 +275,8 @@ beamBeamSystem::probabilityOfHadronBreakup(const double impactparameter)
 	energy=2*gamma*0.938;   // center of mass energy, in GeV
 	  // This equation is from section 50 of the particle data book, the subsection on "Total Hadronic Cross-Sections, using the parameterization for sqrt{s} > 7 GeV.
 	  // only the first and second terms contribute significantly, but leave them all here for good measure
-	  sigmainmb = 0.2838*pow(log(energy),2)+33.73+13.67*pow(energy,-0.412)-7.77*pow(energy,-0.5626);
+//	  sigmainmb = 0.2838*pow(log(energy),2)+33.73+13.67*pow(energy,-0.412)-7.77*pow(energy,-0.5626);
+	  sigmainmb = 68.3;
 	  SIGNN=sigmainmb/10.;
 
 	//use parameter from Constants
@@ -530,7 +532,7 @@ beamBeamSystem::probabilityOfPhotonBreakup(const double impactparameter, const i
 	zcon = zp/(gammatarg*( pi)*( 
 	                                                hbarcmev))*zp/(gammatarg*( pi)*
 		             ( hbarcmev))/137.04;//alpha?
-
+    // zcon *= 1.055; // for uncertainty in phton cross-sections
 	//single neutron from GDR, Veyssiere et al. Nucl. Phys. A159, 561 (1970)
 	for ( int i = 1; i <= 160; i++) {
 		eee[i] = o0+.1*(i-1);

@@ -6,7 +6,7 @@ struct DisentangleFwdRapSigmaAnalyzer: Analyzer
 {
 	bool    print               = false;
 	double  fluxScaleFactor    	= 1.0;
-	PhotonFluxReader cPhotonFluxReader;
+	class PhotonFluxReader cPhotonFluxReader;
 
 	DisentangleFwdRapSigmaAnalyzer(AnalysisData& data_, TString inFileDir_, TString subCase_) : Analyzer{data_}, cPhotonFluxReader{data_, inFileDir_, subCase_} {};
 
