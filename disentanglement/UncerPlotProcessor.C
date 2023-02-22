@@ -81,7 +81,7 @@ struct Sigma_Log_Uncer_Strategy : FrameStrategy
 		// legends[0]	->SetFillColor(0);
 		legends[0]	->SetTextSize(0.035);
 
-		htemp = std::make_unique< TH2D >	("Sigma_Uncer", ";W_{#gammaN}^{Pb} (GeV);#sigma Uncer.(%);", 10,30,520, 10,0,20);
+		htemp = std::make_unique< TH2D >	("Sigma_Uncer", ";W_{#gammaN}^{Pb} (GeV);#sigma Uncer.(%);", 10,30,520, 10,0,25);
 		htemp->GetYaxis()->CenterTitle();
 		htemp->GetXaxis()->CenterTitle();
 		htemp->GetYaxis()->SetTitleSize(0.05);

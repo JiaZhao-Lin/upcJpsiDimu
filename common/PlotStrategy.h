@@ -9,6 +9,7 @@ struct PlotStrategy
 	TGraph*		 			gr	{nullptr};
 	TGraphErrors* 			ge	{nullptr};
 	TGraphAsymmErrors*		gae	{nullptr};
+	TGraphAsymmErrors*		gae2{nullptr};
 	int 					index{0};	// when the figure has sub figure, it indicates which subfigure to plot on
 
 	PlotStrategy(const AnalysisData& data_) : data{data_} {};

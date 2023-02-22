@@ -50,15 +50,25 @@ struct ShadowingRatioAnalyzer : Analyzer
         if(data.IsMapKeyExist("Sigma_SysErrLow") && data.IsMapKeyExist("Sigma_SysErrHigh"))
         {
             std::vector<double> tempLow,   tempHigh;
+            std::vector<double> TheoryLow, TheoryHigh,   ExperiLow,    ExperiHigh;
             for (int i = 0; i < n_data; ++i)
             {
                 tempLow .push_back( 0.5 * data.Get("R", i) * TMath::Hypot( data.Get("Sigma_SysErrLow", i)/data.Get("Sigma", i),
                                                                 data.Get("Sigma_IA_Err", i)/data.Get("Sigma_IA", i) ) );
                 tempHigh.push_back( 0.5 * data.Get("R", i) * TMath::Hypot( data.Get("Sigma_SysErrHigh", i)/data.Get("Sigma", i),
                                                                 data.Get("Sigma_IA_Err", i)/data.Get("Sigma_IA", i) ) );
+
+                ExperiLow.push_back(    0.5 * data.Get("R", i) * data.Get("Sigma_ExperiSysErrLow", i)/data.Get("Sigma", i)    );
+                ExperiHigh.push_back(   0.5 * data.Get("R", i) * data.Get("Sigma_ExperiSysErrHigh", i)/data.Get("Sigma", i)   );
+                TheoryLow.push_back(    TMath::Sqrt( TMath::Power(tempLow[i], 2)  - TMath::Power(ExperiLow[i], 2) )      );
+                TheoryHigh.push_back(   TMath::Sqrt( TMath::Power(tempHigh[i], 2) - TMath::Power(ExperiHigh[i], 2) )    );
             }
             data.Add("R_SysErrLow", tempLow);
             data.Add("R_SysErrHigh", tempHigh);
+            data.Add("R_TheorySysErrLow", TheoryLow);
+            data.Add("R_TheorySysErrHigh", TheoryHigh);
+            data.Add("R_ExperiSysErrLow", ExperiLow);
+            data.Add("R_ExperiSysErrHigh", ExperiHigh);
         }
         else
         {

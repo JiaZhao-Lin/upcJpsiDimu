@@ -24,13 +24,26 @@ struct ResultPlotProcessor
 		case ResultFrameStrategyList::DSigmaDy:
 			for(int i = 0; i < theories.size(); i++)
 			{
-				if		( i<1 )	theories[i]->Draw(frame->legends[1]);
+				if		( i<1 )	theories[i]->Draw(frame->legends[1]); //"Draw" means "Draw this theory on canvas", "frame->legends[1]" means "add it into 1st legend "
 				else			theories[i]->Draw(frame->legends[2]);
 			}
 			for(int i = 0; i < plots.size(); i++)
 			{
 				plots[i]->Apply(frame->legends[0]);
 			}
+			break;
+		case ResultFrameStrategyList::DSigmaDy_00_0X_XX:
+
+			for(int i = 0; i < theories.size(); i++)
+			{
+				theories[i]->DrawBox(frame->legends);
+			}
+
+			for(int i = 0; i < plots.size(); i++)
+			{
+				plots[i]->Apply(frame->legends[0]);
+			}
+			
 			break;
 		case ResultFrameStrategyList::DSigmaDy_NeuConfig:
 			for(int i = 0; i < theories.size(); i++)
@@ -98,9 +111,11 @@ struct ResultPlotProcessor
 		case ResultFrameStrategyList::R:
 			frame = std::make_unique<	R_Strategy						>();
 			break;
-
 		case ResultFrameStrategyList::DSigmaDy:
 			frame = std::make_unique<	DSigmaDy_Strategy				>();
+			break;
+		case ResultFrameStrategyList::DSigmaDy_00_0X_XX:
+			frame = std::make_unique<	DSigmaDy_00_0X_XX_Strategy		>();
 			break;
 		case ResultFrameStrategyList::DSigmaDy_NeuConfig:
 			frame = std::make_unique<	DSigmaDy_NeuConfig_Strategy		>();
@@ -112,7 +127,8 @@ struct ResultPlotProcessor
 		}
 	}
 
-	void AddPlot(const AnalysisData& data_,	ResultPlotStrategyList plot_, const TString NeuConfig_ = "AnAn",	const int index_ = 0)
+	void AddPlot(const AnalysisData& data_,	ResultPlotStrategyList plot_, const TString NeuConfig_ = "AnAn",	const int index_ = 0, 
+				const TString legName = "", const int color = 0, const int mstyle = 1 )
 	{
 		switch (plot_)
 		{
@@ -122,6 +138,9 @@ struct ResultPlotProcessor
 		
 		case ResultPlotStrategyList::DSigmaDy_CMS:
 			plots.push_back( std::make_unique<	DSigmaDy_CMS_Strategy			>(data_,NeuConfig_,index_) );
+			break;
+		case ResultPlotStrategyList::DSigmaDy_00_0X_XX_CMS:
+			plots.push_back( std::make_unique<	DSigmaDy_00_0X_XX_CMS_Strategy	>(data_,NeuConfig_,index_,legName,color,mstyle) );
 			break;
 		case ResultPlotStrategyList::DSigmaDy_ALICE_2019:
 			plots.push_back( std::make_unique<	DSigmaDy_ALICE_2019_Strategy	>(data_,NeuConfig_,index_) );

@@ -331,6 +331,23 @@ struct UncerAnalyzer : Analyzer
 		}
 		AddToSysUncer(v_IA_Uncer, "R_SysUncer");
 
+		//take out the experimental uncertainty
+		auto v_Sigma_ExperiUncer = AnaData.Get("Sigma_SysUncer");
+		auto v_Sigma_TheoryUncer = AnaData.Get("Sigma_TheorySysUncer");
+		auto v_R_ExpriUncer = AnaData.Get("R_SysUncer");
+		auto v_R_TheoryUncer = AnaData.Get("R_TheorySysUncer");
+		for (int i = 0; i < v_Sigma_ExperiUncer.size(); ++i)
+		{
+			v_Sigma_ExperiUncer[i] 	= TMath::Sqrt( TMath::Power(v_Sigma_ExperiUncer[i], 2) 	- TMath::Power(v_Sigma_TheoryUncer[i], 2) );
+
+			//include the IA uncertainty to the R theoretical uncertainty first
+			v_R_TheoryUncer[i]		= TMath::Hypot(v_R_TheoryUncer[i], v_IA_Uncer[i]);
+			v_R_ExpriUncer[i]		= TMath::Sqrt( TMath::Power(v_R_ExpriUncer[i], 2) 		- TMath::Power(v_R_TheoryUncer[i], 2) );
+		}
+		AnaData.Add("Sigma_ExperiSysUncer"	, v_Sigma_ExperiUncer);
+		AnaData.Update("R_TheorySysUncer",v_R_TheoryUncer);
+		AnaData.Add("R_ExperiSysUncer"		, v_R_ExpriUncer);
+
 		//now add the IA uncertainty to the breakdown uncertainty
 		AnaData_IA.Add("R_SysUncer", v_IA_Uncer);
 		AnaData_Breakdown.insert({"IA", AnaData_IA});
@@ -367,6 +384,10 @@ struct UncerAnalyzer : Analyzer
 															CB_Poly3_looseHF_AnaData								},	SysUncer_paramList);
 
 		AnaData.LoadMap(TotalUncer.GetMap());
+
+		//Add Theoritical uncertainty to sperately
+		AnaData.Add("Sigma_TheorySysUncer",	FluxUncer.Get("Sigma_SysUncer"));
+		AnaData.Add("R_TheorySysUncer",		FluxUncer.Get("R_SysUncer"));
 		AddConsSysUncer();	//Add the constant systematic uncertainty
 
 		//load the breakdown of systematic uncertainties to AnaData_Breakdown
@@ -395,6 +416,24 @@ struct UncerAnalyzer : Analyzer
 			}
 
 			AnaData.Add(SysErr_paramList[i], v_SysErr);
+		}
+
+		std::vector<TString> List = {"Sigma_TheorySys", "Sigma_ExperiSys", "R_TheorySys", "R_ExperiSys"};
+		std::vector<TString> List2 = {"Sigma", "Sigma", "R", "R"};
+		//calculate the theoretical error and experimental error
+		for (int i = 0; i < List.size(); ++i)
+		{
+			std::vector<double> v_SysErr;
+			std::vector<double> v_SysUncer = AnaData.Get(List[i]+"Uncer");
+
+			std::vector<double> v_value = Default_AnaData.Get(List2[i]);
+
+			for (int j = 0; j < v_SysUncer.size(); ++j)
+			{
+				v_SysErr.push_back( v_SysUncer[j] / 100.0 * v_value[j] );
+			}
+
+			AnaData.Add(List[i]+"Err", v_SysErr);
 		}
 	}
 

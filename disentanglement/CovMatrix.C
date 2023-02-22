@@ -37,19 +37,19 @@ public:
 		corr_matrix.Print();
 	}
 
-	void SetParam(const TString param_)
-	{
-		this->param = param_;
-		CalculateCov();
-	}
+	// void SetParam(const TString param_)
+	// {
+	// 	this->param = param_;
+	// 	CalculateCov();
+	// }
 
-	void SetSigned(bool isSigned_)
-	{
-		this->isSigned = isSigned_;
-		CalculateCov();
-	}
+	// void SetSigned(bool isSigned_)
+	// {
+	// 	this->isSigned = isSigned_;
+	// 	CalculateCov();
+	// }
 
-	void CalculateCov()
+	void CalculateCov(std::vector<double> Norm_v)
 	{
 		if (AnaData == nullptr)		std::runtime_error("CalculateCovMatrix --> AnaData is not set!");
 		if (sort_keys.empty())		std::runtime_error("CalculateCovMatrix --> sort_keys is not set!");
@@ -64,7 +64,7 @@ public:
 		{
 			for (int j = 0; j < cov_matrix.GetNcols(); ++j)
 			{
-				double cov = vec[i]/100.00 * vec[j]/100.00;
+				double cov = (vec[i]/100.00)*Norm_v[i] * (vec[j]/100.00) * Norm_v[j];
 				cov_matrix(i, j) = cov;
 			}
 		}
@@ -230,21 +230,21 @@ void CovMatrix()
 	for (auto& name : constCorrUncer)
 	{
 		class CalculateCovMatrix cov(name, &UncerAna.AnaData_Breakdown.at(name), name + "_SysUncer", sort_keys);
-		cov.CalculateCov();
+		cov.CalculateCov(UncerAna.Default_AnaData.Get("Sigma"));
 		fullCovMatrices.push_back(cov);
 	}
 
 	for (auto& name : fullCorrUncer)
 	{
 		class CalculateCovMatrix cov(name, &UncerAna.AnaData_Breakdown.at(name), "Sigma_SysUncer", sort_keys);
-		cov.CalculateCov();
+		cov.CalculateCov(UncerAna.Default_AnaData.Get("Sigma"));
 		fullCovMatrices.push_back(cov);
 	}
 
 	for (auto& name : partCorrUncer)
 	{
 		class CalculateCovMatrix cov(name, &UncerAna.AnaData_Breakdown.at(name), "Sigma_SysUncer", sort_keys, true);
-		cov.CalculateCov();
+		cov.CalculateCov(UncerAna.Default_AnaData.Get("Sigma"));
 		partCovMatrices.push_back(cov);
 	}
 
@@ -261,11 +261,31 @@ void CovMatrix()
 	cov_total.Print();
 	auto corr_total = CalculateCovMatrix::CovToCorr(cov_total);
 
-	// auto cov_flux = partCovMatrices[1].cov_matrix;
-	// auto corr_flux = CalculateCovMatrix::CovToCorr(cov_flux);
+	auto cov_sigEx = fullCovMatrices[2].cov_matrix;
+	auto corr_sigEx = CalculateCovMatrix::CovToCorr(cov_sigEx);
+	auto cov_HFveto = fullCovMatrices[3].cov_matrix;
+	auto corr_HFveto = CalculateCovMatrix::CovToCorr(cov_HFveto);
+	auto cov_TnP = fullCovMatrices[4].cov_matrix;
+	auto corr_TnP = CalculateCovMatrix::CovToCorr(cov_TnP);
+
+	auto cov_flux = partCovMatrices[0].cov_matrix;
+	auto corr_flux = CalculateCovMatrix::CovToCorr(cov_flux);
+	auto cov_neutron = partCovMatrices[1].cov_matrix;
+	auto corr_neutron = CalculateCovMatrix::CovToCorr(cov_neutron);
+
+	// CalculateCovMatrix::DrawCorr(corr_sigEx);
+	// CalculateCovMatrix::DrawCov(cov_sigEx);
+	// CalculateCovMatrix::DrawCorr(corr_HFveto);
+	// CalculateCovMatrix::DrawCov(cov_HFveto);
+	// CalculateCovMatrix::DrawCorr(corr_TnP);
+	// CalculateCovMatrix::DrawCov(cov_TnP);
 
 	CalculateCovMatrix::DrawCorr(corr_total);
 	CalculateCovMatrix::DrawCov(cov_total);
+	// CalculateCovMatrix::DrawCorr(corr_flux);
+	// CalculateCovMatrix::DrawCov(cov_flux);
+	// CalculateCovMatrix::DrawCorr(corr_neutron);
+	// CalculateCovMatrix::DrawCov(cov_neutron);
 
 	// auto flux_cov = partCovMatrices[0].cov_matrix;
 	// auto flux_corr = CalculateCovMatrix::CovToCorr(flux_cov);

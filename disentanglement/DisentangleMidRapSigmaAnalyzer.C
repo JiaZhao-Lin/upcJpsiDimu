@@ -35,10 +35,26 @@ struct DisentangleMidRapSigmaAnalyzer: Analyzer
 																	data.Get("dNdy_AnAn_Uncer", i) / 100.0	)	);	// flux err from dNdy Uncer, Converting from % to fraction
 		}		
 
+		std::vector<double> Sigma_ExperiSysErrLow 	= data.Get("DSigmaDy_AnAn_SysErrLow");
+		std::vector<double> Sigma_ExperiSysErrHigh	= data.Get("DSigmaDy_AnAn_SysErrHigh");
+		std::vector<double> Sigma_TheorySysErrLow;
+		std::vector<double> Sigma_TheorySysErrHigh;
+		for (int i = 0; i < Sigma_ExperiSysErrLow.size(); ++i)
+		{
+			Sigma_ExperiSysErrLow[i] 	*= Sigma[i]/data.Get("DSigmaDy_AnAn", i);
+			Sigma_ExperiSysErrHigh[i] 	*= Sigma[i]/data.Get("DSigmaDy_AnAn", i);
+			Sigma_TheorySysErrLow .push_back( TMath::Sqrt( TMath::Power(Sigma_SysErrLow[i], 2)  - TMath::Power(Sigma_ExperiSysErrLow[i], 2) ) );
+			Sigma_TheorySysErrHigh.push_back( TMath::Sqrt( TMath::Power(Sigma_SysErrHigh[i], 2) - TMath::Power(Sigma_ExperiSysErrHigh[i], 2) ) );
+		}
+
 		data.Add("Sigma"        	,Sigma);
 		data.Add("Sigma_Err"    	,Sigma_Err);
 		data.Add("Sigma_SysErrLow" 	,Sigma_SysErrLow);
 		data.Add("Sigma_SysErrHigh" ,Sigma_SysErrHigh);
+		data.Add("Sigma_TheorySysErrLow" 	,Sigma_TheorySysErrLow);
+		data.Add("Sigma_TheorySysErrHigh"	,Sigma_TheorySysErrHigh);
+		data.Add("Sigma_ExperiSysErrLow" 	,Sigma_ExperiSysErrLow);
+		data.Add("Sigma_ExperiSysErrHigh"	,Sigma_ExperiSysErrHigh);
 	}
 
 	void Handle()	override
