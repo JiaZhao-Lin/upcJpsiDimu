@@ -75,7 +75,7 @@ const double HFscaleFactor[3]	= {1,	1,	1.1137430};
 const int NnCases = 6;
 const std::vector<int> RunCase 	= {0,1,2,3,4,5};//{0,1,2,3,4,5};
 
-const TString nCasesName[NnCases] = {"AnAn", "OnOn", "0nXn", "Xn0n", "OnXnSum", "XnXn"};
+const TString nCasesName[NnCases] = {"AnAn", "0n0n", "0nXn", "Xn0n", "0nXnSum", "XnXn"};
 TH1D* hCohMass_in_ny[NnCases][nDiffRapBins+1]; //last content is the sum of all y-bins, within coherent pt threshold
 TH1D* hMass_in_ny[NnCases][nDiffRapBins+1];    //last content is the sum of all y-bins, for all pt 
 TH1D* hPt_Jpsi_in_ny[NnCases][nDiffRapBins+1]; //last content is the sum of all y-bins
@@ -516,6 +516,7 @@ void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4
 
 			double chi2ndf = frameMass->chiSquare("totMassPdf_Norm[mMass]", "h_dataMass", 7); // Need to change to 9 when using CBG. Jpsi+Psi fit
 
+			frameMass->SetYTitle(Form("Events / (%.2f GeV)", hCohMass->GetBinWidth(1)));
 			frameMass->Draw() ;
 			
 			TString yName = "";
@@ -556,8 +557,8 @@ void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4
 			{
 
 				frameMass->GetYaxis()->SetRangeUser(0.5, hCohMass->GetMaximum()*1.2);
+				frameMass->SetYTitle(Form("Events / (%.2f GeV)", hCohMass->GetBinWidth(1)));
 				frameMass->Draw() ;
-
 				//frame_mMass_7fef6c828bd0[mMass] = (RooHist::h_dataMass,RooCurve::totMassPdf_Norm[mMass],RooCurve::totMassPdf_Norm[mMass]_Comp[jpsiCrystalBallPdf],RooCurve::totMassPdf_Norm[mMass]_Comp[psiCrystalBallPdf],RooCurve::totMassPdf_Norm[mMass]_Comp[qedPdf])
 
 				TLegend  *leg =  new TLegend(0.50, 0.50, 0.80, 0.75);
@@ -585,7 +586,7 @@ void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4
 
 				drawLatex(0.25, 0.950, "#bf{CMS}", 42,        0.050,      mTextColor );
 				drawLatex(0.53, 0.950, "PbPb 1.52 nb^{-1} (5.02 TeV)",   42, 0.05,  1);
-				drawLatex(0.18, 0.750, nCasesName[i_ncase],   42, 0.06,  1);
+				drawLatex(0.17, 0.750, nCasesName[i_ncase],   42, 0.06,  1);
 				//drawLatex(0.40, 0.950, "Pb-Pb #sqrt{s_{NN}} = 5.02 TeV UPC ("+nCasesName[i_ncase]+")", 42,        0.045,      mTextColor );
 
 				//drawLatex(0.15, 0.86, nCasesName[i_ncase], mTextFont, 0.06, mTextColor);
@@ -1127,6 +1128,7 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			gPad->SetLogy(1);
 			gPad->SetLogx(0);
 			framePt->GetYaxis()->SetRangeUser(0.5, hPt->GetMaximum()*5);
+			framePt->SetYTitle(Form("Events / (%.2f GeV)", hPt->GetBinWidth(1)));
 			framePt->Draw() ;
 			drawLatex(0.15, 0.92, "CMS Pb-Pb #sqrt{s_{NN}} = 5.02 TeV UPC ("+nCasesName[i_ncase]+")",  42,        0.06,      mTextColor );
 			drawLatex(0.62, 0.82, yName,                                                                 mTextFont, 0.05,      mTextColor );
@@ -1234,13 +1236,14 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 				gPad->SetLogy(1);
 
 				framePt->GetYaxis()->SetRangeUser(1.5, hPt->GetMaximum()*3);
+				framePt->SetYTitle(Form("Events / (%.2f GeV)", hPt->GetBinWidth(1)));
 				framePt->Draw() ;
 				//drawLatex(0.69, 0.945, "#bf{CMS} #it{Preliminary}",                                    42,        0.045,     mTextColor );
 				//drawLatex(0.16, 0.86, "Pb-Pb #sqrt{s_{NN}} = 5.02 TeV UPC ("+nCasesName[i_ncase]+")",  42,        0.055,     mTextColor );
 				drawLatex(0.12, 0.950, "#bf{CMS}" ,     42,        0.050,     mTextColor );
 				
 				drawLatex(0.53, 0.950, "PbPb 1.52 nb^{-1} (5.02 TeV)",   42, 0.05,  1);
-				drawLatex(0.19, 0.750, nCasesName[i_ncase],   42, 0.06,  1);
+				drawLatex(0.18, 0.750, nCasesName[i_ncase],   42, 0.06,  1);
 				//drawLatex(0.40, 0.950, "Pb-Pb #sqrt{s_{NN}} = 5.02 TeV UPC ("+nCasesName[i_ncase]+")",     42,        0.045,     mTextColor );
 				drawLatex(0.18, 0.86,  yName,                                                           mTextFont,  0.050,      mTextColor );
 				drawLatex(0.53, 0.86,  Form("%.2f < m_{#mu#mu} < %.2f GeV", mJpsiMassLow, mJpsiMassHi), mTextFont,  0.050,      mTextColor );
