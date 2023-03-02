@@ -222,7 +222,7 @@ struct UncerAnalyzer : Analyzer
 	//The uncertainty is added to the analysis data 
 	void GetPairUncer()
 	{
-		DisentanglementAnalyzer CB_Poly3_Ana 			{CB_Poly3_AnaData			};	CB_Poly3_Ana			.Handle();
+		DisentanglementAnalyzer CB_Poly3_Ana 			{CB_Poly3_AnaData			};	CB_Poly3_Ana.SetSaveCovMatrix(true);	CB_Poly3_Ana			.Handle();
 		DisentanglementAnalyzer CB_Poly4_Ana 			{CB_Poly4_AnaData			};	CB_Poly4_Ana			.Handle();
 		DisentanglementAnalyzer CB_FixCBAN_Poly3_Ana 	{CB_FixCBAN_Poly3_AnaData	};	CB_FixCBAN_Poly3_Ana 	.Handle();
 		DisentanglementAnalyzer CBG_Poly3_Ana 			{CBG_Poly3_AnaData			};	CBG_Poly3_Ana 			.Handle();
@@ -303,12 +303,12 @@ struct UncerAnalyzer : Analyzer
 		{
 			if (SysUncer_paramList[i] == "R_SysUncer")
 			{
-				v_Lumi_Uncer	=	std::vector<double>	(AnaData.GetSize(SysUncer_paramList[i]),	0.5*Lumi_Uncer*100);
-				v_BR_Uncer		=	std::vector<double> (AnaData.GetSize(SysUncer_paramList[i]),	0.5*br_Jpsi2uu_Uncer*100);
+				v_Lumi_Uncer	=	std::vector<double>	(AnaData.GetSize(SysUncer_paramList[i]),	0.5*Lumi_Uncer);
+				v_BR_Uncer		=	std::vector<double> (AnaData.GetSize(SysUncer_paramList[i]),	0.5*br_Jpsi2uu_Uncer);
 			}
 			else{
-				v_Lumi_Uncer	=	std::vector<double>	(AnaData.GetSize(SysUncer_paramList[i]),	Lumi_Uncer*100);
-				v_BR_Uncer		=	std::vector<double> (AnaData.GetSize(SysUncer_paramList[i]),	br_Jpsi2uu_Uncer*100);
+				v_Lumi_Uncer	=	std::vector<double>	(AnaData.GetSize(SysUncer_paramList[i]),	Lumi_Uncer);
+				v_BR_Uncer		=	std::vector<double> (AnaData.GetSize(SysUncer_paramList[i]),	br_Jpsi2uu_Uncer);
 			}
 			AddToSysUncer(v_Lumi_Uncer, SysUncer_paramList.at(i));
 			AddToSysUncer(v_BR_Uncer, SysUncer_paramList.at(i));
@@ -318,10 +318,10 @@ struct UncerAnalyzer : Analyzer
 		AnalysisData AnaData_Lumi {"Lumi"};
 		AnalysisData AnaData_BR   {"BR"};
 		AnalysisData AnaData_IA   {"IA_Uncer"};
-		AnaData_Lumi	.Add("Lumi_SysUncer", 	std::vector<double>	(AnaData.GetSize("Sigma_SysUncer"),	Lumi_Uncer*100));
-		AnaData_BR		.Add("BR_SysUncer", 	std::vector<double>	(AnaData.GetSize("Sigma_SysUncer"),	br_Jpsi2uu_Uncer*100));
-		AnaData_Lumi	.Add("R_Lumi_SysUncer", std::vector<double>	(AnaData.GetSize("R_SysUncer"),		0.5*Lumi_Uncer*100));
-		AnaData_BR		.Add("R_BR_SysUncer", 	std::vector<double>	(AnaData.GetSize("R_SysUncer"),		0.5*br_Jpsi2uu_Uncer*100));
+		AnaData_Lumi	.Add("Lumi_SysUncer", 	std::vector<double>	(AnaData.GetSize("Sigma_SysUncer"),	Lumi_Uncer));
+		AnaData_BR		.Add("BR_SysUncer", 	std::vector<double>	(AnaData.GetSize("Sigma_SysUncer"),	br_Jpsi2uu_Uncer));
+		AnaData_Lumi	.Add("R_Lumi_SysUncer", std::vector<double>	(AnaData.GetSize("R_SysUncer"),		0.5*Lumi_Uncer));
+		AnaData_BR		.Add("R_BR_SysUncer", 	std::vector<double>	(AnaData.GetSize("R_SysUncer"),		0.5*br_Jpsi2uu_Uncer));
 
 		//now add the IA uncertainty to the R systematic uncertainty
 		std::vector<double> v_IA_Uncer;

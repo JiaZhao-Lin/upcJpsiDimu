@@ -48,6 +48,8 @@ struct DisentanglementAnalyzer : Analyzer
 		cout << setfill(' ');
 	}
 
+	void SetSaveCovMatrix(const bool save)	{cFit2DAnalyzer.saveCovMatrix = save;}
+
     void Handle() override
     {
         PrintHandling();

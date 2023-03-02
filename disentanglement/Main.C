@@ -168,6 +168,20 @@ void Main()
 	p.AddTheory		(TheoryList::DSigmaDy_Sigma_R_CD, 	"Sigma");
 	p.Process		();
 	p.SaveAs		("./outFigures/Sigma_vs_W_LogY_2.pdf");
+
+	// p.SetFigureFrame(ResultFrameStrategyList::Sigma_LogLog);
+	// p.AddPlot		(Data_CMS,			ResultPlotStrategyList::Sigma_CMS);
+	// p.AddPlot		(Data_ALICE_2019_Selected,	ResultPlotStrategyList::Sigma_ALICE_2019);
+	// p.AddPlot		(Data_ALICE_2021_Selected,	ResultPlotStrategyList::Sigma_ALICE_2021);
+	// p.AddPlot		(Data_LHCb_2022_Selected,	ResultPlotStrategyList::Sigma_LHCb_2022);
+	// p.AddTheory		(TheoryList::Sigma_IA, 				"Sigma");
+	// p.AddTheory		(TheoryList::Sigma_R_CGC, 			"Sigma");
+	// p.AddTheory		(TheoryList::Sigma_R_GG, 			"Sigma");
+	// p.AddTheory		(TheoryList::Sigma_R_LTA, 			"Sigma");
+	// p.AddTheory		(TheoryList::DSigmaDy_Sigma_R_bBK,	"Sigma");
+	// p.AddTheory		(TheoryList::DSigmaDy_Sigma_R_CD, 	"Sigma");
+	// p.Process		();
+	// p.SaveAs		("./outFigures/Sigma_vs_W_LogXY.pdf");
 //------------------------------------R--------------------------------------------------------------
 	p.SetFigureFrame(ResultFrameStrategyList::R);
 	p.AddPlot		(Data_CMS,			ResultPlotStrategyList::R_CMS);

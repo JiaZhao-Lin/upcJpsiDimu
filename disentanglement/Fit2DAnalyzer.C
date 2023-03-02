@@ -3,11 +3,13 @@
 
 #include "PhotonFluxReader.C"
 #include "../common/function.C"
+#include "../common/MatrixIO.C"
 
 //Fit Sigma from 2D data point of DSigmaDy and dNdy
 struct Fit2DAnalyzer: Analyzer
 {
     bool    print               = false;
+    bool    saveCovMatrix       = false;
     double  fluxScaleFactor    = 1.0;
     class PhotonFluxReader cPhotonFluxReader;
 
@@ -67,6 +69,12 @@ struct Fit2DAnalyzer: Analyzer
             auto fitResults = gr->Fit(f,  "S");
             // fitResults->Print();
 
+            if (saveCovMatrix)
+            {
+                auto Cov_Fit2D    = fitResults->GetCovarianceMatrix();
+                MatrixIO::Write(Cov_Fit2D, Form("outFiles/CovMatrix_Fit2D_Rap%.2f.txt", data.Get("Rap",i)));
+            }
+
             // gr->SetTitle("TGraph2D TF2 Fit; dN_{1}/dy; dN_{2}/dy; d#sigma/dy");
             gr->SetMarkerColor(kBlue);
             gr->SetMarkerSize(1.5);
@@ -78,7 +86,7 @@ struct Fit2DAnalyzer: Analyzer
                                     f->GetParameter(0), f->GetParError(0), f->GetParameter(1), f->GetParError(1)),      42,       0.04,      1);
             drawLatex(0.1, 0.90, Form("#chi^{2}/ndf: %.2f/1", fitResults->Chi2()),      42,       0.04,      1);
 
-            // c->SaveAs(Form("Test_fit2D_%d.pdf",i));
+            // c->SaveAs(Form("outFigures/fit2D_%d.pdf",i));
             cout<<endl;
             
             //insert results in the middle of the vector
