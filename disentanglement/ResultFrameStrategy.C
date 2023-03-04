@@ -209,6 +209,12 @@ struct DSigmaDy_Strategy : FrameStrategy
 		legends[2]	->	SetFillColor(0);
 		legends[2]	->	SetTextSize(0.045);
 
+		//For others
+		legends[3] =  new TLegend	(0.28, 0.19, 0.50, 0.35);
+		legends[3]	->	SetFillStyle(0);
+		legends[3]	->	SetFillColor(0);
+		legends[3]	->	SetTextSize(0.045);
+
 		//htemp = std::make_unique< TH2D >	("htemp", "", 10, -4.1, 1.0, 10, 0, 14.0);
 		// htemp = std::make_unique< TH2D >	("AnAn", "AnAn;y;d#sigma_{J/#psi}/dy (mb);", 10, -4.6, 0, 10, 1.0, 11.0);
 		//default
@@ -267,6 +273,12 @@ struct DSigmaDy_00_0X_XX_Strategy : FrameStrategy
 		legends[2]	->	SetFillStyle(0);
 		legends[2]	->	SetFillColor(0);
 		legends[2]	->	SetTextSize(0.04);
+
+		legends[3] =  new TLegend	(x1, y1-dy*3, x2, y2-dy*3);
+		legends[3]	->	SetNColumns(3);
+		legends[3]	->	SetFillStyle(0);
+		legends[3]	->	SetFillColor(0);
+		legends[3]	->	SetTextSize(0.04);
 
 		//htemp = std::make_unique< TH2D >	("injn", "injn;y;d#sigma_{J/#psi}/dy (mb);", 10, -2.8, -1.5, 10, 0.0, 3.9);
 		htemp = std::make_unique< TH2D >	("injn", "injn;y;d#sigma_{J/#psi}/dy (mb);", 10, -4.6, -0, 10, 0.02, 7);

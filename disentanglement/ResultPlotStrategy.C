@@ -15,6 +15,8 @@ enum class ResultPlotStrategyList
 	DSigmaDy_LTA_SS,
 	DSigmaDy_LTA_WS,
 
+	Sigma_STARLight,
+	Sigma_LTA,
 	Sigma_CMS,
 	Sigma_ALICE_2019,
 	Sigma_ALICE_2021,
@@ -50,7 +52,17 @@ struct Sigma_PlotStrategy : PlotStrategy
 		std::vector<double> ExperiSysErrLow, ExperiSysErrHigh;
 
 
-		if(data.IsMapKeyExist("Sigma_SysErrLow") && data.IsMapKeyExist("Sigma_SysErrHigh"))	//If the data has AsymmErr
+		if(!data.IsMapKeyExist("Sigma_SysErr"))
+		{
+			auto temp = std::vector<double>(data.GetSize("W"), 0);
+			SysErrLow 		 	= temp;
+			SysErrHigh			= temp;
+			TheorySysErrLow		= temp;
+			TheorySysErrHigh	= temp;
+			ExperiSysErrLow		= temp;
+			ExperiSysErrHigh	= temp;
+		}
+		else if(data.IsMapKeyExist("Sigma_SysErrLow") && data.IsMapKeyExist("Sigma_SysErrHigh"))	//If the data has AsymmErr
 		{
 			SysErrLow  = data.Get("Sigma_SysErrLow");
 			SysErrHigh = data.Get("Sigma_SysErrHigh");
@@ -170,6 +182,42 @@ struct DSigmaDy_PlotStrategy : PlotStrategy
 		gae 	= new TGraphAsymmErrors	(data.GetSize("Dy"),		temp.data(),					data.Get(TempName).data(),
 																	data.Get("Dy_Err").data(),		data.Get("Dy_Err").data(),
 																	SysErrLow.data(), 				SysErrHigh.data());
+	}
+};
+
+struct Sigma_STARLight_PlotStrategy : Sigma_PlotStrategy
+{
+	Sigma_STARLight_PlotStrategy(const AnalysisData& data_) :     Sigma_PlotStrategy{data_} {}
+
+	void Apply(TLegend*	leg)	override
+	{
+		Sigma_PlotStrategy::Apply(leg);
+		leg->AddEntry(ge,	"STARLight",	"p");
+
+		ge  ->SetMarkerStyle(20);
+		ge  ->SetMarkerSize(1.5);
+		ge  ->SetMarkerColor(2);
+		ge  ->SetLineColor(2);
+		ge  ->SetLineWidth(2);
+		ge  ->Draw("pezsame");
+	}
+};
+
+struct Sigma_LTA_PlotStrategy : Sigma_PlotStrategy
+{
+	Sigma_LTA_PlotStrategy(const AnalysisData& data_) :     Sigma_PlotStrategy{data_} {}
+
+	void Apply(TLegend*	leg)	override
+	{
+		Sigma_PlotStrategy::Apply(leg);
+		leg->AddEntry(ge,	"LTA",	"p");
+
+		ge  ->SetMarkerStyle(20);
+		ge  ->SetMarkerSize(1.5);
+		ge  ->SetMarkerColor(2);
+		ge  ->SetLineColor(2);
+		ge  ->SetLineWidth(2);
+		ge  ->Draw("pezsame");
 	}
 };
 

@@ -10,7 +10,6 @@ struct SigmaSlopeFitter
 		{
 			return exp( par[2]*x[0] + par[3]);
 		}
-
 		return exp( par[0]*x[0] + par[1]);
 	}
 
@@ -49,18 +48,25 @@ struct SigmaSlopeFitter
 		auto Sigma_Err_ToFit_LHCb_2022 	= Data_LHCb_2022_Selected.Get("Sigma_Err");
 
 		// --------------------------For moving points up and down-----------------------------------
+		auto total_SysErr = Data_CMS.Get("Sigma_SysErr");
+		auto thoery_SysErr = Data_CMS.Get("Sigma_TheorySysErr");
+		auto experi_SysErr = Data_CMS.Get("Sigma_ExperiSysErr");
+		// AnalysisDataObserver obs;
+		// Data_CMS.Subscribe(&obs);
+		// Data_CMS.Print();
+		// throw;
 		// for (int i = 0; i < W_ToFit.size(); i++)
 		// {
-		// 	// cout<<W_ToFit[i]<<endl;
-		// 	// if (i%2==1)
+		// 	cout<<W_ToFit[i]<<endl;
+		// 	// if (i<W_ToFit.size()/2)
 		// 	// {
-		// 	// 	Sigma_ToFit[i]-= 0.01 * TotalSysUncer_Map.at("Sigmas")[i]*TotalSysUncer_Map.at("Sigmas_TotalSysUncer")[i];
+		// 	// 	Sigma_ToFit[i] -= total_SysErr[i];
 		// 	// }
 		// 	// else
 		// 	// {
-		// 	// 	Sigma_ToFit[i]+= 0.01 * TotalSysUncer_Map.at("Sigmas")[i]*TotalSysUncer_Map.at("Sigmas_TotalSysUncer")[i];
+		// 	// 	Sigma_ToFit[i] += total_SysErr[i];
 		// 	// }
-		// 	Sigma_ToFit[i]-= 0.01 * TotalSysUncer_Map.at("Sigmas")[i]*TotalSysUncer_Map.at("Sigmas_TotalSysUncer")[i];
+		// 	Sigma_ToFit[i] += thoery_SysErr[i];
 		// }
 		// ------------------------------------------------------------------------------------------
 

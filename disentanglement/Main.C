@@ -100,6 +100,7 @@ void Main()
 	p.AddPlot		(Data_LHCb_2022,	ResultPlotStrategyList::DSigmaDy_LHCb_2022,		"AnAn");
 	p.AddTheory		(TheoryList::DSigmaDy_LTA, "AnAn");
 	p.AddTheory		(TheoryList::DSigmaDy_Sigma_R_CD, "AnAn");
+	p.AddTheory		(TheoryList::DSigmaDy_STARLight, "AnAn");
 	p.Process		();
 	p.SaveAs		("./outFigures/DSigmaDy_AnAn.pdf");
 
@@ -128,6 +129,9 @@ void Main()
 	p.AddTheory		(TheoryList::DSigmaDy_LTA, "0n0n");
 	p.AddTheory		(TheoryList::DSigmaDy_LTA, "0nXnSum");
 	p.AddTheory		(TheoryList::DSigmaDy_LTA, "XnXn");
+	p.AddTheory		(TheoryList::DSigmaDy_STARLight, "0n0n");
+	p.AddTheory		(TheoryList::DSigmaDy_STARLight, "0nXnSum");
+	p.AddTheory		(TheoryList::DSigmaDy_STARLight, "XnXn");
 
 	p.Process		();
 	p.SaveAs		("./outFigures/DSigmaDy_00_0X_XX.pdf");

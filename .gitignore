@@ -10,3 +10,5 @@
 *.DS_Store
 *.icloud
 *.vscode
+*.yaml
+*.tar.gz

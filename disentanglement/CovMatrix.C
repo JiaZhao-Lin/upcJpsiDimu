@@ -247,6 +247,9 @@ void CovMatrix()
 
 	auto corr_stat = CalculateCovMatrix::CovToCorr(cov_stat);
 
+	auto cov_Experi = cov_stat + cov_lumi + cov_BR + cov_sigEx + cov_HFveto + cov_TnP + cov_neutron;
+	auto corr_Experi = CalculateCovMatrix::CovToCorr(cov_Experi);
+
 	CalculateCovMatrix::DrawCov(cov_BR,			"outFigures/CovMatrix_BR.pdf");
 	CalculateCovMatrix::DrawCorr(corr_BR,		"outFigures/CorrMatrix_BR.pdf");
 	CalculateCovMatrix::DrawCov(cov_lumi,		"outFigures/CovMatrix_Lumi.pdf");
@@ -272,4 +275,6 @@ void CovMatrix()
 
 
 	MatrixIO::Write(cov_total, "outFiles/CovMatrix.txt");
+	MatrixIO::Write(cov_Experi, "outFiles/CovMatrixExperi.txt");
+	MatrixIO::Write(cov_flux, "outFiles/CovMatrixFlux.txt");
 }

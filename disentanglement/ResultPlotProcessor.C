@@ -25,7 +25,8 @@ struct ResultPlotProcessor
 			for(int i = 0; i < theories.size(); i++)
 			{
 				if		( i<1 )	theories[i]->Draw(frame->legends[1]); //"Draw" means "Draw this theory on canvas", "frame->legends[1]" means "add it into 1st legend "
-				else			theories[i]->Draw(frame->legends[2]);
+				else if ( i<2 )	theories[i]->Draw(frame->legends[2]);
+				else			theories[i]->Draw(frame->legends[3]);
 			}
 			for(int i = 0; i < plots.size(); i++)
 			{
@@ -152,6 +153,12 @@ struct ResultPlotProcessor
 			plots.push_back( std::make_unique<	DSigmaDy_LHCb_2022_Strategy		>(data_,NeuConfig_,index_) );
 			break;
 			
+		case ResultPlotStrategyList::Sigma_STARLight:
+			plots.push_back( std::make_unique<	Sigma_STARLight_PlotStrategy	>(data_) );
+			break;
+		case ResultPlotStrategyList::Sigma_LTA:
+			plots.push_back( std::make_unique<	Sigma_LTA_PlotStrategy			>(data_) );
+			break;
 		case ResultPlotStrategyList::Sigma_CMS:
 			plots.push_back( std::make_unique<	Sigma_CMS_PlotStrategy			>(data_) );
 			break;
@@ -193,6 +200,9 @@ struct ResultPlotProcessor
 			break;
 		case TheoryList::Sigma_R_CGC:
 			theories.push_back( std::make_unique<	Sigma_R_CGC				>(Case) );
+			break;
+		case TheoryList::DSigmaDy_STARLight:
+			theories.push_back( std::make_unique<	DSigmaDy_STARLight		>(Case) );
 			break;
 		case TheoryList::DSigmaDy_LTA:
 			theories.push_back( std::make_unique<	DSigmaDy_LTA			>(Case) );
