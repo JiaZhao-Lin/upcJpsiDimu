@@ -52,7 +52,7 @@ struct Sigma_PlotStrategy : PlotStrategy
 		std::vector<double> ExperiSysErrLow, ExperiSysErrHigh;
 
 
-		if(!data.IsMapKeyExist("Sigma_SysErr"))
+		if(!data.IsMapKeyExist("Sigma_SysErr") && !data.IsMapKeyExist("Sigma_SysErrLow") && !data.IsMapKeyExist("Sigma_SysErrHigh"))
 		{
 			auto temp = std::vector<double>(data.GetSize("W"), 0);
 			SysErrLow 		 	= temp;
@@ -210,7 +210,7 @@ struct Sigma_LTA_PlotStrategy : Sigma_PlotStrategy
 	void Apply(TLegend*	leg)	override
 	{
 		Sigma_PlotStrategy::Apply(leg);
-		leg->AddEntry(ge,	"LTA",	"p");
+		leg->AddEntry(ge,	"Extracted LTA pseudata",	"p");
 
 		ge  ->SetMarkerStyle(20);
 		ge  ->SetMarkerSize(1.5);

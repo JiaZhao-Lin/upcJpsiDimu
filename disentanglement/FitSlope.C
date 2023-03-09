@@ -2,6 +2,7 @@
 #include "../common/function.C"
 #include "ResultFrameStrategy.C"
 
+// Given sigma, fit the slope at high W.
 struct SigmaSlopeFitter
 {
 	static double fPieceWise4Fit(double *x, double *par)

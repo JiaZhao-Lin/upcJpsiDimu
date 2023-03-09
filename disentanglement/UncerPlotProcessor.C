@@ -186,11 +186,13 @@ struct UncerPlotProcessor
 		ShiftPlot(uncerAnalyzer.CB_Poly3_looseHF_AnaData,		"W",	"Sigma",	5,	26,	1,	frame->legends[0],	"HFveto"			);
 		ShiftPlot(uncerAnalyzer.CB_Poly3_fluxPM_AnaData,		"W",	"Sigma",	5,	26,	2,	frame->legends[0],	"PhotonFluxPM"		);
 		ShiftPlot(uncerAnalyzer.CB_Poly3_fluxM_AnaData,			"W",	"Sigma",	5,	26,	4,	frame->legends[0],	"PhotonFluxM" 		);
-		ShiftPlot(uncerAnalyzer.CB_Poly3_PU_AnaData,			"W",	"Sigma",	5,	26,	6,	frame->legends[0],	"n-PileUp"			);
-		ShiftPlot(uncerAnalyzer.CB_Poly3_TnP_Low_AnaData,		"W",	"Sigma",	5,	26,	8,	frame->legends[0],	"TnP"				);
+		ShiftPlot(uncerAnalyzer.CB_Poly3_fluxEMDP_AnaData,		"W",	"Sigma",	5,	26,	6,	frame->legends[0],	"PhotonFluxEMDP" 	);
+		ShiftPlot(uncerAnalyzer.CB_Poly3_fluxEMDM_AnaData,		"W",	"Sigma",	5,	26,	8,	frame->legends[0],	"PhotonFluxEMDM" 	);
+		ShiftPlot(uncerAnalyzer.CB_Poly3_PU_AnaData,			"W",	"Sigma",	5,	26,	9,	frame->legends[0],	"n-PileUp"			);
+		ShiftPlot(uncerAnalyzer.CB_Poly3_TnP_Low_AnaData,		"W",	"Sigma",	5,	26,	28,	frame->legends[0],	"TnP"				);
 		frame->DrawLegend();
 
-		SaveAs("outFigures/CompareSigma.pdf");
+		SaveAs("outFigures/Compare_Sigma_vs_W_LogY.pdf");
 	}
 
 	//Take all the AnalysisData from UncerAnalyzer and plot them using ShiftPlot function using the R_Strategy
@@ -215,11 +217,13 @@ struct UncerPlotProcessor
 		ShiftPlot(uncerAnalyzer.CB_Poly3_looseHF_AnaData,		"X",	"R",	4e-4,	26,	1,	frame->legends[0],	"HFveto"			);
 		ShiftPlot(uncerAnalyzer.CB_Poly3_fluxPM_AnaData,		"X",	"R",	4e-4,	26,	2,	frame->legends[0],	"PhotonFluxPM"		);
 		ShiftPlot(uncerAnalyzer.CB_Poly3_fluxM_AnaData,			"X",	"R",	4e-4,	26,	4,	frame->legends[0],	"PhotonFluxM" 		);
-		ShiftPlot(uncerAnalyzer.CB_Poly3_PU_AnaData,			"X",	"R",	4e-4,	26,	6,	frame->legends[0],	"n-PileUp"			);
-		ShiftPlot(uncerAnalyzer.CB_Poly3_TnP_Low_AnaData,		"X",	"R",	4e-4,	26,	8,	frame->legends[0],	"TnP"				);
+		ShiftPlot(uncerAnalyzer.CB_Poly3_fluxEMDP_AnaData,		"X",	"R",	4e-4,	26,	6,	frame->legends[0],	"PhotonFluxEMDP" 	);
+		ShiftPlot(uncerAnalyzer.CB_Poly3_fluxEMDM_AnaData,		"X",	"R",	4e-4,	26,	8,	frame->legends[0],	"PhotonFluxEMDM" 	);
+		ShiftPlot(uncerAnalyzer.CB_Poly3_PU_AnaData,			"X",	"R",	4e-4,	26,	9,	frame->legends[0],	"n-PileUp"			);
+		ShiftPlot(uncerAnalyzer.CB_Poly3_TnP_Low_AnaData,		"X",	"R",	4e-4,	26,	28,	frame->legends[0],	"TnP"				);
 		frame->DrawLegend();
 
-		SaveAs("outFigures/CompareR.pdf");
+		SaveAs("outFigures/Compare_Rg_vs_x.pdf");
 	}
 
 	void Uncer_Breakdown()
@@ -334,7 +338,7 @@ void UncerPlotProcessor()
 {
 	struct UncerPlotProcessor processor;
 	
-	// processor.CompareSigma();
-	// processor.CompareR();
+	processor.CompareSigma();
+	processor.CompareR();
 	processor.Uncer_Breakdown();
 }

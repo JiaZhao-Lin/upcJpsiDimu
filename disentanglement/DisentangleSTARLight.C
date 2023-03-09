@@ -1,6 +1,8 @@
 #include "DisentanglementAnalyzer.C"
 #include "ResultPlotProcessor.C"
 
+// Use to disentangle the sigma from the DSigmaDy from STARLight.
+// The disentanglement is done by the DisentanglementAnalyzer class.
 void DisentangleSTARLight()
 {
 	TString flux_subCase = "_SigNN68p3R6p67a0p56";

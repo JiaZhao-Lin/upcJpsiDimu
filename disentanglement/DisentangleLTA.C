@@ -1,6 +1,8 @@
 #include "DisentanglementAnalyzer.C"
 #include "ResultPlotProcessor.C"
 
+// Use to disentangle the sigma from the DSigmaDy from LTA.
+// The disentanglement is done by the DisentanglementAnalyzer class.
 void DisentangleLTA()
 {
 	TString flux_subCase = "_SigNN68p3R6p67a0p56";
@@ -34,5 +36,5 @@ void DisentangleLTA()
 	p.AddPlot		(Data_LTA_WS,			ResultPlotStrategyList::Sigma_LTA);
 	p.AddTheory		(TheoryList::Sigma_R_LTA, 				"Sigma");
 	p.Process		();
-	p.SaveAs		("./outFigures/Sigma_vs_W_LogY_TEST.pdf");
+	p.SaveAs		("./outFigures/Sigma_vs_W_LogY_LTA.pdf");
 }

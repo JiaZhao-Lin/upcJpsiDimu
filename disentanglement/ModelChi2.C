@@ -220,7 +220,7 @@ void ModelChi2()
 	//Get the covariance matrix
 	TMatrixD cov_matrix_sys 	= MatrixIO::Read("outFiles/SysCovMatrix.txt");
 	TMatrixD cov_matrix_stat 	= MatrixIO::Read("outFiles/StatCovMatrix.txt");
-	TMatrixD cov_matrix_flux 	= MatrixIO::Read("outFiles/FluxCovMatrix.txt");
+	TMatrixD cov_matrix_flux 	= MatrixIO::Read("outFiles/CovMatrixFlux.txt");
 	TMatrixD cov_matrix 		= MatrixIO::Read("outFiles/CovMatrix.txt");
 	cov_matrix_sys.Print();
 	cov_matrix_stat.Print();

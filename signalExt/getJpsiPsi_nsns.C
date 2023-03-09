@@ -542,6 +542,10 @@ void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4
 			drawLatex(.45, 0.35+textDy, Form("R = #frac{#sigma_{#psi(2S)}}{#sigma_{J/#psi}} = %.3f #pm %.4f", R, RErr ), mTextFont, mTextSize, mTextColor);
 			drawLatex(.45, 0.25+textDy, Form("f_{D} = #frac{FD J/#psi}{primary J/#psi} = %.3f #pm %.4f",      fD,fDErr),  mTextFont, mTextSize, mTextColor);
 
+			cout<<"y name: "<<yName<<endl;
+			cout<<"y name: "<<yName<<" eff_CohJpsi*acc_CohJpsi/0.942: "<<eff_CohJpsi*acc_CohJpsi/0.942<<endl;
+
+
 			//----------------------------------------------------------------------------------------------------------------------------------------------------
 			if(SymmetricRapBin && iy > (nDiffRapBins/2 - 1) && iy < nDiffRapBins){
 				c1->SaveAs( Form("outplots/massSpec_4JpsiPsi_"+nCasesName[i_ncase]+"_iy%d_Symm.png",  iy) );

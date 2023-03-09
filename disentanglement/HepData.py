@@ -47,8 +47,9 @@ class HepDataCreator:
 
 		return data_dict, data_dict_sys
 
-	def create_variables(self, param, independent=False, binned=False, units="", sys_breakdown=False):
-		var = Variable(param, is_independent=independent, is_binned=binned, units=units)
+	def create_variables(self, param, param_name="N/A", independent=False, binned=False, units="", sys_breakdown=False):
+		var = Variable(param_name, is_independent=independent, is_binned=binned, units=units)
+		var.add_qualifier("$\sqrt{s_{NN}}$", "5020", "GeV")
 		var.values = self.data_dict[param]
 		
 		unc = Uncertainty(param+"_stat_unc", is_symmetric=True)
@@ -74,19 +75,21 @@ class HepDataCreator:
 
 	def create_table(self):
 
-		Dy_var = Variable("Dy", is_independent=True, is_binned=False, units="")
+		Dy_var = Variable("|y|", is_independent=True, is_binned=False, units="")
 		Dy_var.values = self.data_dict["Dy"]
 		# Dy_unc = Uncertainty("Dy_stat_unc", is_symmetric=True)
 		# Dy_unc.values = self.data_dict["Dy_Err"]
 		# print(self.data_dict["Dy_Err"])
 		# Dy_var.add_uncertainty(Dy_unc)
 
-		DSigmaDy_AnAn_var = self.create_variables("DSigmaDy_AnAn", units="mb")
-		DSigmaDy_0n0n_var = self.create_variables("DSigmaDy_0n0n", units="mb")
-		DSigmaDy_0nXnSum_var = self.create_variables("DSigmaDy_0nXnSum", units="mb")
-		DSigmaDy_XnXn_var = self.create_variables("DSigmaDy_XnXn", units="mb")
+		DSigmaDy_AnAn_var 		= self.create_variables("DSigmaDy_0n0n",	"$\\frac{d\sigma_{J/\psi}^{AnAn}}{dy}$", units="mb")
+		DSigmaDy_0n0n_var 		= self.create_variables("DSigmaDy_0n0n",	"$\\frac{d\sigma_{J/\psi}^{0n0n}}{dy}$", units="mb")
+		DSigmaDy_0nXnSum_var 	= self.create_variables("DSigmaDy_0nXnSum",	"$\\frac{d\sigma_{J/\psi}^{0nXn}}{dy}$", units="mb")
+		DSigmaDy_XnXn_var 		= self.create_variables("DSigmaDy_XnXn", 	"$\\frac{d\sigma_{J/\psi}^{XnXn}}{dy}$", units="mb")
 
-		DSigmaDy_table = Table("DSigmaDy")
+		DSigmaDy_table = Table("Table 1")
+		DSigmaDy_table.description = "The differential coherent Jpsi photoproduction cross section as a function of rapidity, in different neutron multiplicity classes: 0n0n, 0nXn, XnXn , and AnAn."
+		DSigmaDy_table.location = "Data from Figure 2"
 		DSigmaDy_table.add_variable(Dy_var)
 		DSigmaDy_table.add_variable(DSigmaDy_AnAn_var)
 		DSigmaDy_table.add_variable(DSigmaDy_0n0n_var)
@@ -94,22 +97,26 @@ class HepDataCreator:
 		DSigmaDy_table.add_variable(DSigmaDy_XnXn_var)
 
 
-		W_var = Variable("W", is_independent=True, is_binned=False, units="GeV")
+		W_var = Variable("$W_{\gamma N}^{Pb}$", is_independent=True, is_binned=False, units="GeV")
 		W_var.values = self.data_dict["W"]
 
-		Sigma_var = self.create_variables("Sigma", units="mb", sys_breakdown=True)
+		Sigma_var = self.create_variables("Sigma",	"$\sigma(\gamma Pb \\rightarrow J/\psi Pb)$", units="mb", sys_breakdown=True)
 
-		Sigma_table = Table("Sigma")
+		Sigma_table = Table("Table 2")
+		Sigma_table.description = "The coherent Jpsi photoproduction cross section as a function of photon-nuclear center-of-mass energy per nucleon, measured in 5.02 TeV PbPb UPCs."
+		Sigma_table.location = "Data from Figure 3"
 		Sigma_table.add_variable(W_var)
 		Sigma_table.add_variable(Sigma_var)
 
 
-		X_var = Variable("X", is_independent=True, is_binned=False, units="")
+		X_var = Variable("x", is_independent=True, is_binned=False, units="")
 		X_var.values = self.data_dict["X"]
 
-		R_var = self.create_variables("R", sys_breakdown=True)
+		R_var = self.create_variables("R", "$R_{g}^{Pb}$", sys_breakdown=True)
 
-		R_table = Table("R")
+		R_table = Table("Table 3")
+		R_table.description = "The nuclear gluon suppression factor as a function of Bjorken x extracted from the coherent Jpsi photoproduction in 5.02 TeV PbPb UPCs."
+		R_table.location = "Data from Figure 4"
 		R_table.add_variable(X_var)
 		R_table.add_variable(R_var)
 
@@ -144,7 +151,7 @@ class HepDataCreatorMatrix:
 		return matrix
 
 	
-	def create_table(self, table_name="Total covariance matrix"):
+	def create_table(self, table_name="Total covariance matrix", table_description="N/A", table_location="N/A"):
 		# Create the table object and add the variables
 		x = []
 		y = []
@@ -166,6 +173,8 @@ class HepDataCreatorMatrix:
 		z_var.values = z
 
 		table = Table(table_name)
+		table.description = table_description
+		table.location = table_location
 		for var in [x_var,y_var,z_var]:
 			table.add_variable(var)
 
@@ -188,9 +197,9 @@ if (__name__ == "__main__"):
 	hep_matrix_flux = HepDataCreatorMatrix("test", "./outFiles/CovMatrixFlux.txt")
 
 	data_tables = hep.create_table()
-	matrix_table = hep_matrix.create_table()
-	matrix_table_experi = hep_matrix_experi.create_table("Experimental covariance matrix")
-	matrix_table_flux = hep_matrix_flux.create_table("Flux covariance matrix")
+	matrix_table = hep_matrix.create_table(table_description="$\sigma(\gamma Pb \\rightarrow J/\psi Pb)$ total covariance matrix including experimental and theorical uncertainties")
+	matrix_table_experi = hep_matrix_experi.create_table("Experimental covariance matrix", table_description="$\sigma(\gamma Pb \\rightarrow J/\psi Pb)$ experimental covariance matrix")
+	matrix_table_flux = hep_matrix_flux.create_table("Theoritical covariance matrix", table_description="$\sigma(\gamma Pb \\rightarrow J/\psi Pb)$ theoritical covariance matrix including flux uncertainties")
 
 	tables = list(data_tables + matrix_table + matrix_table_experi + matrix_table_flux)
 	submit(tables)
