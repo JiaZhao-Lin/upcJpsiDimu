@@ -99,8 +99,8 @@ void Main()
 	p.AddPlot		(Data_ALICE_2021,	ResultPlotStrategyList::DSigmaDy_ALICE_2021,	"AnAn");
 	p.AddPlot		(Data_LHCb_2022,	ResultPlotStrategyList::DSigmaDy_LHCb_2022,		"AnAn");
 	p.AddTheory		(TheoryList::DSigmaDy_LTA, "AnAn");
+	p.AddTheory		(TheoryList::DSigmaDy_STARLight, "AnAn");
 	p.AddTheory		(TheoryList::DSigmaDy_Sigma_R_CD, "AnAn");
-	// p.AddTheory		(TheoryList::DSigmaDy_STARLight, "AnAn");
 	p.Process		();
 	p.SaveAs		("./outFigures/DSigmaDy_AnAn.pdf");
 
@@ -124,14 +124,14 @@ void Main()
 	p.SetFigureFrame(ResultFrameStrategyList::DSigmaDy_00_0X_XX);
 	p.AddPlot		(Data_CMS, 			ResultPlotStrategyList::DSigmaDy_00_0X_XX_CMS,		"0n0n",    0, " ", 1, 20);
 	p.AddPlot		(Data_CMS, 			ResultPlotStrategyList::DSigmaDy_00_0X_XX_CMS,		"0nXnSum", 0, " ", 2, 24);
-	p.AddPlot		(Data_CMS, 			ResultPlotStrategyList::DSigmaDy_00_0X_XX_CMS,		"XnXn",    0, "  Data  ", 4, 21);
+	p.AddPlot		(Data_CMS, 			ResultPlotStrategyList::DSigmaDy_00_0X_XX_CMS,		"XnXn",    0, "  Data ", 4, 21);
 
 	p.AddTheory		(TheoryList::DSigmaDy_LTA, "0n0n");
 	p.AddTheory		(TheoryList::DSigmaDy_LTA, "0nXnSum");
 	p.AddTheory		(TheoryList::DSigmaDy_LTA, "XnXn");
-	// p.AddTheory		(TheoryList::DSigmaDy_STARLight, "0n0n");
-	// p.AddTheory		(TheoryList::DSigmaDy_STARLight, "0nXnSum");
-	// p.AddTheory		(TheoryList::DSigmaDy_STARLight, "XnXn");
+	p.AddTheory		(TheoryList::DSigmaDy_STARLight, "0n0n");
+	p.AddTheory		(TheoryList::DSigmaDy_STARLight, "0nXnSum");
+	p.AddTheory		(TheoryList::DSigmaDy_STARLight, "XnXn");
 
 	p.Process		();
 	p.SaveAs		("./outFigures/DSigmaDy_00_0X_XX.pdf");
@@ -150,12 +150,12 @@ void Main()
 	p.AddPlot		(Data_ALICE_2019_Selected,	ResultPlotStrategyList::Sigma_ALICE_2019);
 	p.AddPlot		(Data_ALICE_2021_Selected,	ResultPlotStrategyList::Sigma_ALICE_2021);
 	p.AddPlot		(Data_LHCb_2022_Selected,	ResultPlotStrategyList::Sigma_LHCb_2022);
-	p.AddTheory		(TheoryList::Sigma_IA, 				"Sigma");
+	p.AddTheory		(TheoryList::Sigma_R_LTA, 			"Sigma");
+	p.AddTheory		(TheoryList::DSigmaDy_Sigma_R_CD, 	"Sigma");
+	p.AddTheory		(TheoryList::DSigmaDy_Sigma_R_bBK,	"Sigma");
 	p.AddTheory		(TheoryList::Sigma_R_CGC, 			"Sigma");
 	p.AddTheory		(TheoryList::Sigma_R_GG, 			"Sigma");
-	p.AddTheory		(TheoryList::Sigma_R_LTA, 			"Sigma");
-	p.AddTheory		(TheoryList::DSigmaDy_Sigma_R_bBK,	"Sigma");
-	p.AddTheory		(TheoryList::DSigmaDy_Sigma_R_CD, 	"Sigma");
+	p.AddTheory		(TheoryList::Sigma_IA, 				"Sigma");
 	p.Process		();
 	p.SaveAs		("./outFigures/Sigma_vs_W_LogY_1.pdf");
 	
@@ -164,12 +164,12 @@ void Main()
 	p.AddPlot		(Data_ALICE_2019_Selected,	ResultPlotStrategyList::Sigma_ALICE_2019);
 	p.AddPlot		(Data_ALICE_2021_Selected,	ResultPlotStrategyList::Sigma_ALICE_2021);
 	p.AddPlot		(Data_LHCb_2022_Selected,	ResultPlotStrategyList::Sigma_LHCb_2022);
-	p.AddTheory		(TheoryList::Sigma_IA, 				"Sigma");
+	p.AddTheory		(TheoryList::Sigma_R_LTA, 			"Sigma");
+	p.AddTheory		(TheoryList::DSigmaDy_Sigma_R_CD, 	"Sigma");
+	p.AddTheory		(TheoryList::DSigmaDy_Sigma_R_bBK,	"Sigma");
 	p.AddTheory		(TheoryList::Sigma_R_CGC, 			"Sigma");
 	p.AddTheory		(TheoryList::Sigma_R_GG, 			"Sigma");
-	p.AddTheory		(TheoryList::Sigma_R_LTA, 			"Sigma");
-	p.AddTheory		(TheoryList::DSigmaDy_Sigma_R_bBK,	"Sigma");
-	p.AddTheory		(TheoryList::DSigmaDy_Sigma_R_CD, 	"Sigma");
+	p.AddTheory		(TheoryList::Sigma_IA, 				"Sigma");
 	p.Process		();
 	p.SaveAs		("./outFigures/Sigma_vs_W_LogY_2.pdf");
 
@@ -193,10 +193,10 @@ void Main()
 	p.AddPlot		(Data_ALICE_2021_Selected,	ResultPlotStrategyList::R_ALICE_2021);
 	p.AddPlot		(Data_LHCb_2022_Selected,	ResultPlotStrategyList::R_LHCb_2022);
 	// p.AddTheory		(TheoryList::Sigma_R_CGC, 			"R");	//too short
-	p.AddTheory		(TheoryList::Sigma_R_GG, 			"R");
 	p.AddTheory		(TheoryList::Sigma_R_LTA, 			"R");
-	p.AddTheory		(TheoryList::DSigmaDy_Sigma_R_bBK,	"R");
 	p.AddTheory		(TheoryList::DSigmaDy_Sigma_R_CD, 	"R");
+	p.AddTheory		(TheoryList::DSigmaDy_Sigma_R_bBK,	"R");
+	p.AddTheory		(TheoryList::Sigma_R_GG, 			"R");
 	p.Process		();
 	p.SaveAs		("./outFigures/Rg_vs_x.pdf");
 //-------------------------------------------------------------------------------------------------

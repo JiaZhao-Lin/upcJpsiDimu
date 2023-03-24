@@ -230,18 +230,18 @@ struct Sigma_CMS_PlotStrategy : Sigma_PlotStrategy
 		Sigma_PlotStrategy::Apply(leg);
 		leg->AddEntry(ge,	"CMS",	"p");
 
-		auto legUncer = new TLegend(0.15, 0.73, 0.24, 0.82);
-		legUncer->AddEntry(gae, " Syst. Exp.", "f");
-		legUncer->AddEntry(gae2, " Syst. #gamma Flux", "f");
-		legUncer->SetFillColor(0);
-		legUncer->SetTextSize(0.03);
-		legUncer->Draw("same");
+		// auto legUncer = new TLegend(0.23, 0.17, 0.32, 0.25);
+		// legUncer->AddEntry(gae, " Syst. exp.", "f");
+		// legUncer->AddEntry(gae2, " Syst. #gamma flux", "f");
+		// legUncer->SetFillColor(0);
+		// legUncer->SetTextSize(0.03);
+		// legUncer->Draw("same");
 
 		gae ->SetMarkerColor(0);
 		gae ->SetFillColorAlpha(16, 0.7);
 		gae ->SetFillStyle(1001);
-		gae ->Draw("2same"); 
 		gae ->SetLineWidth(0);
+		gae ->Draw("2same"); 
 		gae2 ->SetFillColorAlpha(1, 0);
 		gae2 ->SetFillStyle(2);
 		gae2->SetLineColor(kBlack);
@@ -262,11 +262,12 @@ struct Sigma_ALICE_2019_Strategy : Sigma_PlotStrategy
 	void Apply(TLegend*	leg)	override
 	{
 		Sigma_PlotStrategy::Apply(leg);
-		leg->AddEntry(ge,	"ALICE* (-4 < y < -3.5)",	"p");
+		leg->AddEntry(ge,	"ALICE* (-4.0 < #it{y} < -3.5)",	"p");
 
 		gae	->SetMarkerStyle(24);
 		gae	->SetFillColorAlpha(16, 0.7);
 		gae	->SetFillStyle(1001);
+		gae ->SetLineWidth(0);
 		gae	->Draw("2same");
 		gae2 ->SetFillColorAlpha(1, 0);
 		gae2 ->SetFillStyle(2);
@@ -293,6 +294,7 @@ struct Sigma_ALICE_2021_Strategy : Sigma_PlotStrategy
 		gae ->SetMarkerStyle(24);
 		gae ->SetFillColorAlpha(16, 0.7);
 		gae ->SetFillStyle(1001);
+		gae ->SetLineWidth(0);
 		gae ->Draw("2same");
 		gae2 ->SetFillColorAlpha(1, 0);
 		gae2 ->SetFillStyle(2);
@@ -314,11 +316,12 @@ struct Sigma_LHCb_2022_Strategy : Sigma_PlotStrategy
 	void Apply(TLegend*	leg)	override
 	{
 		Sigma_PlotStrategy::Apply(leg);
-		leg->AddEntry(ge,	"LHCb* (-4.5 < y < -3.5)",	"p");
+		leg->AddEntry(ge,	"LHCb* (-4.5 < #it{y} < -3.5)",	"p");
 
 		gae ->SetMarkerStyle(24);
 		gae ->SetFillColorAlpha(16, 0.7);
 		gae ->SetFillStyle(1001);
+		gae ->SetLineWidth(0);
 		gae ->Draw("2same");
 		gae2 ->SetFillColorAlpha(1, 0);
 		gae2 ->SetFillStyle(2);
@@ -463,12 +466,12 @@ struct R_CMS_Strategy : R_PlotStrategy
 		R_PlotStrategy::Apply(leg);
 		leg->AddEntry(ge,	"CMS",	"p");
 
-		auto legUncer = new TLegend(0.17, 0.53, 0.26, 0.62);
-		legUncer->AddEntry(gae, " Syst. Exp.", "f");
-		legUncer->AddEntry(gae2, " Syst. #gamma Flux + IA", "f");
-		legUncer	->SetFillColor(0);
-		legUncer	->SetTextSize(0.03);
-		legUncer->Draw("same");
+		// auto legUncer = new TLegend(0.17, 0.53, 0.26, 0.62);
+		// legUncer->AddEntry(gae, " Syst. exp.", "f");
+		// legUncer->AddEntry(gae2, " Syst. #gamma flux + IA", "f");
+		// legUncer	->SetFillColor(0);
+		// legUncer	->SetTextSize(0.03);
+		// legUncer->Draw("same");
 		
 		gae ->SetMarkerColor(0);
 		gae ->SetFillColorAlpha(16, 0.7);
@@ -498,11 +501,12 @@ struct R_CMS_Strategy : R_PlotStrategy
 		ge_FXT_FNL->SetLineColor(1);
 		ge_FXT_FNL->Draw("pezsame");
 
-		TLegend* leg_FXT = new TLegend(0.55, 0.82, 0.77, 0.88);
+		TLegend* leg_FXT = new TLegend(0.47, 0.77, 0.67, 0.82);
 		leg_FXT->SetBorderSize(0);
+		leg_FXT	->SetFillStyle(0);
 		leg_FXT->SetFillColor(0);
-		leg_FXT->SetTextSize(0.040);
-		leg_FXT->AddEntry( ge_FXT_FNL, "E691 #gamma+Pb #rightarrow J/#psi+Pb",  "p" );
+		leg_FXT->SetTextSize(0.035);
+		leg_FXT->AddEntry( ge_FXT_FNL, "E691 #gamma + Pb #rightarrow J/#psi + Pb",  "p" );
 		leg_FXT->Draw("same");
 	}
 };
@@ -515,7 +519,7 @@ struct R_ALICE_2019_Strategy : R_PlotStrategy
 	{
 		X_AXIS_ERR = {2.e-3,1.5e-3};
 		R_PlotStrategy::Apply(leg);
-		leg->AddEntry(ge,	"ALICE* (-4 < y < -3.5)",	"p");
+		leg->AddEntry(ge,	"ALICE* (-4.0 < #it{y} < -3.5)",	"p");
 
 		gae ->SetMarkerStyle(24);
 		gae ->SetFillColorAlpha(16, 0.7);
@@ -569,7 +573,7 @@ struct R_LHCb_2022_Strategy : R_PlotStrategy
 	{
 		X_AXIS_ERR = {2.5e-3,2e-3};
 		R_PlotStrategy::Apply(leg);
-		leg->AddEntry(ge,	"LHCb* (-4.5 < y < -3.5)",	"p");
+		leg->AddEntry(ge,	"LHCb* (-4.5 < #it{y} < -3.5)",	"p");
 
 		gae ->SetMarkerStyle(24);
 		gae ->SetFillColorAlpha(16, 0.7);

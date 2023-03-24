@@ -47,7 +47,7 @@ struct Sigma_IA : Theory
 		gr_Sigma_IA	->SetLineWidth(2);
 		gr_Sigma_IA	->Draw("lsame");
 
-		leg->AddEntry(gr_Sigma_IA,	"Impulse Approximation",	"l");
+		leg->AddEntry(gr_Sigma_IA,	"Impulse approx.",	"l");
 	}
 };
 
@@ -230,7 +230,7 @@ struct DSigmaDy_STARLight :	Theory
 
 	virtual void DrawBox(std::vector<TLegend *> legs) override
 	{
-		std::vector<TString> Name = {"STARLight"};
+		std::vector<TString> Name = {" STARLight"};
 		std::vector<int> colors = {1};
 		std::vector<int> styles = {3};
 
@@ -401,7 +401,7 @@ struct DSigmaDy_LTA : Theory
 
 	virtual void DrawBox(std::vector<TLegend *> legs) override
 	{
-		std::vector<TString> Name = {"LTA_SS", "LTA_WS", "EPS09 central"};
+		std::vector<TString> Name = {" LTA_SS", " LTA_WS", "EPS09 central"};
 		std::vector<int> colors = {1,2,1};
 		std::vector<int> styles = {2,5,3};
 

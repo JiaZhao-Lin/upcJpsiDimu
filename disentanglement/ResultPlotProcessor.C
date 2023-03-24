@@ -24,9 +24,8 @@ struct ResultPlotProcessor
 		case ResultFrameStrategyList::DSigmaDy:
 			for(int i = 0; i < theories.size(); i++)
 			{
-				if		( i<1 )	theories[i]->Draw(frame->legends[1]); //"Draw" means "Draw this theory on canvas", "frame->legends[1]" means "add it into 1st legend "
-				else if ( i<2 )	theories[i]->Draw(frame->legends[2]);
-				else			theories[i]->Draw(frame->legends[3]);
+				if		( i<2 )	theories[i]->Draw(frame->legends[1]); //"Draw" means "Draw this theory on canvas", "frame->legends[1]" means "add it into 1st legend "
+				else			theories[i]->Draw(frame->legends[2]);
 			}
 			for(int i = 0; i < plots.size(); i++)
 			{
@@ -69,22 +68,22 @@ struct ResultPlotProcessor
 		case ResultFrameStrategyList::Sigma_Log:
 			for(int i = 0; i < theories.size(); i++)
 			{
-				if		( i<3 )	theories[i]->Draw(frame->legends[1]);
-				else if	( i<4 )	theories[i]->Draw(frame->legends[2]);
-				else if	( i<5 )	theories[i]->Draw(frame->legends[3]);
-				else			theories[i]->Draw(frame->legends[4]);
+				if		( i<2 )	theories[i]->Draw(frame->legends[1]);
+				else			theories[i]->Draw(frame->legends[2]);
 			}
 			for(auto &plot : plots) 	{	plot->Apply(frame->legends[0]	);	}
+			frame->legends[0]->AddEntry(plots[1]->gae, "Syst. exp.", "f");
+			frame->legends[0]->AddEntry(plots[1]->gae2, "Syst. #gamma flux", "f");
 			break;
 		case ResultFrameStrategyList::R:
 			for(int i = 0; i < theories.size(); i++)
 			{
-				if		( i<1 )	theories[i]->Draw(frame->legends[1]);
-				else if	( i<2 )	theories[i]->Draw(frame->legends[2]);
-				else if	( i<3 )	theories[i]->Draw(frame->legends[3]);
-				else			theories[i]->Draw(frame->legends[4]);
+				if		( i<2 )	theories[i]->Draw(frame->legends[1]);
+				else			theories[i]->Draw(frame->legends[2]);
 			}
 			for(auto &plot : plots) 	{	plot->Apply(frame->legends[0]	);	}
+			frame->legends[0]->AddEntry(plots[0]->gae, "Syst. exp.", "f");
+			frame->legends[0]->AddEntry(plots[0]->gae2, "Syst. #gamma flux", "f");
 			break;
 		default:
 			for(auto &theory : theories) {	theory->Draw(frame->legends[0]	);	}

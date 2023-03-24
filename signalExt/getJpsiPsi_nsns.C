@@ -562,6 +562,7 @@ void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4
 
 				frameMass->GetYaxis()->SetRangeUser(0.5, hCohMass->GetMaximum()*1.2);
 				frameMass->SetYTitle(Form("Events / (%.2f GeV)", hCohMass->GetBinWidth(1)));
+				frameMass->GetXaxis()->SetTitleOffset(0.95);
 				frameMass->Draw() ;
 				//frame_mMass_7fef6c828bd0[mMass] = (RooHist::h_dataMass,RooCurve::totMassPdf_Norm[mMass],RooCurve::totMassPdf_Norm[mMass]_Comp[jpsiCrystalBallPdf],RooCurve::totMassPdf_Norm[mMass]_Comp[psiCrystalBallPdf],RooCurve::totMassPdf_Norm[mMass]_Comp[qedPdf])
 
@@ -570,7 +571,7 @@ void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4
 				leg->SetFillColor(0);
 				leg->SetTextFont(mTextFont);
 				leg->SetTextSize(0.045);
-				leg->AddEntry(frameMass->findObject("h_dataMass"),            "Data",        "p");
+				leg->AddEntry(frameMass->findObject("h_dataMass"),            "Data",        "pe");
 				leg->AddEntry(frameMass->findObject("totMassPdf_Norm[mMass]"),   Form("Fit: #chi^{2}/ndf = %1.1f", chi2ndf),   "l");
 				leg->AddEntry(frameMass->findObject("totMassPdf_Norm[mMass]_Comp[jpsiCrystalBallPdf]"), Form("J/#psi (%d #pm %d)",TMath::Nint(nJpsi.getVal()), TMath::Nint(nJpsi.getError())), "l" );
 				leg->AddEntry(frameMass->findObject("totMassPdf_Norm[mMass]_Comp[psiCrystalBallPdf]"),  Form("#psi(2S) (%d #pm %d)",TMath::Nint(nPsi.getVal()), TMath::Nint(nPsi.getError())), "l" );
@@ -1148,7 +1149,7 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			leg->SetFillColor(0);
 			leg->SetTextFont(mTextFont);
 			leg->SetTextSize(0.02);
-			leg->AddEntry(framePt->findObject("h_dataPt"),            "Data",        "p");
+			leg->AddEntry(framePt->findObject("h_dataPt"),            "Data",        "pe");
 			leg->AddEntry(framePt->findObject("totPtPdf_Norm[mPt]"),   Form("Fit: #chi^{2}/ndf = %1.1f/%1.f = %1.1f", Pt_chi2, Pt_ndf, Pt_chi2/Pt_ndf),   "l");
 			//(RooHist::h_dataPt,RooCurve::totPtPdf_Norm[mPt],RooCurve::totPtPdf_Norm[mPt]_Comp[cohJpsiPdf],RooCurve::totPtPdf_Norm[mPt]_Comp[feeddownJpsiPdf],RooCurve::totPtPdf_Norm[mPt]_Comp[incohJpsiPdf],RooCurve::totPtPdf_Norm[mPt]_Comp[dissoJpsiPdf],RooCurve::totPtPdf_Norm[mPt]_Comp[qedPtPdf])
 			const TString curveName[5]  = {"totPtPdf_Norm[mPt]_Comp[cohJpsiPdf]","totPtPdf_Norm[mPt]_Comp[incohJpsiPdf]", "totPtPdf_Norm[mPt]_Comp[dissoJpsiPdf]", "totPtPdf_Norm[mPt]_Comp[feeddownJpsiPdf]","totPtPdf_Norm[mPt]_Comp[qedPtPdf]"};
@@ -1241,6 +1242,7 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 
 				framePt->GetYaxis()->SetRangeUser(1.5, hPt->GetMaximum()*3);
 				framePt->SetYTitle(Form("Events / (%.2f GeV)", hPt->GetBinWidth(1)));
+				framePt->GetXaxis()->SetTitleOffset(0.95);
 				framePt->Draw() ;
 				//drawLatex(0.69, 0.945, "#bf{CMS} #it{Preliminary}",                                    42,        0.045,     mTextColor );
 				//drawLatex(0.16, 0.86, "Pb-Pb #sqrt{s_{NN}} = 5.02 TeV UPC ("+nCasesName[i_ncase]+")",  42,        0.055,     mTextColor );
@@ -1261,7 +1263,7 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 				leg_4paper->SetFillColor(0);
 				leg_4paper->SetTextFont(mTextFont);
 				leg_4paper->SetTextSize(0.042);
-				leg_4paper->AddEntry(framePt->findObject("h_dataPt"),            "Data",        "p");
+				leg_4paper->AddEntry(framePt->findObject("h_dataPt"),            "Data",        "pe");
 				leg_4paper->AddEntry(framePt->findObject("totPtPdf_Norm[mPt]"),   Form("Fit: #chi^{2}/ndf = %1.1f", Pt_chi2/Pt_ndf),   "l");
 				
 				//const TString curveName[5]  = {"totPtPdf_Norm[mPt]_Comp[cohJpsiPdf]","totPtPdf_Norm[mPt]_Comp[incohJpsiPdf]", "totPtPdf_Norm[mPt]_Comp[dissoJpsiPdf]", "totPtPdf_Norm[mPt]_Comp[feeddownJpsiPdf]","totPtPdf_Norm[mPt]_Comp[qedPtPdf]"};
