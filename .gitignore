@@ -1,14 +1,21 @@
 *.~
-*.png
-*.pdf
 *.C~
 *.sh~
 *.h~
 *.d
 *.pcm
 *.so
+
 *.DS_Store
 *.icloud
 *.vscode
 *.yaml
 *.tar.gz
+__pycache__
+.ipynb_checkpoints
+
+*.png
+*.pdf
+# *.root
+Test.*
+test.*
