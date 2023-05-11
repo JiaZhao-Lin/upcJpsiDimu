@@ -279,6 +279,15 @@ struct Sigma_ALICE_2019_Strategy : Sigma_PlotStrategy
 		ge	->SetLineColor(4);
 		ge	->SetLineWidth(2);
 		ge	->Draw("pezsame");
+
+		// SingleDataReader reader{"inFiles/Sigma_ALICE_2023.txt"};
+		// auto W_temp = reader.GetVec("W");
+		// auto Sigma_temp = reader.GetVec("Sigma");
+		// auto Sigma_Err_temp = reader.GetVec("Sigma_SysErr");
+		// for (auto& i : Sigma_temp) i *= 1e-3;
+		// for (auto& i : Sigma_Err_temp) i *= 1e-3;
+		// TGraphErrors* ge2 = new TGraphErrors(W_temp.size(), W_temp.data(), Sigma_temp.data(), nullptr, Sigma_Err_temp.data());
+		// ge2->Draw("pezsame");
 	}
 };
 

@@ -10,12 +10,16 @@
 *.icloud
 *.vscode
 *.yaml
-*.tar.gz
+*.tar
+*.gz
 __pycache__
 .ipynb_checkpoints
 
 *.png
 *.pdf
-# *.root
+*.root
+*.txt
+*.dat
+*.out
 Test.*
 test.*
