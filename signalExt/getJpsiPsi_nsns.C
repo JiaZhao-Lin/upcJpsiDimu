@@ -455,8 +455,8 @@ void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4
 			//------------------------------------------------------------------------------------------------------------
 			//------------------------------------------------------------------------------------------------------------
 			//totMassPdf.fitTo( dataMass, Range(2.70, 3.50), Extended(kTRUE), SumW2Error(kTRUE), Hesse(kTRUE), Minos(kFALSE));
-			totMassPdf.fitTo( dataMass, Extended(kTRUE), SumW2Error(kTRUE), Hesse(kTRUE), Minos(kFALSE), Save());
-			RooFitResult *ResFit = totMassPdf.fitTo( dataMass, Extended(kTRUE), SumW2Error(kTRUE), Hesse(kTRUE), Minos(kFALSE), Save());
+			totMassPdf.fitTo( dataMass, Extended(kTRUE), SumW2Error(kTRUE), Hesse(kTRUE), Minos(kFALSE), PrintLevel(-1));
+			RooFitResult *ResFit = totMassPdf.fitTo( dataMass, Extended(kTRUE), SumW2Error(kTRUE), Hesse(kTRUE), Minos(kFALSE), Save(), PrintLevel(-1));
 			//totMassPdf.fitTo(dataMass,Range(massLow4Fit, massHig4Fit),Extended(kTRUE),SumW2Error(kTRUE),Hesse(kTRUE),Minos(kFALSE),Save());
 			//------------------------------------------------------------------------------------------------------------
 
@@ -741,6 +741,45 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 				hPt       ->Rebin(2);
 				hPt_SdB   ->Rebin(2);
 			}
+			// else
+			// {
+			// 	hMass     ->Rebin(2);
+			// 	hPt       ->Rebin(2);
+			// 	hPt_SdB   ->Rebin(2);
+			// }
+
+			// = rebin the hPt based on a input pt binning array ==========================================
+			// std::vector<double> ptBinVec;
+			// const double pt_init_binWidth = hPt->GetBinWidth(1);
+			// const double pt_nbin = hPt->GetNbinsX();
+			// const double pt_cutOff_forRebin = 1;
+			// ptBinVec.push_back( hPt->GetBinLowEdge(1) );
+
+			// for(int i=1; i<pt_nbin; i++)
+			// {
+			// 	ptBinVec.push_back(ptBinVec[i-1] + pt_init_binWidth);
+			// 	if( ptBinVec[i] >= pt_cutOff_forRebin ) break;
+			// }
+
+			// std::vector<double> ptBinVec_tail = { 1.1, 1.2, 1.3, 1.4, 1.5, 1.6,1.8,2.0,2.2,2.6,3.0, 6.0};
+			// ptBinVec.insert(ptBinVec.end(), ptBinVec_tail.begin(), ptBinVec_tail.end());
+			// cout<<hPt->GetBinLowEdge(pt_nbin)<<" "<<ptBinVec.back()<<endl;
+			// ptBinVec = {0.0, 0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4, 1.6, 1.8, 2, 2.2, 2.6, 3, 6};
+			// hPt = (TH1D*) hPt->Rebin(int(ptBinVec.size()-1), "hPt_rebin", ptBinVec.data());
+			// hPt->Scale(1.0, "width");
+
+			// //cout pt_bin
+			// // for(int i=1; i<=hPt->GetNbinsX(); i++)
+			// // {
+			// // 	cout<<hPt->GetBinLowEdge(i)<<" ";
+			// // }
+			// for(int i=1; i<=hPt->GetNbinsX(); i++)
+			// {
+			// 	cout<<hPt->GetBinLowEdge(i) << ": " <<hPt->GetBinContent(i)<<" "<<endl;
+			// }
+			// // throw std::runtime_error("stop here");
+			// ============================================================================================
+
 
 			//------------------------------------------------------------------------------------------------------------
 			//1. Fit mass in full pt range to get the QED yield value
@@ -817,8 +856,8 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 
 			//------------------------------------------------------------------------------------------------------------
 			//------------------------------------------------------------------------------------------------------------
-			totMassPdf.fitTo( dataMass, Extended(kTRUE), SumW2Error(kTRUE), Hesse(kTRUE), Minos(kFALSE), Save());
-			RooFitResult *ResFit = totMassPdf.fitTo( dataMass, Extended(kTRUE), SumW2Error(kTRUE), Hesse(kTRUE), Minos(kFALSE), Save());
+			totMassPdf.fitTo( dataMass, Extended(kTRUE), SumW2Error(kTRUE), Hesse(kTRUE), Minos(kFALSE), PrintLevel(-1));
+			RooFitResult *ResFit = totMassPdf.fitTo( dataMass, Extended(kTRUE), SumW2Error(kTRUE), Hesse(kTRUE), Minos(kFALSE), Save(), PrintLevel(-1));
 			//------------------------------------------------------------------------------------------------------------
 			//------------------------------------------------------------------------------------------------------------
 
@@ -828,7 +867,7 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			const double nPsiError   = nPsi.getError();
 		
 			TF1* fQED4frac = new TF1("fQED4frac", "[0] + [1]*x + [2]*x*x +[3]*x*x*x", 0, 5);
-			fQED4frac ->SetParameters( cQEDPdf.mP0.getVal(), cQEDPdf.mP1.getVal(), cQEDPdf.mP2.getVal(), cQEDPdf.mP3.getVal() );
+			fQED4frac ->SetParameters( cQEDPdf.mP0->getVal(), cQEDPdf.mP1->getVal(), cQEDPdf.mP2->getVal(), cQEDPdf.mP3->getVal() );
 
 			const double  fracQED  = fQED4frac->Integral(mJpsiMassLow, mJpsiMassHi) / fQED4frac->Integral(massLow4Fit, massHig4Fit);
 			
@@ -969,6 +1008,13 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			hInCohJpsiPtHist->RebinX(hPt->GetBinWidth(1)/hInCohJpsiPtHist->GetBinWidth(1));
 			hFeeddownJpsiPtHist->RebinX(hPt->GetBinWidth(1)/hFeeddownJpsiPtHist->GetBinWidth(1));
 			hQEDPtHist->RebinX(hPt->GetBinWidth(1)/hQEDPtHist->GetBinWidth(1));
+
+			// = rebin the hPt based on a input pt binning array ==========================================
+			// hCohJpsiPtHist = (TH1D*)hCohJpsiPtHist->Rebin(ptBinVec.size()-1, "hCohJpsiPtHist", ptBinVec.data());
+			// hInCohJpsiPtHist = (TH1D*)hInCohJpsiPtHist->Rebin(ptBinVec.size()-1, "hInCohJpsiPtHist", ptBinVec.data());
+			// hFeeddownJpsiPtHist = (TH1D*)hFeeddownJpsiPtHist->Rebin(ptBinVec.size()-1, "hFeeddownJpsiPtHist", ptBinVec.data());
+			// hQEDPtHist = (TH1D*)hQEDPtHist->Rebin(ptBinVec.size()-1, "hQEDPtHist", ptBinVec.data());
+			// =============================================================================================
 			
 			RooRealVar mPt("mPt", "p_{T} (GeV)", ptLow4Fit, ptHig4Fit);
 	
@@ -1035,7 +1081,7 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 					// RooArgList( Pdf_CohJpsi_wFDW,  *dissoJpsiPdf, qedPtPdf ),
 					// RooArgList( nCohJpsi_wFDW,        nDissoJpsi,   nQEDBg)  );
 			
-			totPtPdf.fitTo(dataPt,Extended(kTRUE),SumW2Error(kTRUE),Hesse(kTRUE),Minos(kFALSE),Save());
+			totPtPdf.fitTo(dataPt,Extended(kTRUE),SumW2Error(kTRUE),Hesse(kTRUE),Minos(kFALSE), PrintLevel(-1));
 			
 			//calcualte numbers
 			const double N_CohJpsi       = nCohJpsi_wFDW.getVal()  *fracPrim.getVal();
@@ -1091,7 +1137,7 @@ void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double mass
 			int nFramePtBins = (ptHig4Fit - ptLow4Fit)/hPt->GetBinWidth(1);
 			cout<<nFramePtBins<<endl;
 
-			RooPlot *framePt = mPt.frame(Range(ptLow4Fit, ptHig4Fit), Title(""), Bins(nFramePtBins));
+			RooPlot *framePt = mPt.frame(Range(ptLow4Fit, ptHig4Fit), Title(""));
 
 			dataPt  .plotOn(framePt, MarkerStyle(20), MarkerSize(1.2), MarkerColor(2), LineColor(2), LineWidth(mLineWidth), DrawOption("pz"));
 			totPtPdf.plotOn(framePt, LineColor(1), LineStyle(1), LineWidth(mLineWidth));

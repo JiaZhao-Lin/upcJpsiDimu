@@ -67,8 +67,8 @@ struct QEDPdf : public PdfFactory
 	const double massLow4Fit, massHig4Fit;
 	const int FitN;
 	RooRealVar  & mMass;
-	RooConstVar mP0, mP1, mP2, mP3, mP4;
-	RooRealVar  mP0_Free, mP1_Free, mP2_Free, mP3_Free;
+	RooConstVar *mP0, *mP1,* mP2,* mP3,* mP4;
+	RooRealVar  *mP0_Free,* mP1_Free, *mP2_Free, *mP3_Free;
 	//-----------------------------------------------------------------------------------
 
 	//Constructor------------------------------------------------------------------------
@@ -95,17 +95,17 @@ struct QEDPdf : public PdfFactory
 			Hist ->Fit(fQED, "R", "",  massLow4Fit, massHig4Fit); //use side band to initialized QED parameters
 		}
 
-		mP0	=	RooConstVar(  "mP0", "mP0",  fQED->GetParameter(0));
-		mP1	=	RooConstVar(  "mP1", "mP1",  fQED->GetParameter(1));
-		mP2	=	RooConstVar(  "mP2", "mP2",  fQED->GetParameter(2));
-		mP3	=	RooConstVar(  "mP3", "mP3",  fQED->GetParameter(3));
+		mP0	= new	RooConstVar(  "mP0", "mP0",  fQED->GetParameter(0));
+		mP1	= new	RooConstVar(  "mP1", "mP1",  fQED->GetParameter(1));
+		mP2	= new	RooConstVar(  "mP2", "mP2",  fQED->GetParameter(2));
+		mP3	= new	RooConstVar(  "mP3", "mP3",  fQED->GetParameter(3));
 		// mP0	=	RooRealVar(  "mP0", "mP0",  fQED->GetParameter(0), -1.e8,  1.e8);
 		// mP1	=	RooRealVar(  "mP1", "mP1",  fQED->GetParameter(1), 0.,     1.e5);
 		// mP2	=	RooRealVar(  "mP2", "mP2",  fQED->GetParameter(2), -1.e5,    0.);
 		// mP3	=	RooRealVar(  "mP3", "mP3",  fQED->GetParameter(3), 0.,    1.e4);
 
 		Pdf = new RooGenericPdf("qedPdf", "qedPdf", "mP0 + mP1*mMass + mP2*mMass*mMass + mP3*mMass*mMass*mMass", 
-									RooArgSet(mP0, mP1, mP2, mP3, mMass));
+									RooArgSet(*mP0, *mP1, *mP2, *mP3, mMass));
 	}
 	void InitQuartic()
 	{
@@ -117,14 +117,14 @@ struct QEDPdf : public PdfFactory
 			Hist ->Fit(fQED, "R", "",  massLow4Fit, massHig4Fit); //use side band to initialized QED parameters
 		}
 
-		mP0	=	RooConstVar(  "mP0", "mP0",  fQED->GetParameter(0));
-		mP1	=	RooConstVar(  "mP1", "mP1",  fQED->GetParameter(1));
-		mP2	=	RooConstVar(  "mP2", "mP2",  fQED->GetParameter(2));
-		mP3	=	RooConstVar(  "mP3", "mP3",  fQED->GetParameter(3));
-		mP4	=	RooConstVar(  "mP4", "mP4",  fQED->GetParameter(4));
+		mP0	= new	RooConstVar(  "mP0", "mP0",  fQED->GetParameter(0));
+		mP1	= new	RooConstVar(  "mP1", "mP1",  fQED->GetParameter(1));
+		mP2	= new	RooConstVar(  "mP2", "mP2",  fQED->GetParameter(2));
+		mP3	= new	RooConstVar(  "mP3", "mP3",  fQED->GetParameter(3));
+		mP4	= new	RooConstVar(  "mP4", "mP4",  fQED->GetParameter(4));
 
 		Pdf = new RooGenericPdf("qedPdf", "qedPdf", "mP0 + mP1*mMass + mP2*mMass*mMass + mP3*mMass*mMass*mMass + mP4*mMass*mMass*mMass*mMass", 
-									RooArgSet(mP0, mP1, mP2, mP3, mP4, mMass));
+									RooArgSet(*mP0,* mP1, *mP2, *mP3, *mP4, mMass));
 	}
 	void InitFreeCubic()
 	{
@@ -136,13 +136,13 @@ struct QEDPdf : public PdfFactory
 			Hist ->Fit(fQED, "R", "",  massLow4Fit, massHig4Fit); //use side band to initialized QED parameters
 		}
 
-		mP0_Free	=	RooRealVar(  "mP0_Free", "mP0_Free",  fQED->GetParameter(0), -1.e6,  1.e6);
-		mP1_Free	=	RooRealVar(  "mP1_Free", "mP1_Free",  fQED->GetParameter(1), 0.,     1.e4);
-		mP2_Free	=	RooRealVar(  "mP2_Free", "mP2_Free",  fQED->GetParameter(2), -1.e4,    0.);
-		mP3_Free	=	RooRealVar(  "mP3_Free", "mP3_Free",  fQED->GetParameter(3), 0.,    1.e3);
+		mP0_Free	= new	RooRealVar(  "mP0_Free", "mP0_Free",  fQED->GetParameter(0), -1.e6,  1.e6);
+		mP1_Free	= new	RooRealVar(  "mP1_Free", "mP1_Free",  fQED->GetParameter(1), 0.,     1.e4);
+		mP2_Free	= new	RooRealVar(  "mP2_Free", "mP2_Free",  fQED->GetParameter(2), -1.e4,    0.);
+		mP3_Free	= new	RooRealVar(  "mP3_Free", "mP3_Free",  fQED->GetParameter(3), 0.,    1.e3);
 
 		Pdf = new RooGenericPdf("qedPdf", "qedPdf", "mP0_Free + mP1_Free*mMass + mP2_Free*mMass*mMass + mP3_Free*mMass*mMass*mMass", 
-									RooArgSet(mP0_Free, mP1_Free, mP2_Free, mP3_Free, mMass));
+									RooArgSet(*mP0_Free, *mP1_Free, *mP2_Free,* mP3_Free, mMass));
 	}
 	double GetInitN(const double BinLow, const double BinHigh)
 	{
