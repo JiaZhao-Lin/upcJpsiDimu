@@ -1,10 +1,13 @@
 # Generate HepData for sumbission
-
+# %%
+# # Imports
 import ROOT
 from hepdata_lib import Submission, Table, Uncertainty, Variable
-import numbers as np
+import numpy as np
+import pandas as pd
 
-# a class to create a submission
+# %%
+# classes to create a submission
 
 class HepDataCreator:
 
@@ -163,7 +166,6 @@ class HepDataCreator:
 
 		return [DSigmaDy_table, Sigma_table, R_table]
 
-
 class HepDataCreatorMatrix:
 	def __init__(self, name, infile):
 		self.name = name
@@ -222,6 +224,110 @@ class HepDataCreatorMatrix:
 		table.keywords["observables"] = ["COV"]
 		return [table]
 
+class HepDataCreatorFlux:
+	def __init__(self, name, infile, infile_cov_matrix_list):
+		self.name = name
+		self.infile = infile
+		self.infile_cov_matrix_list = list(infile_cov_matrix_list)
+		self.df = pd.read_csv(self.infile, sep='\t')
+		self.matrices = []
+		for infile_cov_matrix in self.infile_cov_matrix_list:
+			self.matrices.append(np.loadtxt(infile_cov_matrix))
+	
+	def create_variables(self, param, param_name="N/A", qualifier = None, independent=False, binned=False, units=""):
+		var = Variable(param_name, is_independent=independent, is_binned=binned, units=units)
+		var.add_qualifier("SQRT(S)/NUCLEON", "5020", "GeV")
+		# var.add_qualifier("RE", "PB PB -> J/PSI <MU+ MU-> PB PB")
+		# var.add_qualifier("ABS(YRAP)", "1.6 - 2.4")
+		# var.add_qualifier("MUON ABS(ETA)", "0.0 - 2.4")
+
+		if qualifier != None:
+			var.add_qualifier("NEUTRON MULT", qualifier)
+
+		# n_sig_figs = 3
+		# # set the error to the same number of significant figures as the value
+		# errors = [f"{i:#.{n_sig_figs}g}" for i in self.df[param+"_Err"].values]
+		# # first get the number of decimal places in the error
+		# n_decimals = [len(str(i).split(".")[1]) for i in errors]
+		# # set the decimal places to the same as the error
+		# var.values = [ f"{i:.{j}f}" for i, j in zip(self.df[param].values, n_decimals)]
+		# unc = Uncertainty('', is_symmetric=True)
+		# # around the number to 2 significant digits 
+		# unc.values = [ f"{i:.{j}f}" for i,j in zip(self.df[param+"_Err"].values, n_decimals)]
+		# var.add_uncertainty(unc)
+
+		n_sig_figs = 3
+		var.values = [ f"{i:.{n_sig_figs}f}" for i in self.df[param].values]
+
+		return var
+	
+	def create_matrix(self, iNeu, table_name, table_description, table_location):
+		# Create the table object and add the variables
+		x = []
+		y = []
+		nrows = self.matrices[iNeu].shape[0]
+		ncols = self.matrices[iNeu].shape[1]
+		for i in range(nrows):
+			for j in range(ncols):
+				x.append(i+1)
+				y.append(j+1)
+
+		#flatten the matrix
+		z = self.matrices[iNeu].flatten()
+
+		x_var = Variable("First bin", is_independent=True, is_binned=False, units="")
+		x_var.values = x
+
+		y_var = Variable("Second bin", is_independent=True, is_binned=False, units="")
+		y_var.values = y
+
+		z_var = Variable("Covariance", is_independent=False, is_binned=False, units="")
+		z_var.values = z
+
+		table = Table(table_name)
+		table.description = table_description
+		table.location = table_location
+		for var in [x_var,y_var,z_var]:
+			table.add_variable(var)
+
+		table.keywords["observables"] = ["COV"]
+		return table
+
+	def create_table(self):
+
+		Dy_var = Variable("$y$", is_independent=True, is_binned=False, units="")
+		Dy_var.values = self.df["Dy"].values
+
+		dNdy_0n0n_var 		= self.create_variables("dNdy_0n0n",	"$\\frac{dN^{\mathrm{0n0n}}}{dy}$", qualifier="0n0n")
+		dNdy_0nXnSum_var 	= self.create_variables("dNdy_0nXnSum",	"$\\frac{dN^{\mathrm{0nXn}}}{dy}$", qualifier="0nXn")
+		dNdy_XnXn_var 		= self.create_variables("dNdy_XnXn", 	"$\\frac{dN^{\mathrm{XnXn}}}{dy}$", qualifier="XnXn")
+
+		dNdy_table = Table("Table 4")
+		dNdy_table.description = "The photon flux values from STARLight as a function of rapidity, in different neutron multiplicity classes: 0n0n, 0nXn, and XnXn."
+		dNdy_table.location = "Photon flux values used in Equation 2"
+		dNdy_table.add_variable(Dy_var)
+		dNdy_table.add_variable(dNdy_0n0n_var)
+		dNdy_table.add_variable(dNdy_0nXnSum_var)
+		dNdy_table.add_variable(dNdy_XnXn_var)
+
+		dNdy_table.keywords["observables"] = ["DN/DYRAP"]
+
+		table_flux_cov_0n0n = self.create_matrix(0, 
+					   table_name="Flux Covariance Matrix 0n0n", 
+					   table_description="The covariance matrix for the flux in the 0n0n neutron multiplicity class.", 
+					   table_location="Covariance matrix for 0n0n")
+		table_flux_cov_0nXnSum = self.create_matrix(1,
+						table_name="Flux Covariance Matrix 0nXn",
+						table_description="The covariance matrix for the flux in the 0nXn neutron multiplicity class.",
+						table_location="Covariance matrix for 0nXn")
+		table_flux_cov_XnXn = self.create_matrix(2,
+					   	table_name="Flux Covariance Matrix XnXn",
+						table_description="The covariance matrix for the flux in the XnXn neutron multiplicity class.",
+						table_location="Covariance matrix for XnXn")
+		
+
+		return [dNdy_table, table_flux_cov_0n0n, table_flux_cov_0nXnSum, table_flux_cov_XnXn]
+
 def submit(tables_):
 	# Submit the table to the HEPData database
 	tables = list(tables_)
@@ -229,16 +335,21 @@ def submit(tables_):
 	for table in tables:
 		submission.add_table(table)
 
-	submission.create_files("./outFiles/HepData", remove_old=True)
+	submission.create_files("./outFiles/HepData/")
+
+# %%
+# # Main
 
 if (__name__ == "__main__"):
 	print("HEPData.py")
 	hep = HepDataCreator("test", "./outFiles/Result_CMS.root", 	"./outFiles/Result_CMS_SysUncer.root")
+	hep_flux = HepDataCreatorFlux("test", "../simulation/out4flux/flux_interpolated_default.txt", 	['../simulation/out4flux/flux_cov_matrix_0n0n.txt', '../simulation/out4flux/flux_cov_matrix_0nXnSum.txt', '../simulation/out4flux/flux_cov_matrix_XnXn.txt'])
 	hep_matrix = HepDataCreatorMatrix("test", "./outFiles/CovMatrix.txt")
 	hep_matrix_experi = HepDataCreatorMatrix("test", "./outFiles/CovMatrixExperi.txt")
 	hep_matrix_flux = HepDataCreatorMatrix("test", "./outFiles/CovMatrixFlux.txt")
 
 	data_tables = hep.create_table()
+	flux_tables = hep_flux.create_table()
 	matrix_table = hep_matrix.create_table(table_description="The total covariance matrix of the total coherent photoproduction cross section as a function of photon-nuclear center-of-mass energy per nucleon $W_{\gamma \mathrm{N}}^{\mathrm{Pb}}$. The covariance matrix includes both the experimental and theoretical (photon flux) uncertainties. The bins are ordered as increasing in $W_{\gamma \mathrm{N}}^{\mathrm{Pb}}$.", 
 										table_location="Total covariance matrix for data from Figure 3")
 	matrix_table_experi = hep_matrix_experi.create_table(table_name="Experimental covariance matrix", 
@@ -248,7 +359,7 @@ if (__name__ == "__main__"):
 						  				table_description="The theoretical (photon flux) covariance matrix of the total coherent photoproduction cross section as a function of photon-nuclear center-of-mass energy per nucleon $W_{\gamma \mathrm{N}}^{\mathrm{Pb}}$. The bins are ordered as increasing in $W_{\gamma \mathrm{N}}^{\mathrm{Pb}}$.",
 										table_location="Theoretical covariance matrix for data from Figure 3")
 
-	tables = list(data_tables + matrix_table + matrix_table_experi + matrix_table_flux)
+	tables = list(data_tables + flux_tables + matrix_table + matrix_table_experi + matrix_table_flux)
 
 	for t in tables:
 		t.keywords["cmenergies"] = [5020]

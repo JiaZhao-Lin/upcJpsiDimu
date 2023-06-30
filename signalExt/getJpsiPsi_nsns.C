@@ -92,6 +92,8 @@ double fD_inPtCut[NnCases][nDiffRapBins+1];    		//fD within pt<0.20 GeV/c
 double fDerr_inPtCut[NnCases][nDiffRapBins+1];    	//fD within pt<0.20 GeV/c
 double NJpsi_inMFit[NnCases][nDiffRapBins+1]; 		//# Jpsi within pt<0.20 GeV/c from mass fitting
 double NerrJpsi_inMFit[NnCases][nDiffRapBins+1]; 	//# Jpsi within pt<0.20 GeV/c from mass fitting
+double NJpsi_inMFit_Raw[NnCases][nDiffRapBins+1]; 		//# Jpsi within pt<0.20 GeV/c from mass fitting
+double NerrJpsi_inMFit_Raw[NnCases][nDiffRapBins+1]; 	//# Jpsi within pt<0.20 GeV/c from mass fitting
 double Eff_CohJpsi[NnCases][nDiffRapBins+1];     	//efficiency of coherent jpsi
 // const double temAcc[nDiffRapBins+1] = {0.170, 0.348, 0.348, 0.170, 0.250};//need to be updated by corrected one later
 double Acc_CohJpsi[nDiffRapBins+1];     //acceptance of coherent jpsi
@@ -103,6 +105,7 @@ std::vector< std::vector<double> > xsecError( NnCases , std::vector<double> (nDi
 void prepareData();
 void loadEff();
 void loadAcc();
+void getNeuFractions();
 void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4.2);
 void fitFullMassAndPt_4Decouple( const double massLow4Fit=2.6, const double massHig4Fit=4.2,  const double ptLow4Fit=0,     const double ptHig4Fit=3.5);
 void saveFile(const TString headerTitle = "Default");
@@ -119,8 +122,19 @@ void getJpsiPsi_nsns()
 	
 	fitCohMass_4RNRfD(2.61, 4.2);
 
+	for(int iCase=0; iCase<NnCases; iCase++)
+	{
+		for(int iRap=0; iRap<nDiffRapBins+1; iRap++)
+		{
+			NJpsi_inMFit_Raw[iCase][iRap] = NJpsi_inMFit[iCase][iRap];
+			NerrJpsi_inMFit_Raw[iCase][iRap] = NerrJpsi_inMFit[iCase][iRap];
+		}
+	}
+
 	PileUp_Corr(NJpsi_inMFit, NerrJpsi_inMFit, nDiffRapBins+1);
 	
+	getNeuFractions();
+
 	//fitFullMassAndPt_4Decouple(2.61,4.2, 0.00,3.0);
 	fitFullMassAndPt_4Decouple(2.61,4.2, -0.01,3.0);
 
@@ -281,6 +295,21 @@ void loadAcc()
 	LoadAcceptance Acceptance(Form("../simulation/out4AccFactors/Acceptance_AllSpecs_%dRapBins.root", nDiffRapBins), SymmetricRapBin);
 	H_AccVsY_CohJpsi		= (TH1D*)	Acceptance.GetAcceptance()	->Clone();
 }
+
+void getNeuFractions()
+{
+	for (int i_ncase = 0; i_ncase < NnCases; ++i_ncase)
+	{
+		for (int iy = nDiffRapBins/2; iy < nDiffRapBins; ++iy)
+		{
+			cout<< Form("%s %1.1f < |y| < %1.1f: nJpsi: %f, frac in AnAn: %f. AFTER PU correction: nJpsi: %f, frac in AnAn: %f. perc changed: %f", nCasesName[i_ncase].Data(), mDiffRapLow[iy], mDiffRapHi[iy], 
+			NJpsi_inMFit_Raw[i_ncase][iy], NJpsi_inMFit_Raw[i_ncase][iy]/NJpsi_inMFit_Raw[0][iy],
+			NJpsi_inMFit[i_ncase][iy], NJpsi_inMFit[i_ncase][iy]/NJpsi_inMFit[0][iy],
+			(NJpsi_inMFit[i_ncase][iy]-NJpsi_inMFit_Raw[i_ncase][iy])/NJpsi_inMFit_Raw[i_ncase][iy] )<<endl;
+		}
+	}
+}
+
 //------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------
 void fitCohMass_4RNRfD( const double massLow4Fit=2.6, const double massHig4Fit=4.2)
