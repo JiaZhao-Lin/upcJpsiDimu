@@ -167,6 +167,9 @@ struct ResultPlotProcessor
 		case ResultPlotStrategyList::Sigma_ALICE_2021:
 			plots.push_back( std::make_unique<	Sigma_ALICE_2021_Strategy		>(data_) );
 			break;
+		case ResultPlotStrategyList::Sigma_ALICE_2023:
+			plots.push_back( std::make_unique<	Sigma_ALICE_2023_Strategy		>(data_) );
+			break;
 		case ResultPlotStrategyList::Sigma_LHCb_2022:
 			plots.push_back( std::make_unique<	Sigma_LHCb_2022_Strategy		>(data_) );
 			break;
@@ -179,6 +182,9 @@ struct ResultPlotProcessor
 			break;
 		case ResultPlotStrategyList::R_ALICE_2021:
 			plots.push_back( std::make_unique<	R_ALICE_2021_Strategy			>(data_) );
+			break;
+		case ResultPlotStrategyList::R_ALICE_2023:
+			plots.push_back( std::make_unique<	R_ALICE_2023_Strategy			>(data_) );
 			break;
 		case ResultPlotStrategyList::R_LHCb_2022:
 			plots.push_back( std::make_unique<	R_LHCb_2022_Strategy			>(data_) );

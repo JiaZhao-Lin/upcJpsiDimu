@@ -51,6 +51,7 @@ void Main()
 	AnalysisData Data_CMS("CMS");
 	AnalysisData Data_ALICE_2019_Selected("ALICE_2019_Selected");
 	AnalysisData Data_ALICE_2021_Selected("ALICE_2021_Selected");
+	AnalysisData Data_ALICE_2023("ALICE_2023");
 	AnalysisData Data_LHCb_2022_Selected("LHCb_2022_Selected");
 	AnalysisData Data_ALICE_2019("ALICE_2019");
 	AnalysisData Data_ALICE_2021("ALICE_2021");
@@ -69,6 +70,7 @@ void Main()
 	Data_ALICE_2019_Selected	.LoadMapFile("outFiles/Result_ALICE_2019_Selected.root");
 	Data_ALICE_2021_Selected	.LoadMapFile("outFiles/Result_ALICE_2021_Selected.root");
 	Data_LHCb_2022_Selected		.LoadMapFile("outFiles/Result_LHCb_2022_Selected.root");
+	Data_ALICE_2023				.LoadTextFile("inFiles/Sigma_ALICE_2023_HEPData.txt");
 	Data_ALICE_2019				.LoadTextFile("inFiles/DSigmaDy_ALICE_2019.txt");
 	Data_ALICE_2021				.LoadTextFile("inFiles/DSigmaDy_ALICE_2021.txt");
 	Data_LHCb_2022				.LoadTextFile("inFiles/DSigmaDy_LHCb_2022.txt");
@@ -81,6 +83,7 @@ void Main()
 	Data_CMS.Subscribe(&obs);
 	Data_ALICE_2019_Selected.Subscribe(&obs);
 	Data_ALICE_2021_Selected.Subscribe(&obs);
+	Data_ALICE_2023.Subscribe(&obs);
 	Data_LHCb_2022_Selected.Subscribe(&obs);
 	// Data_CMS.Print();
 	// Data_ALICE_2019_Selected.Print();
@@ -173,6 +176,30 @@ void Main()
 	p.Process		();
 	p.SaveAs		("./outFigures/Sigma_vs_W_LogY_2.pdf");
 
+	p.SetFigureFrame(ResultFrameStrategyList::Sigma_Log);
+	p.AddPlot		(Data_CMS,			ResultPlotStrategyList::Sigma_CMS);
+	// p.AddPlot		(Data_ALICE_2019_Selected,	ResultPlotStrategyList::Sigma_ALICE_2019);
+	// p.AddPlot		(Data_ALICE_2021_Selected,	ResultPlotStrategyList::Sigma_ALICE_2021);
+	p.AddPlot		(Data_ALICE_2023,			ResultPlotStrategyList::Sigma_ALICE_2023);
+	p.AddPlot		(Data_LHCb_2022_Selected,	ResultPlotStrategyList::Sigma_LHCb_2022);
+	for (int i = 0; i < p.plots.size(); i++)
+	{
+		//cast to Sigma_PlotStrategy
+		auto sp = dynamic_cast<Sigma_PlotStrategy*>(p.plots[i].get());
+		sp->X_AXIS_ERR		= std::vector<double>(sp->data.GetSize("W"), 9);
+	}
+	p.AddTheory		(TheoryList::Sigma_R_LTA, 			"Sigma");
+	p.AddTheory		(TheoryList::DSigmaDy_Sigma_R_CD, 	"Sigma");
+	p.AddTheory		(TheoryList::DSigmaDy_Sigma_R_bBK,	"Sigma");
+	p.AddTheory		(TheoryList::Sigma_R_CGC, 			"Sigma");
+	p.AddTheory		(TheoryList::Sigma_R_GG, 			"Sigma");
+	p.AddTheory		(TheoryList::Sigma_IA, 				"Sigma");
+	
+	p.Process		();
+	p.frame->htemp->GetXaxis()->SetLimits(0,930);
+	// p.frame->htemp->GetYaxis()->SetLimits(1e-6,1000);
+	p.SaveAs		("./outFigures/Sigma_vs_W_LogY_2_test.pdf");
+
 	// p.SetFigureFrame(ResultFrameStrategyList::Sigma_LogLog);
 	// p.AddPlot		(Data_CMS,			ResultPlotStrategyList::Sigma_CMS);
 	// p.AddPlot		(Data_ALICE_2019_Selected,	ResultPlotStrategyList::Sigma_ALICE_2019);
@@ -199,5 +226,20 @@ void Main()
 	p.AddTheory		(TheoryList::Sigma_R_GG, 			"R");
 	p.Process		();
 	p.SaveAs		("./outFigures/Rg_vs_x.pdf");
+
+
+	p.SetFigureFrame(ResultFrameStrategyList::R);
+	p.AddPlot		(Data_CMS,			ResultPlotStrategyList::R_CMS);
+	p.AddPlot		(Data_ALICE_2023,	ResultPlotStrategyList::R_ALICE_2023);
+	p.AddPlot		(Data_LHCb_2022_Selected,	ResultPlotStrategyList::R_LHCb_2022);
+	// p.AddTheory		(TheoryList::Sigma_R_CGC, 			"R");	//too short
+	p.AddTheory		(TheoryList::Sigma_R_LTA, 			"R");
+	p.AddTheory		(TheoryList::DSigmaDy_Sigma_R_CD, 	"R");
+	p.AddTheory		(TheoryList::DSigmaDy_Sigma_R_bBK,	"R");
+	p.AddTheory		(TheoryList::Sigma_R_GG, 			"R");
+	p.Process		();
+	gPad->SetLogx();
+
+	p.SaveAs		("./outFigures/Rg_vs_x_test.pdf");
 //-------------------------------------------------------------------------------------------------
 }

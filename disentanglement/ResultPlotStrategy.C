@@ -20,11 +20,13 @@ enum class ResultPlotStrategyList
 	Sigma_CMS,
 	Sigma_ALICE_2019,
 	Sigma_ALICE_2021,
+	Sigma_ALICE_2023,
 	Sigma_LHCb_2022,
 
 	R_CMS,
 	R_ALICE_2019,
 	R_ALICE_2021,
+	R_ALICE_2023,
 	R_LHCb_2022
 };
 
@@ -317,6 +319,56 @@ struct Sigma_ALICE_2021_Strategy : Sigma_PlotStrategy
 		ge	->Draw("pezsame");
 	}
 };
+struct Sigma_ALICE_2023_Strategy : Sigma_PlotStrategy
+{
+	Sigma_ALICE_2023_Strategy(const AnalysisData& data_)	: Sigma_PlotStrategy{data_} {}
+	
+	void Apply(TLegend*	leg)	override
+	{
+		// Sigma_PlotStrategy::Apply(leg);
+		//multiplied by 1e-3
+		vector<double> Sigma_temp = data.Get("Sigma");
+		vector<double> Sigma_Err_Stat_temp = data.Get("Sigma_Err_Stat");
+		vector<double> Sigma_Err_Box_temp = data.Get("Sigma_Err_Box");
+		vector<double> Sigma_Err_Grey_temp = data.Get("Sigma_Err_Grey");
+		for (auto& i : Sigma_temp) i *= 1e-3;
+		for (auto& i : Sigma_Err_Stat_temp) i *= 1e-3;
+		for (auto& i : Sigma_Err_Box_temp) i *= 1e-3;
+		for (auto& i : Sigma_Err_Grey_temp) i *= 1e-3;
+		// vector<double> W_Err_Low_temp = data.Get("W_Err_Low");
+		// vector<double> W_Err_Hig_temp = data.Get("W_Err_Hig");
+		vector<double> W_Err_Low_temp = vector<double>(data.GetSize("Sigma"), 9);
+		vector<double> W_Err_Hig_temp = vector<double>(data.GetSize("Sigma"), 9);
+
+		TGraphAsymmErrors* ge = new TGraphAsymmErrors	(data.GetSize("Sigma"),	data.Get("W").data(),	Sigma_temp.data(),	
+									W_Err_Low_temp.data(),	W_Err_Hig_temp.data(),
+									Sigma_Err_Stat_temp.data(),	Sigma_Err_Stat_temp.data()	);
+		gae2 = new TGraphAsymmErrors	(data.GetSize("Sigma"),	data.Get("W").data(),	Sigma_temp.data(),	
+									W_Err_Low_temp.data(),	W_Err_Hig_temp.data(),
+									Sigma_Err_Grey_temp.data(),	Sigma_Err_Grey_temp.data()	);
+		gae = new TGraphAsymmErrors	(data.GetSize("Sigma"),	data.Get("W").data(),	Sigma_temp.data(),
+									W_Err_Low_temp.data(),	W_Err_Hig_temp.data(),
+									Sigma_Err_Box_temp.data(),	Sigma_Err_Box_temp.data()	);
+
+		leg->AddEntry(ge,	"ALICE 2023",	"p");
+
+		gae ->SetMarkerStyle(24);
+		gae ->SetFillColorAlpha(16, 0.7);
+		gae ->SetFillStyle(1001);
+		gae ->SetLineWidth(0);
+		gae ->Draw("2same");
+		gae2 ->SetFillColorAlpha(1, 0);
+		gae2 ->SetFillStyle(2);
+		gae2->SetLineColor(kBlack);
+		gae2 ->Draw("2same");
+		ge	->SetMarkerStyle(24);
+		ge	->SetMarkerColor(4);
+		ge	->SetMarkerSize(1.5);
+		ge	->SetLineColor(4);
+		ge	->SetLineWidth(2);
+		ge	->Draw("pezsame");
+	}
+};
 
 struct Sigma_LHCb_2022_Strategy : Sigma_PlotStrategy
 {
@@ -511,6 +563,7 @@ struct R_CMS_Strategy : R_PlotStrategy
 		ge_FXT_FNL->Draw("pezsame");
 
 		TLegend* leg_FXT = new TLegend(0.47, 0.77, 0.67, 0.82);
+		// TLegend* leg_FXT = new TLegend(0.42, 0.77, 0.67, 0.82);
 		leg_FXT->SetBorderSize(0);
 		leg_FXT	->SetFillStyle(0);
 		leg_FXT->SetFillColor(0);
@@ -556,6 +609,78 @@ struct R_ALICE_2021_Strategy : R_PlotStrategy
 		X_AXIS_ERR = {5e-5};
 		R_PlotStrategy::Apply(leg);
 		leg->AddEntry(ge,	"ALICE* (|y| < 0.15)",	"p");
+
+		gae ->SetMarkerStyle(24);
+		gae ->SetFillColorAlpha(16, 0.7);
+		gae ->SetFillStyle(1001);
+		gae ->Draw("2same");
+		gae2 ->SetFillColorAlpha(1, 0);
+		gae2 ->SetFillStyle(2);
+		gae2->SetLineColor(kBlack);
+		gae2 ->Draw("2same");
+		ge->SetMarkerStyle(24);
+		ge->SetMarkerColor(4);
+		ge->SetMarkerSize(1.2);
+		ge->SetLineColor(4);
+		ge->SetLineWidth(1);
+		ge->Draw("pezsame");
+	}
+};
+
+struct R_ALICE_2023_Strategy : R_PlotStrategy
+{
+	R_ALICE_2023_Strategy(const AnalysisData& data_)	: R_PlotStrategy{data_} {}
+	
+	void Apply(TLegend*	leg)	override
+	{
+		X_AXIS_ERR = {5e-5};
+		// R_PlotStrategy::Apply(leg);
+
+		//convert W to x
+		// vector<double> X_temp = ParamConverter::W2x(data.Get("W"));
+		// vector<double> X_Err_Low_temp = ParamConverter::W2x(data.Get("W_Err_Low"));
+		// vector<double> X_Err_Hig_temp = ParamConverter::W2x(data.Get("W_Err_Hig"));
+
+		vector<double> X_temp;
+		vector<double> X_Err_Low_temp;
+		vector<double> X_Err_Hig_temp;
+
+		for (int i = 0; i < data.GetSize("W"); ++i)
+		{
+			X_temp.push_back( ParamConverter::W2x( data.Get("W")[i] ) );
+			X_Err_Low_temp.push_back( ParamConverter::W2x( data.Get("W_Err_Low")[i] ) );
+			X_Err_Hig_temp.push_back( ParamConverter::W2x( data.Get("W_Err_Hig")[i] ) );
+		}
+		//convert the x errors to log scale
+		// for (int i = 0; i < X_Err_Low_temp.size(); ++i)
+		// {
+		// 	X_Err_Low_temp[i] = X_temp[i] - TMath::Exp( TMath::Log ( X_temp[i] ) - X_Err_Low_temp[i] );
+		// 	X_Err_Hig_temp[i] = TMath::Exp( TMath::Log ( X_temp[i] ) + X_Err_Hig_temp[i] ) - X_temp[i];
+		// }
+		//convert the x errors to linear scale
+		X_Err_Low_temp = {2e-3, 1.3e-3, 0.8e-3, 0.8e-4, 0.5e-4, 0.3e-4, 0.3e-5, 0.2e-5, 0.1e-5};
+		X_Err_Hig_temp = {2e-3, 1.3e-3, 0.8e-3, 0.8e-4, 0.5e-4, 0.3e-4, 0.3e-5, 0.2e-5, 0.1e-5};
+
+		// TGraphAsymmErrors* ge = new TGraphAsymmErrors	(data.GetSize("Sigma"),	data.Get("W").data(),	Sigma_temp.data(),	
+		// 							data.Get("W_Err_Low").data(),	data.Get("W_Err_Hig").data(),
+		// 							Sigma_Err_Stat_temp.data(),	Sigma_Err_Stat_temp.data()	);
+		// gae2 = new TGraphAsymmErrors	(data.GetSize("Sigma"),	data.Get("W").data(),	Sigma_temp.data(),	
+		// 							data.Get("W_Err_Low").data(),	data.Get("W_Err_Hig").data(),
+		// 							Sigma_Err_Grey_temp.data(),	Sigma_Err_Grey_temp.data()	);
+		// gae = new TGraphAsymmErrors	(data.GetSize("Sigma"),	data.Get("W").data(),	Sigma_temp.data(),
+		// 							data.Get("W_Err_Low").data(),	data.Get("W_Err_Hig").data(),
+		// 							Sigma_Err_Box_temp.data(),	Sigma_Err_Box_temp.data()	);
+
+		TGraphAsymmErrors* ge = new TGraphAsymmErrors	(data.GetSize("Rg"),	X_temp.data(),	data.Get("Rg").data(),	
+									X_Err_Low_temp.data(),	X_Err_Hig_temp.data(),
+									data.Get("Rg_Err_Stat").data(),	data.Get("Rg_Err_Stat").data()	);
+		gae2 = new TGraphAsymmErrors	(data.GetSize("Rg"),	X_temp.data(),	data.Get("Rg").data(),
+									X_Err_Low_temp.data(),	X_Err_Hig_temp.data(),
+									data.Get("Rg_Err_Grey").data(),	data.Get("Rg_Err_Grey").data()	);
+		gae = new TGraphAsymmErrors	(data.GetSize("Rg"),	X_temp.data(),	data.Get("Rg").data(),
+									X_Err_Low_temp.data(),	X_Err_Hig_temp.data(),
+									data.Get("Rg_Err_Box").data(),	data.Get("Rg_Err_Box").data()	);
+		leg->AddEntry(ge,	"ALICE 2023",	"p");
 
 		gae ->SetMarkerStyle(24);
 		gae ->SetFillColorAlpha(16, 0.7);
