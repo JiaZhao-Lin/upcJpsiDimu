@@ -173,6 +173,9 @@ struct ResultPlotProcessor
 		case ResultPlotStrategyList::Sigma_LHCb_2022:
 			plots.push_back( std::make_unique<	Sigma_LHCb_2022_Strategy		>(data_) );
 			break;
+		case ResultPlotStrategyList::Sigma_STAR_2023:
+			plots.push_back( std::make_unique<	Sigma_STAR_2023_Strategy		>(data_) );
+			break;
 
 		case ResultPlotStrategyList::R_CMS:
 			plots.push_back( std::make_unique<	R_CMS_Strategy					>(data_) );
@@ -188,6 +191,9 @@ struct ResultPlotProcessor
 			break;
 		case ResultPlotStrategyList::R_LHCb_2022:
 			plots.push_back( std::make_unique<	R_LHCb_2022_Strategy			>(data_) );
+			break;
+		case ResultPlotStrategyList::R_STAR_2023:
+			plots.push_back( std::make_unique<	R_STAR_2023_Strategy			>(data_) );
 			break;
 
 		default:

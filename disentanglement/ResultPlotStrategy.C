@@ -22,12 +22,14 @@ enum class ResultPlotStrategyList
 	Sigma_ALICE_2021,
 	Sigma_ALICE_2023,
 	Sigma_LHCb_2022,
+	Sigma_STAR_2023,
 
 	R_CMS,
 	R_ALICE_2019,
 	R_ALICE_2021,
 	R_ALICE_2023,
-	R_LHCb_2022
+	R_LHCb_2022,
+	R_STAR_2023,
 };
 
 struct Empty_PlotStrategy : PlotStrategy
@@ -319,6 +321,7 @@ struct Sigma_ALICE_2021_Strategy : Sigma_PlotStrategy
 		ge	->Draw("pezsame");
 	}
 };
+
 struct Sigma_ALICE_2023_Strategy : Sigma_PlotStrategy
 {
 	Sigma_ALICE_2023_Strategy(const AnalysisData& data_)	: Sigma_PlotStrategy{data_} {}
@@ -341,7 +344,7 @@ struct Sigma_ALICE_2023_Strategy : Sigma_PlotStrategy
 		vector<double> W_Err_Hig_temp = vector<double>(data.GetSize("Sigma"), 9);
 
 		TGraphAsymmErrors* ge = new TGraphAsymmErrors	(data.GetSize("Sigma"),	data.Get("W").data(),	Sigma_temp.data(),	
-									W_Err_Low_temp.data(),	W_Err_Hig_temp.data(),
+									nullptr,	nullptr,
 									Sigma_Err_Stat_temp.data(),	Sigma_Err_Stat_temp.data()	);
 		gae2 = new TGraphAsymmErrors	(data.GetSize("Sigma"),	data.Get("W").data(),	Sigma_temp.data(),	
 									W_Err_Low_temp.data(),	W_Err_Hig_temp.data(),
@@ -362,6 +365,48 @@ struct Sigma_ALICE_2023_Strategy : Sigma_PlotStrategy
 		gae2->SetLineColor(kBlack);
 		gae2 ->Draw("2same");
 		ge	->SetMarkerStyle(24);
+		ge	->SetMarkerColor(4);
+		ge	->SetMarkerSize(1.5);
+		ge	->SetLineColor(4);
+		ge	->SetLineWidth(2);
+		ge	->Draw("pezsame");
+	}
+};
+
+struct Sigma_STAR_2023_Strategy : Sigma_PlotStrategy
+{
+	Sigma_STAR_2023_Strategy(const AnalysisData& data_)	: Sigma_PlotStrategy{data_} {}
+	
+	void Apply(TLegend*	leg)	override
+	{
+		// Sigma_PlotStrategy::Apply(leg);
+		//multiplied by 1e-3
+		vector<double> Sigma_temp = data.Get("Sigma");
+		vector<double> Sigma_Err_Stat_temp = data.Get("Sigma_Err_Stat");
+		vector<double> Sigma_Err_Sys_temp = data.Get("Sigma_Err_Sys");
+		for (auto& i : Sigma_temp) i *= 1e-3;
+		for (auto& i : Sigma_Err_Stat_temp) i *= 1e-3;
+		for (auto& i : Sigma_Err_Sys_temp) i *= 1e-3;
+		// vector<double> W_Err_Low_temp = data.Get("W_Err_Low");
+		// vector<double> W_Err_Hig_temp = data.Get("W_Err_Hig");
+		vector<double> W_Err_Low_temp = vector<double>(data.GetSize("Sigma"), 9);
+		vector<double> W_Err_Hig_temp = vector<double>(data.GetSize("Sigma"), 9);
+
+		TGraphAsymmErrors* ge = new TGraphAsymmErrors	(data.GetSize("Sigma"),	data.Get("W").data(),	Sigma_temp.data(),	
+									nullptr,	nullptr,
+									Sigma_Err_Stat_temp.data(),	Sigma_Err_Stat_temp.data()	);
+		gae = new TGraphAsymmErrors	(data.GetSize("Sigma"),	data.Get("W").data(),	Sigma_temp.data(),
+									W_Err_Low_temp.data(),	W_Err_Hig_temp.data(),
+									Sigma_Err_Sys_temp.data(),	Sigma_Err_Sys_temp.data()	);
+
+		leg->AddEntry(ge,	"STAR 2023",	"p");
+
+		gae ->SetMarkerStyle(30);
+		gae ->SetFillColorAlpha(16, 0.7);
+		gae ->SetFillStyle(1001);
+		gae ->SetLineWidth(0);
+		gae ->Draw("2same");
+		ge	->SetMarkerStyle(30);
 		ge	->SetMarkerColor(4);
 		ge	->SetMarkerSize(1.5);
 		ge	->SetLineColor(4);
@@ -562,8 +607,8 @@ struct R_CMS_Strategy : R_PlotStrategy
 		ge_FXT_FNL->SetLineColor(1);
 		ge_FXT_FNL->Draw("pezsame");
 
-		TLegend* leg_FXT = new TLegend(0.47, 0.77, 0.67, 0.82);
-		// TLegend* leg_FXT = new TLegend(0.42, 0.77, 0.67, 0.82);
+		// TLegend* leg_FXT = new TLegend(0.47, 0.77, 0.67, 0.82);
+		TLegend* leg_FXT = new TLegend(0.42, 0.77, 0.67, 0.82);
 		leg_FXT->SetBorderSize(0);
 		leg_FXT	->SetFillStyle(0);
 		leg_FXT->SetFillColor(0);
@@ -658,8 +703,8 @@ struct R_ALICE_2023_Strategy : R_PlotStrategy
 		// 	X_Err_Hig_temp[i] = TMath::Exp( TMath::Log ( X_temp[i] ) + X_Err_Hig_temp[i] ) - X_temp[i];
 		// }
 		//convert the x errors to linear scale
-		X_Err_Low_temp = {2e-3, 1.3e-3, 0.8e-3, 0.8e-4, 0.5e-4, 0.3e-4, 0.3e-5, 0.2e-5, 0.1e-5};
-		X_Err_Hig_temp = {2e-3, 1.3e-3, 0.8e-3, 0.8e-4, 0.5e-4, 0.3e-4, 0.3e-5, 0.2e-5, 0.1e-5};
+		X_Err_Low_temp = {2e-3, 1.3e-3, 0.8e-3, 0.8e-4, 0.5e-4, 0.3e-4, 0.3e-5, 0.18e-5, 0.11e-5};
+		X_Err_Hig_temp = {2e-3, 1.3e-3, 0.8e-3, 0.8e-4, 0.5e-4, 0.3e-4, 0.3e-5, 0.18e-5, 0.11e-5};
 
 		// TGraphAsymmErrors* ge = new TGraphAsymmErrors	(data.GetSize("Sigma"),	data.Get("W").data(),	Sigma_temp.data(),	
 		// 							data.Get("W_Err_Low").data(),	data.Get("W_Err_Hig").data(),
@@ -672,7 +717,7 @@ struct R_ALICE_2023_Strategy : R_PlotStrategy
 		// 							Sigma_Err_Box_temp.data(),	Sigma_Err_Box_temp.data()	);
 
 		TGraphAsymmErrors* ge = new TGraphAsymmErrors	(data.GetSize("Rg"),	X_temp.data(),	data.Get("Rg").data(),	
-									X_Err_Low_temp.data(),	X_Err_Hig_temp.data(),
+									nullptr,	nullptr,
 									data.Get("Rg_Err_Stat").data(),	data.Get("Rg_Err_Stat").data()	);
 		gae2 = new TGraphAsymmErrors	(data.GetSize("Rg"),	X_temp.data(),	data.Get("Rg").data(),
 									X_Err_Low_temp.data(),	X_Err_Hig_temp.data(),
@@ -692,7 +737,7 @@ struct R_ALICE_2023_Strategy : R_PlotStrategy
 		gae2 ->Draw("2same");
 		ge->SetMarkerStyle(24);
 		ge->SetMarkerColor(4);
-		ge->SetMarkerSize(1.2);
+		ge->SetMarkerSize(1.3);
 		ge->SetLineColor(4);
 		ge->SetLineWidth(1);
 		ge->Draw("pezsame");
@@ -705,7 +750,7 @@ struct R_LHCb_2022_Strategy : R_PlotStrategy
 	
 	void Apply(TLegend*	leg)	override
 	{
-		X_AXIS_ERR = {2.5e-3,2e-3};
+		X_AXIS_ERR = {3.0e-3,2e-3};
 		R_PlotStrategy::Apply(leg);
 		leg->AddEntry(ge,	"LHCb* (-4.5 < #it{y} < -3.5)",	"p");
 
@@ -719,7 +764,63 @@ struct R_LHCb_2022_Strategy : R_PlotStrategy
 		gae2 ->Draw("2same");
 		ge->SetMarkerStyle(26);
 		ge->SetMarkerColor(4);
-		ge->SetMarkerSize(1.2);
+		ge->SetMarkerSize(1.3);
+		ge->SetLineColor(4);
+		ge->SetLineWidth(1);
+		ge->Draw("pezsame");
+	}
+};
+
+struct R_STAR_2023_Strategy : R_PlotStrategy
+{
+	R_STAR_2023_Strategy(const AnalysisData& data_)	: R_PlotStrategy{data_} {}
+	
+	void Apply(TLegend*	leg)	override
+	{
+		X_AXIS_ERR = {5e-5};
+		// R_PlotStrategy::Apply(leg);
+
+		//convert W to x
+		// vector<double> X_temp = ParamConverter::W2x(data.Get("W"));
+		// vector<double> X_Err_Low_temp = ParamConverter::W2x(data.Get("W_Err_Low"));
+		// vector<double> X_Err_Hig_temp = ParamConverter::W2x(data.Get("W_Err_Hig"));
+
+		vector<double> X_temp;
+		vector<double> X_Err_Low_temp;
+		vector<double> X_Err_Hig_temp;
+		vector<double> Rg_temp = data.Get("Rg");
+		vector<double> Rg_Err_Stat_temp = data.Get("Rg_Err_Stat");
+		vector<double> Rg_Err_Sys_temp = data.Get("Rg_Err_Sys");
+
+		for (int i = 0; i < data.GetSize("W"); ++i)
+		{
+			X_temp.push_back( ParamConverter::W2x( data.Get("W")[i] ) );
+			// X_Err_Low_temp.push_back( ParamConverter::W2x( data.Get("W_Err_Low")[i] ) );
+			// X_Err_Hig_temp.push_back( ParamConverter::W2x( data.Get("W_Err_Hig")[i] ) );
+
+			Rg_temp[i] = TMath::Sqrt(Rg_temp[i]);
+			Rg_Err_Stat_temp[i] = 0.5 * Rg_Err_Stat_temp[i] / Rg_temp[i];
+			Rg_Err_Sys_temp[i] = 0.5 * Rg_Err_Sys_temp[i] / Rg_temp[i];
+		}
+
+		X_Err_Low_temp = {2.6e-3, 1.7e-3, 1.2e-3};
+		X_Err_Hig_temp = {2.6e-3, 1.7e-3, 1.2e-3};
+
+		TGraphAsymmErrors* ge = new TGraphAsymmErrors	(data.GetSize("Rg"),	X_temp.data(),	Rg_temp.data(),	
+									nullptr,	nullptr,
+									Rg_Err_Stat_temp.data(),	Rg_Err_Stat_temp.data()	);
+		gae = new TGraphAsymmErrors	(data.GetSize("Rg"),	X_temp.data(),	Rg_temp.data(),
+									X_Err_Low_temp.data(),	X_Err_Hig_temp.data(),
+									Rg_Err_Sys_temp.data(),	Rg_Err_Sys_temp.data()	);
+		leg->AddEntry(ge,	"STAR 2023",	"p");
+
+		gae ->SetMarkerStyle(30);
+		gae ->SetFillColorAlpha(16, 0.7);
+		gae ->SetFillStyle(1001);
+		gae ->Draw("2same");
+		ge->SetMarkerStyle(30);
+		ge->SetMarkerColor(4);
+		ge->SetMarkerSize(1.3);
 		ge->SetLineColor(4);
 		ge->SetLineWidth(1);
 		ge->Draw("pezsame");

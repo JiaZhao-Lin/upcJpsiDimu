@@ -56,6 +56,7 @@ void Main()
 	AnalysisData Data_ALICE_2019("ALICE_2019");
 	AnalysisData Data_ALICE_2021("ALICE_2021");
 	AnalysisData Data_LHCb_2022("LHCb_2022");
+	AnalysisData Data_STAR_2023("STAR_2023");
 
 //------------------------------------REDO Analysis------------------------------------------------
 //-------------------------------------------------------------------------------------------------
@@ -74,6 +75,7 @@ void Main()
 	Data_ALICE_2019				.LoadTextFile("inFiles/DSigmaDy_ALICE_2019.txt");
 	Data_ALICE_2021				.LoadTextFile("inFiles/DSigmaDy_ALICE_2021.txt");
 	Data_LHCb_2022				.LoadTextFile("inFiles/DSigmaDy_LHCb_2022.txt");
+	Data_STAR_2023				.LoadTextFile("inFiles/Sigma_STAR_2023.txt");
 //-------------------------------------------------------------------------------------------------
 
 	AnalysisData Data_CMS_SysUncer("CMS_SysUncer");	Data_CMS_SysUncer.LoadMapFile("outFiles/Result_CMS_SysUncer.root");
@@ -85,6 +87,7 @@ void Main()
 	Data_ALICE_2021_Selected.Subscribe(&obs);
 	Data_ALICE_2023.Subscribe(&obs);
 	Data_LHCb_2022_Selected.Subscribe(&obs);
+	Data_STAR_2023.Subscribe(&obs);
 	// Data_CMS.Print();
 	// Data_ALICE_2019_Selected.Print();
 	// Data_ALICE_2021_Selected.Print();
@@ -182,6 +185,7 @@ void Main()
 	// p.AddPlot		(Data_ALICE_2021_Selected,	ResultPlotStrategyList::Sigma_ALICE_2021);
 	p.AddPlot		(Data_ALICE_2023,			ResultPlotStrategyList::Sigma_ALICE_2023);
 	p.AddPlot		(Data_LHCb_2022_Selected,	ResultPlotStrategyList::Sigma_LHCb_2022);
+	p.AddPlot		(Data_STAR_2023,			ResultPlotStrategyList::Sigma_STAR_2023);
 	for (int i = 0; i < p.plots.size(); i++)
 	{
 		//cast to Sigma_PlotStrategy
@@ -232,6 +236,7 @@ void Main()
 	p.AddPlot		(Data_CMS,			ResultPlotStrategyList::R_CMS);
 	p.AddPlot		(Data_ALICE_2023,	ResultPlotStrategyList::R_ALICE_2023);
 	p.AddPlot		(Data_LHCb_2022_Selected,	ResultPlotStrategyList::R_LHCb_2022);
+	p.AddPlot		(Data_STAR_2023,	ResultPlotStrategyList::R_STAR_2023);
 	// p.AddTheory		(TheoryList::Sigma_R_CGC, 			"R");	//too short
 	p.AddTheory		(TheoryList::Sigma_R_LTA, 			"R");
 	p.AddTheory		(TheoryList::DSigmaDy_Sigma_R_CD, 	"R");
