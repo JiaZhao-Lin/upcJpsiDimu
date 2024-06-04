@@ -399,7 +399,7 @@ struct Sigma_STAR_2023_Strategy : Sigma_PlotStrategy
 									W_Err_Low_temp.data(),	W_Err_Hig_temp.data(),
 									Sigma_Err_Sys_temp.data(),	Sigma_Err_Sys_temp.data()	);
 
-		leg->AddEntry(ge,	"STAR 2023",	"p");
+		leg->AddEntry(ge,	"STAR #gamma + Au #rightarrow J/#psi + Au",	"p");
 
 		gae ->SetMarkerStyle(30);
 		gae ->SetFillColorAlpha(16, 0.7);
@@ -812,7 +812,7 @@ struct R_STAR_2023_Strategy : R_PlotStrategy
 		gae = new TGraphAsymmErrors	(data.GetSize("Rg"),	X_temp.data(),	Rg_temp.data(),
 									X_Err_Low_temp.data(),	X_Err_Hig_temp.data(),
 									Rg_Err_Sys_temp.data(),	Rg_Err_Sys_temp.data()	);
-		leg->AddEntry(ge,	"STAR 2023",	"p");
+		leg->AddEntry(ge,	"STAR #gamma + Au #rightarrow J/#psi + Au",	"p");
 
 		gae ->SetMarkerStyle(30);
 		gae ->SetFillColorAlpha(16, 0.7);
